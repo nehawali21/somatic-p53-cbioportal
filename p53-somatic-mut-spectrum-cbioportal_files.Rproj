@@ -1,0 +1,16 @@
+Version: 1.0
+ProjectId: dfeeaadc-664e-4127-915a-3e234d5bc2cd
+
+RestoreWorkspace: Default
+SaveWorkspace: Default
+AlwaysSaveHistory: Default
+
+EnableCodeIndexing: Yes
+UseSpacesForTab: Yes
+NumSpacesForTab: 2
+Encoding: UTF-8
+
+RnwWeave: Sweave
+LaTeX: pdfLaTeX
+
+ProjectName: somatic cbioportal p53

@@ -1,0 +1,15274 @@
+# BiocManager::install("cBioPortalData")
+# BiocManager::install("ComplexHeatmap")
+# BiocManager::install(version = "3.19")
+pacman::p_load(BiocManager, cBioPortalData, AnVIL, janitor, tidyverse, ggplot2, dplyr, plotly, cowplot, readr, scales, grid, gridExtra, condformat, cbioportalR, pivottabler, reshape2, RColorBrewer, ComplexHeatmap, ggalluvial, svglite, ggh4x)
+set.seed(1212)
+
+#start package to get data from cBioPortal
+cbio <- cBioPortal()
+
+#find all nonoverlapping studies by going to cbioportal in chrome, hit F12, click curated list of nonredundant studies button, then within F12 console go to network --> fetch/XHR --> fetch entry --> payload --> right-click on second study ids for copy value and paste to Excel and from Excel paste to here
+nonoverlapping <- list("acbc_mskcc_2015",
+                       "acc_2019",
+                       "acc_tcga_pan_can_atlas_2018",
+                       "acyc_fmi_2014",
+                       "acyc_jhu_2016",
+                       "acyc_mda_2015",
+                       "acyc_mskcc_2013",
+                       "acyc_sanger_2013",
+                       "all_phase2_target_2018_pub",
+                       "all_stjude_2016",
+                       "aml_ohsu_2018",
+                       "aml_ohsu_2022", # new one in 217 unique
+                       "aml_target_2018_pub",
+                       "ampca_bcm_2016",
+                       "angs_painter_2020",
+                       "angs_project_painter_2018",
+                       "bcc_unige_2016",
+                       "bfn_duke_nus_2015",
+                       "biliary_tract_summit_2022",
+                       #"bladder_columbia_msk_2018", # new one in 217 unique, but inclusion causes error
+                       "blca_bcan_hcrn_2022",
+                       "blca_bgi",
+                       "blca_cornell_2016",
+                       "blca_dfarber_mskcc_2014",
+                       "blca_mskcc_solit_2012",
+                       "blca_mskcc_solit_2014",
+                       "blca_tcga_pan_can_atlas_2018",
+                       "brain_cptac_2020",
+                       "brca_bccrc",
+                       "brca_broad",
+                       "brca_cptac_2020",
+                       "brca_hta9_htan_2022",
+                       "brca_igr_2015",
+                       "brca_mbcproject_wagle_2017",
+                       "brca_metabric",
+                       "brca_mskcc_2019",
+                       "brca_sanger",
+                       "brca_smc_2018",
+                       "brca_tcga_pan_can_atlas_2018",
+                       "ccrcc_dfci_2019",
+                       "ccrcc_irc_2014",
+                       "ccrcc_utokyo_2013",
+                       "cesc_tcga_pan_can_atlas_2018",
+                       "chol_icgc_2017",
+                       "chol_jhu_2013",
+                       "chol_nccs_2013",
+                       "chol_nus_2012",
+                       "chol_tcga_pan_can_atlas_2018",
+                       "cll_broad_2015",
+                       "cll_iuopa_2015",
+                       "cllsll_icgc_2011",
+                       "coad_caseccc_2015",
+                       "coad_cptac_2019",
+                       "coad_silu_2022", # new one in 217 unique
+                       "coadread_dfci_2016",
+                       "coadread_genentech",
+                       "coadread_mskcc",
+                       "coadread_tcga_pan_can_atlas_2018",
+                       "crc_nigerian_2020",
+                       "cscc_dfarber_2015",
+                       "cscc_hgsc_bcm_2014",
+                       "cscc_ucsf_2021",
+                       "ctcl_columbia_2015",
+                       "desm_broad_2015",
+                       "difg_glass_2019",
+                       "dlbc_tcga_pan_can_atlas_2018",
+                       "dlbcl_dfci_2018",
+                       "dlbcl_duke_2017",
+                       "egc_tmucih_2015",
+                       "es_dfarber_broad_2014",
+                       "es_iocurie_2014",
+                       "esca_broad",
+                       "esca_tcga_pan_can_atlas_2018",
+                       "escc_icgc",
+                       "escc_ucla_2014",
+                       "gbc_shanghai_2014",
+                       "gbm_columbia_2019",
+                       "gbm_cptac_2021",
+                       "gbm_tcga_pan_can_atlas_2018",
+                       "glioma_msk_2018",
+                       "hcc_inserm_fr_2015",
+                       "hcc_meric_2021",
+                       "hcc_msk_venturaa_2018",
+                       "hccihch_pku_2019",
+                       "histiocytosis_cobi_msk_2019",
+                       "hnsc_broad",
+                       "hnsc_jhu",
+                       "hnsc_mdanderson_2013",
+                       "hnsc_tcga_pan_can_atlas_2018",
+                       "ihch_ismms_2015",
+                       "ihch_smmu_2014",
+                       "kich_tcga_pan_can_atlas_2018",
+                       "kirc_bgi",
+                       "kirc_tcga_pan_can_atlas_2018",
+                       "kirp_tcga_pan_can_atlas_2018",
+                       "laml_tcga_pan_can_atlas_2018",
+                       "lcll_broad_2013",
+                       "lgg_tcga_pan_can_atlas_2018",
+                       "lgg_ucsf_2014",
+                       "lgsoc_mapk_msk_2022",
+                       "liad_inserm_fr_2014",
+                       "lihc_amc_prv",
+                       "lihc_riken",
+                       "lihc_tcga_pan_can_atlas_2018",
+                       "luad_broad",
+                       "luad_cptac_2020",
+                       "luad_oncosg_2020",
+                       "luad_tcga_pan_can_atlas_2018",
+                       "luad_tsp",
+                       "lung_nci_2022",
+                       "lung_smc_2016",
+                       "lusc_cptac_2021",
+                       "lusc_tcga_pan_can_atlas_2018",
+                       "mbl_broad_2012",
+                       "mbl_dkfz_2017",
+                       "mbl_pcgp",
+                       "mbl_sickkids_2016",
+                       "mcl_idibips_2013",
+                       "mds_iwg_2022",
+                       "mds_tokyo_2011",
+                       "mel_dfci_2019",
+                       "mel_tsam_liang_2017",
+                       "mel_ucla_2016",
+                       "meso_tcga_pan_can_atlas_2018",
+                       "metastatic_solid_tumors_mich_2017",
+                       "mixed_allen_2018",
+                       "mixed_pipseq_2017",
+                       "mixed_selpercatinib_2020",
+                       "mm_broad",
+                       "mng_utoronto_2021",
+                       "mnm_washu_2016",
+                       "mpcproject_broad_2021",
+                       "mpn_cimr_2013",
+                       "mpnst_mskcc",
+                       "mrt_bcgsc_2016",
+                       "msk_impact_2017",
+                       "nbl_amc_2012",
+                       "nbl_target_2018_pub",
+                       "nbl_ucologne_2015",
+                       "nccrcc_genentech_2014",
+                       "nepc_wcm_2016",
+                       "nhl_bcgsc_2011",
+                       "nhl_bcgsc_2013",
+                       "npc_nusingapore",
+                       "nsclc_mskcc_2018",
+                       "nsclc_tracerx_2017",
+                       "nsclc_unito_2016",
+                       "ov_tcga_pan_can_atlas_2018",
+                       "paac_jhu_2014",
+                       "paad_cptac_2021",
+                       "paad_qcmg_uq_2016",
+                       "paad_tcga_pan_can_atlas_2018",
+                       "paad_utsw_2015",
+                       "pact_jhu_2011",
+                       "pan_origimed_2020",
+                       "pancan_pcawg_2020",
+                       "panet_arcnet_2017",
+                       "panet_jhu_2011",
+                       "panet_shanghai_2013",
+                       "pcnsl_mayo_2015",
+                       "pcpg_tcga_pan_can_atlas_2018",
+                       "pediatric_dkfz_2017",
+                       "plmeso_nyu_2015",
+                       "pog570_bcgsc_2020",
+                       "pptc_2019",
+                       "prad_broad",
+                       "prad_eururol_2017",
+                       "prad_fhcrc",
+                       "prad_mich",
+                       "prad_msk_2019",
+                       "prad_mskcc",
+                       "prad_mskcc_cheny1_organoids_2014",
+                       "prad_su2c_2019",
+                       "prad_tcga_pan_can_atlas_2018",
+                       "prostate_dkfz_2018",
+                       "prostate_pcbm_swiss_2019",
+                       "rms_nih_2014",
+                       "rt_target_2018_pub",
+                       "sarc_mskcc",
+                       "sarc_tcga_pan_can_atlas_2018",
+                       "scco_mskcc",
+                       "sclc_cancercell_gardner_2017",
+                       "sclc_jhu",
+                       "sclc_ucologne_2015",
+                       "skcm_broad",
+                       "skcm_broad_brafresist_2012",
+                       "skcm_dfci_2015",
+                       "skcm_mskcc_2014",
+                       "skcm_tcga_pan_can_atlas_2018",
+                       "skcm_vanderbilt_mskcc_2015",
+                       "skcm_yale",
+                       "stad_oncosg_2018",
+                       "stad_pfizer_uhongkong",
+                       "stad_tcga_pan_can_atlas_2018",
+                       "stad_utokyo",
+                       "stmyec_wcm_2022", # new one in 217 unique
+                       "summit_2018",
+                       "tet_nci_2014",
+                       "tgct_tcga_pan_can_atlas_2018",
+                       "thca_tcga_pan_can_atlas_2018",
+                       "thym_tcga_pan_can_atlas_2018",
+                       "uccc_nih_2017",
+                       "ucec_ccr_cfdna_msk_2022",
+                       "ucec_ccr_msk_2022",
+                       "ucec_cptac_2020",
+                       "ucec_tcga_pan_can_atlas_2018",
+                       "ucs_jhu_2014",
+                       "ucs_tcga_pan_can_atlas_2018",
+                       "um_qimr_2016",
+                       "urcc_mskcc_2016",
+                       "utuc_cornell_baylor_mdacc_2019",
+                       "utuc_igbmc_2021",
+                       "utuc_msk_2019",
+                       "utuc_mskcc_2015",
+                       "uvm_tcga_pan_can_atlas_2018",
+                       "vsc_cuk_2018",
+                       "wt_target_2018_pub"
+)
+#get all clinical data of studies and add column listing study name 
+clindata <- list()
+for(i in nonoverlapping){
+  clindata[[i]] <- clinicalData(api = cbio, studyId = i)
+  clindata[[i]]$StudyID <- i
+}
+head(clindata)
+
+#COMBINE ALL CLINICAL DATA TIBBLES WITHIN LIST WITHOUT LOSING DATA SINCE COLUMNS ARE DIFFERENT 
+clindatacombined <- Reduce(full_join, clindata) %>% 
+  drop_na(sampleId) %>% #remove rows without sample ID
+  drop_na(CANCER_TYPE_DETAILED) #remove rows without detailed cancer type
+
+#feed in altered and unaltered samples lists from cbioportal download when TP53 queried in cBioPortal website as only muts checkbox genomic profiles, only cases with muts data dropdown, OQL search datatypes: mut; tp53, combine into 1 list, rename columns 
+alteredsamples <- read.delim("C:/Users/nwali/Downloads/altered_samples (1).txt",  # ALL 217 unique studies
+                             header = FALSE, 
+                             sep = ":")
+unalteredsamples <- read.delim("C:/Users/nwali/Downloads/unaltered_samples (1).txt", # ALL 217 unique studies
+                               header = FALSE, 
+                               sep = ":")
+queriedsamples <- rbind(alteredsamples, 
+                        unalteredsamples) %>% #can rbind because same column names and width
+  remove_rownames() %>% 
+  dplyr::rename(StudyID = V1, 
+                SampleID = V2)
+
+#create unique queried samples
+uniquequeriedsamples <- distinct(queriedsamples, 
+                                 SampleID) %>% 
+  remove_rownames()
+
+#only keep clinical data of unique queried samples and remove cancer of unknown primary rows, but keep NA cancer type since we just care about detailed cancer anyways, and only keep primary samples
+clindatacombined <- clindatacombined %>% 
+  subset(clindatacombined$sampleId %in% uniquequeriedsamples$SampleID) %>% 
+  subset(CANCER_TYPE != "Cancer of Unknown Primary" | is.na(CANCER_TYPE)) %>%
+  subset(SAMPLE_TYPE %in% (clindatacombined[grepl("Primary", 
+                                                  clindatacombined$SAMPLE_TYPE, 
+                                                  ignore.case = TRUE), # take upper or lowercase primary phrase
+                                            "SAMPLE_TYPE"] %>% 
+                             unique() %>% 
+                             pull()))
+
+#combine duplicate cancers that only have slight differences in spelling but are seen as different in R
+clindatacombined <- clindatacombined %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c('Glioblastoma', 
+                                                                          'Glioblastoma multiforme'), 
+                                              'Glioblastoma Multiforme', 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c('Papillary Thyroid Cancer', 
+                                                                          'Papillary Throid Carcinoma'), 
+                                              'Papillary Thyroid Carcinoma', 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c('Acute myeloid leukemia', 
+                                                                          'Acute myeloid leukemias'), 
+                                              'Acute Myeloid Leukemia', 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c('Adrenocortical carcinoma'),
+                                              'Adrenocortical Carcinoma', 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c('Breast Invasive Carcinoma, NOS', 
+                                                                          'Breast Invasive Carcinoma (NOS)',
+                                                                          'Breast Invasive Cancer, NOS', 
+                                                                          'Breast Invasive Carcinoma', 
+                                                                          'Invasive Breast Carcinoma'), 
+                                              'Breast Invasive Carcinoma, NOS', 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c('Atypical teratoid/rhabdoid tumor'),
+                                              'Atypical Teratoid/Rhabdoid Tumor', 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c('Anaplastic ependymoma'), 
+                                              'Anaplastic Ependymoma', 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(tolower(CANCER_TYPE_DETAILED) %>% 
+                                                str_detect('chromophobe.*renal cell carcinoma'), 
+                                              'Chromophobe Renal Cell Carcinoma', 
+                                              CANCER_TYPE_DETAILED)) %>% 
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c('Anaplastic pleomorphic xanthoastrocytoma'), 
+                                              'Anaplastic Pleomorphic Xanthoastrocytoma', 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Ewing's sarcoma"), 
+                                              'Ewing Sarcoma',
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c('Follicular Thyroid Cancer'), 
+                                              'Follicular Thyroid Carcinoma', 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c('Head and Neck Carcinoma Other'), 
+                                              'Head and Neck Carcinoma, Other', 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c('Head and Neck Squamous Cell CarcinomaÃŠ'), 
+                                              'Head and Neck Squamous Cell Carcinoma',
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c('Hepatocellular carcinoma', 
+                                                                          'Liver Hepatocellular Carcinoma'),
+                                              'Hepatocellular Carcinoma', 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c('Liver Hepatocellular Carcinoma plus Intrahepatic Cholangiocarcinoma'),
+                                              'Hepatocellular Carcinoma plus Intrahepatic Cholangiocarcinoma',
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c('Inflammatory myofibroblastic tumor'),
+                                              'Inflammatory Myofibroblastic Tumor', 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c('Low-Grade Glioma (NOS)'), 
+                                              'Low-Grade Glioma, NOS', 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c('Low grade Fibromyxoid Sarcoma'), 
+                                              'Low-Grade Fibromyxoid Sarcoma', 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c('Medullary Thyroid Cancer'), 
+                                              'Medullary Thyroid Carcinoma', 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c('Neuroendocrine Tumor, NOS'),
+                                              'Neuroendocrine Carcinoma, NOS', 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c('Ovarian Carcinoma Other', 
+                                                                          'Ovarian Cancer, Other'), 
+                                              'Ovarian Carcinoma, Other', 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c('Papillary Kidney Renal Cell Carcinoma'),
+                                              'Papillary Renal Cell Carcinoma', 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c('Pilocytic astrocytoma'),
+                                              'Pilocytic Astrocytoma', 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Wilms' tumors",
+                                                                          'Wilms Tumor'), 
+                                              "Wilms' Tumor", 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Prostate"), 
+                                              "Prostate Cancer, NOS",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Breast"),
+                                              "Breast Cancer", 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Bowel"), 
+                                              "Bowel Cancer, NOS", 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Adenocarcinoma"),
+                                              "Pancreatic Adenocarcinoma", 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c('Well Differentiated Liposarcoma'), 
+                                              "Well-Differentiated Liposarcoma", 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Undifferentiated Sarcoma"),
+                                              "Undifferentiated Soft Tissue Sarcoma", 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Undifferentiated Pleomorphic Sarcoma Malignant Fibrous Histiocytoma"), 
+                                              "Undifferentiated Pleomorphic Sarcoma/Malignant Fibrous Histiocytoma",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c('Unclassified Kidney Renal Cell Carcinoma'), 
+                                              "Unclassified Renal Cell Carcinoma", 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Diffse large B-cell lymphoma"), 
+                                              "Diffuse Large B-Cell Lymphoma", 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c('Follicular lymphoma'), 
+                                              "Follicular Lymphoma",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Gallbladder Cancer"), 
+                                              "Gallbladder Carcinoma", 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Head and Neck"), 
+                                              "Head and Neck Cancer, NOS",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Kidney Renal Cell Carcinoma Other"),
+                                              "Renal Cell Carcinoma, Other", 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Lung"), 
+                                              "Lung Cancer, NOS", 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Mixed Carcinoma"), 
+                                              "Breast Mixed Carcinoma",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Sarcoma, NOS"), 
+                                              "Soft Tissue Sarcoma, NOS", 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Gastric Adenocarcinoma", 
+                                                                          'Stomach Adenocarcinoma',
+                                                                          "Diffuse Type Stomach Adenocarcinoma",
+                                                                          "Intestinal Type Stomach Adenocarcinoma",
+                                                                          "Mucinous Stomach Adenocarcinoma",
+                                                                          "Papillary Stomach Adenocarcinoma",
+                                                                          "Signet Ring Cell Carcinoma of the Stomach",
+                                                                          "Tubular Stomach Adenocarcinoma"),
+                                              "Gastric Adenocarcinoma", 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Bone Sarcoma Other"),
+                                              "Bone Sarcoma, Other", 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Breast Carcinoma Other"), 
+                                              "Breast Carcinoma, Other", 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Colon Adenocarcinoma",
+                                                                          "Rectal Adenocarcinoma",
+                                                                          "Mucinous Adenocarcinoma of the Colon and Rectum",
+                                                                          "Signet Ring Cell Adenocarcinoma of the Colon and Rectum"),
+                                              "Colorectal Adenocarcinoma", 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Colorectal Carcinoma Other"), 
+                                              "Colorectal Carcinoma, Other", 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Esophageal Carcinoma Other"),
+                                              "Esophageal Carcinoma, Other", 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Gallbladder Carcinoma Other"),
+                                              "Gallbladder Carcinoma, Other", 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Gastric Carcinoma Other"), 
+                                              "Gastric Carcinoma, Other", 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Melanoma Other"), 
+                                              "Melanoma, Other", 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Non Small Cell Lung Cancer Other"), 
+                                              "Non Small Cell Lung Cancer, Other", 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Pancreatic Cancer Other"),
+                                              "Pancreatic Cancer, Other", 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Soft Tissue Sarcoma Other"), 
+                                              "Soft Tissue Sarcoma, Other", 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Thyroid Carcinoma Other"), 
+                                              "Thyroid Carcinoma, Other", 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Urothelial Carcinoma Other"),
+                                              "Urothelial Carcinoma, Other", 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Uterine Corpus Endometrial Carcinoma Other"), 
+                                              "Uterine Corpus Endometrial Carcinoma, Other", 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Breast Cancer", 
+                                                                          "Breast Carcinoma, Other"), 
+                                              "Breast Carcinoma, Other", 
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Diffuse Large B-Cell Lymphoma"),
+                                              "Diffuse Large B-Cell Lymphoma, NOS",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Anaplastic medulloblastoma"),
+                                              "Anaplastic Medulloblastoma",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Ductal Carcinoma In Situ (DCIS)"),
+                                              "Breast Ductal Carcinoma In Situ",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Endometrioid Carcinoma"),
+                                              "Cervical Endometrioid Carcinoma",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Ependymomal Tumor"),
+                                              "Ependymoma",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Adenocarcinoma of the Gastroesophageal Junction"),
+                                              "Esophagogastric Adenocarcinoma",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Gallbladder Carcinoma, Other"),
+                                              "Gallbladder Carcinoma",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Head and Neck Carcinoma, Other", 
+                                                                          "Head and Neck Cancer, NOS"),
+                                              "Head and Neck Carcinoma, NOS",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Infiltrating Ductal Carcinoma"),
+                                              "Breast Invasive Ductal Carcinoma",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Infiltrating Lobular Carcinoma"),
+                                              "Breast Invasive Lobular Carcinoma",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Infiltrating Tubular Carcinoma"),
+                                              "Breast Invasive Tubular Carcinoma",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Melanoma, Other",
+                                                                          "Cutaneous Melanoma",
+                                                                          "Uveal Melanoma",
+                                                                          "Acral Melanoma",
+                                                                          "Anorectal Mucosal Melanoma",
+                                                                          "Mucosal Melanoma of the Vulva/Vagina",
+                                                                          "Head and Neck Mucosal Melanoma",
+                                                                          "Mucosal Melanoma of the Esophagus",
+                                                                          "Mucosal Melanoma of the Urethra",
+                                                                          "Melanoma of Unknown Primary"),
+                                              "Melanoma",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Non Small Cell Lung Cancer, Other",
+                                                                          "Poorly Differentiated Non-Small Cell Lung Cancer",
+                                                                          "Large Cell Lung Carcinoma",
+                                                                          "Sarcomatoid Carcinoma of the Lung",
+                                                                          "Lung Adenosquamous Carcinoma",
+                                                                          "Spindle Cell Carcinoma of the Lung",
+                                                                          "Lung Adenocarcinoma",
+                                                                          "Lung Squamous Cell Carcinoma",
+                                                                          "Basaloid Large Cell Carcinoma of the Lung",
+                                                                          "Adenoid Cystic Carcinoma of the Lung",
+                                                                          "Ciliated Muconodular Papillary Tumor of the Lung"),
+                                              "Non-Small Cell Lung Cancer",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Renal Cell Carcinoma, Other"),
+                                              "Renal Cell Carcinoma",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Salivary Carcinoma, Other"),
+                                              "Salivary Carcinoma",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Soft Tissue Sarcoma, Other"),
+                                              "Soft Tissue Sarcoma, NOS",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Extrahepatic Cholangiocarcinoma",
+                                                                          "Intrahepatic Cholangiocarcinoma",
+                                                                          "Perihilar Cholangiocarcinoma"),
+                                              "Cholangiocarcinoma",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("High-Grade Serous Ovarian Cancer",
+                                                                          "Low-Grade Serous Ovarian Cancer",
+                                                                          "Ovarian Serous Carcinoma"),
+                                              "Serous Ovarian Cancer",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Anaplastic Astrocytoma",
+                                                                          "Diffuse Astrocytoma",
+                                                                          "Pilocytic Astrocytoma"),
+                                              "Astrocytoma",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Anaplastic Oligoastrocytoma"),
+                                              "Oligoastrocytoma",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Anaplastic Oligodendroglioma"),
+                                              "Oligodendroglioma",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Nasopharyngeal Carcinoma",
+                                                                          "Oropharynx Squamous Cell Carcinoma",
+                                                                          "Hypopharynx Squamous Cell Carcinoma",
+                                                                          "Oral Cavity Squamous Cell Carcinoma",
+                                                                          "Larynx Squamous Cell Carcinoma",
+                                                                          "Sinonasal Squamous Cell Carcinoma"),
+                                              "Head and Neck Squamous Cell Carcinoma",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Lung Neuroendocrine Tumor",
+                                                                          "Large Cell Neuroendocrine Carcinoma",
+                                                                          "Atypical Lung Carcinoid",
+                                                                          "Lung Carcinoid"),
+                                              "Lung Neuroendocrine Tumor, Other",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Pleural Mesothelioma, Epithelioid Type",
+                                                                          "Pleural Mesothelioma, Biphasic Type",
+                                                                          "Pleural Mesothelioma, Sarcomatoid Type",
+                                                                          "Pleural Mesothelioma",
+                                                                          "Peritoneal Mesothelioma"),
+                                              "Mesothelioma",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Papillary Thyroid Carcinoma",
+                                                                          "Poorly Differentiated Thyroid Cancer",
+                                                                          "Anaplastic Thyroid Cancer",
+                                                                          "Follicular Thyroid Carcinoma",
+                                                                          "Medullary Thyroid Carcinoma",
+                                                                          "Hurthle Cell Thyroid Cancer",
+                                                                          "Thyroid Carcinoma, Other"),
+                                              "Thyroid Carcinoma",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Chondroblastic Osteosarcoma",
+                                                                          "Osteoblastic Osteosarcoma",
+                                                                          "Fibroblastic Osteosarcoma",
+                                                                          "Small Cell Osteosarcoma"),
+                                              "Osteosarcoma",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Endometrioid Ovarian Cancer",
+                                                                          "Clear Cell Ovarian Cancer",
+                                                                          "Mucinous Ovarian Cancer",
+                                                                          "Ovarian Epithelial Tumor"),
+                                              "Ovarian Epithelial Tumor, Other",
+                                              CANCER_TYPE_DETAILED)) %>%
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("High-Grade Glioma, NOS",
+                                                                          "Diffuse Glioma",
+                                                                          "Low-Grade Glioma, NOS",
+                                                                          "Diffuse Intrinsic Pontine Glioma",
+                                                                          "Anaplastic Ganglioglioma",
+                                                                          "Ganglioglioma"),
+                                              "Glioma, Other",
+                                              CANCER_TYPE_DETAILED))
+
+#make new altered and unaltered samples and queried sample list now that problematic rows are removed
+alteredsamples <- alteredsamples %>% 
+  subset(alteredsamples$V2 %in% clindatacombined$sampleId)
+unalteredsamples <- unalteredsamples %>% 
+  subset(unalteredsamples$V2 %in% clindatacombined$sampleId)
+queriedsamples <- rbind(alteredsamples, 
+                        unalteredsamples) %>% 
+  remove_rownames() %>% 
+  dplyr::rename(StudyID = V1, 
+                SampleID = V2)
+
+#make new unique queried samples list and apply again to clinical data (should not change latter)
+uniquequeriedsamples <- distinct(queriedsamples, 
+                                 SampleID) %>% 
+  remove_rownames()
+clindatacombined <- clindatacombined %>%  
+  subset(clindatacombined$sampleId %in% uniquequeriedsamples$SampleID)
+
+#sort cancer type detailed by unique sample count, take only cancers with 100+ unique samples, add total row
+cancersunique <- clindatacombined %>%                              
+  dplyr::group_by(CANCER_TYPE_DETAILED) %>%
+  dplyr::summarise(count = n_distinct(sampleId))
+cancersunique <- cancersunique[order(-cancersunique$count),]
+cancersuniquewithtotal <- cancersunique %>% 
+  adorn_totals()
+cancersover100 <- cancersunique %>%  
+  subset(count >= 100)
+cancersover100 <- cancersover100[order(-cancersover100$count),]
+cancersover100withtotal <- cancersover100 %>% 
+  adorn_totals()
+
+#graph table as a plot and save
+cancersover100grid <- tableGrob(cancersover100withtotal, 
+                                rows = NULL, 
+                                theme = ttheme_default(base_size = 10, 
+                                                       core = list(padding = unit(c(2, 2), 
+                                                                                  "mm"))))
+cancersgrid <- grid.arrange(cancersover100grid)
+#save_plot("FILEPATH.svg", cancersgrid, base_height = 18, base_width = 8)
+write_csv(cancersover100withtotal, 
+          file = "C:/Users/nwali/Downloads/cancersover100.csv")
+
+# further clean up clindatacombined df
+clindatacombined <- clindatacombined %>% 
+  remove_empty("cols") %>%
+  relocate(c(sampleId,
+             StudyID,
+             CANCER_TYPE,
+             CANCER_TYPE_DETAILED,
+             SAMPLE_TYPE,
+             SEX,
+             RACE,
+             ETHNICITY,
+             COUNTRY,
+             COUNTRY_OF_PROCUREMENT,
+             TMB_NONSYNONYMOUS,
+             MUTATION_COUNT),
+           .after = patientId) %>%
+  mutate_at(c("TMB_NONSYNONYMOUS",
+              "MUTATION_COUNT",
+              "SAMPLE_COUNT"),
+            as.numeric)
+
+#extract samples of interest with study ID, cancer info
+set_cbioportal_db(db = "public")
+test_cbioportal_db()
+studiesandsamples <- clindatacombined[, c("sampleId", 
+                                          "StudyID", 
+                                          "CANCER_TYPE", 
+                                          "CANCER_TYPE_DETAILED")] # can only have columns with no NAs
+studiesandsamples <- studiesandsamples %>% 
+  dplyr::rename(sample_id = sampleId, 
+                study_id = StudyID)
+
+#get p53 mutation data for samples
+p53muts <- get_mutations_by_sample(sample_study_pairs = studiesandsamples, 
+                                   genes = "TP53")
+
+#add cancer type and detailed columns
+studiesandsamples <- studiesandsamples %>% 
+  dplyr::rename(sampleId = sample_id, 
+                studyId = study_id)
+p53muts <- merge(p53muts, 
+                 studiesandsamples, 
+                 by = c("sampleId", 
+                        "studyId")) 
+p53muts <- merge(p53muts,
+                 clindatacombined %>%
+                   dplyr::select(c("sampleId", 
+                                   "StudyID", 
+                                   "SAMPLE_TYPE",
+                                   "RACE",
+                                   "ETHNICITY",
+                                   "COUNTRY",
+                                   "COUNTRY_OF_PROCUREMENT",
+                                   "TMB_NONSYNONYMOUS",
+                                   "MUTATION_COUNT")) %>%
+                   dplyr::rename(studyId = StudyID), 
+                 by = c("sampleId", 
+                        "studyId")) 
+
+#rearrange columns and combine duplicate mut types based on spelling, can save for Excel too; also remove any muts denoted as germline but keep NA in that column
+p53muts <- p53muts %>% 
+  relocate(hugoGeneSymbol, 
+           sampleId, 
+           studyId, 
+           CANCER_TYPE, 
+           CANCER_TYPE_DETAILED, 
+           proteinChange, 
+           mutationType, 
+           variantType, 
+           TMB_NONSYNONYMOUS,
+           MUTATION_COUNT,
+           #referenceAllele, 
+           #variantAllele, 
+           .before = entrezGeneId)
+p53muts <- p53muts %>% 
+  subset(mutationStatus != "GERMLINE" | is.na(mutationStatus)) %>% 
+  dplyr::mutate(mutationType = ifelse(mutationType %in% c("Frame_Shift_Del", 
+                                                          'frame_shift_del'), 
+                                      "Frame_Shift_Del", 
+                                      mutationType)) %>% 
+  remove_empty("cols") # remove all cols which have only NA in them
+
+# freezing it in time almost, so that can add to clindata before mut subsetting which loses pts
+p53muts_forclindata <- p53muts
+
+# remove mutations with unspecified protein change 
+p53muts <- p53muts %>% 
+  subset(proteinChange != "MUTATED") %>% 
+  subset(proteinChange != "-") %>%
+  remove_empty("cols") # remove all cols which have only NA in them
+
+#check correct joining of cancer columns to p53muts dataset by concatenating key columns
+test <- as.list(paste0(studiesandsamples$sampleId, 
+                       studiesandsamples$studyId, 
+                       studiesandsamples$CANCER_TYPE, 
+                       studiesandsamples$CANCER_TYPE_DETAILED))
+test2 <- as.list(paste0(p53muts$sampleId, 
+                        p53muts$studyId, 
+                        p53muts$CANCER_TYPE, 
+                        p53muts$CANCER_TYPE_DETAILED))
+all(test2 %in% test) #should be TRUE if joined correctly as it checks if all p53muts columns exactly in main
+
+# # some studies overlap with TP53 database somatic studies so removing them from here, comment these lines out if these studies need to be retained i.e. data not shown in conjunction with TP53 somatic data
+# p53muts <- p53muts %>% 
+#   subset(!(studyId %in% c("sarc_mskcc", # soft tissue sarcoma paper nature genetics 2010
+#                           "hnsc_broad", # HNSCC paper science 2011
+#                           "hnsc_jhu"))) # HNSCC paper science 2011
+
+# because T125T is an important mutation from germline data, but it's not annotated properly in TCGA samples in cbioportal somatic p53muts df, read in cases of GDC TCGA T125= i.e. T125T manually gotten from --> <https://portal.gdc.cancer.gov/v1/exploration?cases_size=100&cases_sort=%5B%7B%22field%22%3A%22project.project_id%22%2C%22order%22%3A%22asc%22%7D%5D&facetTab=cases&filters=%7B%22content%22%3A%5B%7B%22content%22%3A%7B%22field%22%3A%22cases.case_id%22%2C%22value%22%3A%5B%22set_id%3Adeee4d915eb6683cc5d01bf5197456a4f18103a434bb3447efbb7b16d8324d032a9699c386a38c7c22fe6cf84aafe4b4c81f347e4bd5e3e288239dd21ba9f027%22%5D%7D%2C%22op%22%3A%22IN%22%7D%2C%7B%22op%22%3A%22in%22%2C%22content%22%3A%7B%22field%22%3A%22genes.gene_id%22%2C%22value%22%3A%5B%22ENSG00000141510%22%5D%7D%7D%5D%2C%22op%22%3A%22AND%22%7D&searchTableTab=cases>. once file read in, change incorrect annotations in p53muts to T125= for consistency with other studies' annotations
+tcga_known_t125t <- read.delim("C:\\Users\\nwali\\Downloads\\explore-case-table.2024-02-20 GDC TCGA T125=.tsv", 
+                               header = TRUE,
+                               sep = "\t") %>%
+  clean_names()
+
+p53muts <- p53muts %>% 
+  mutate(proteinChange = ifelse((patientId %in% tcga_known_t125t$case_id & proteinChange == "X125_splice"), 
+                                "T125=", 
+                                proteinChange))
+
+# correct splice muts not annotated as T125= although same genomic position and nucleotide changes
+p53muts <- p53muts %>%
+  dplyr::mutate(proteinChange = ifelse((chr == "17" & startPosition == 7579312 & endPosition == 7579312 & ncbiBuild == "GRCh37" & referenceAllele == "C" & variantAllele %in% c("A", "G", "T") & proteinChange == "X125_splice"),
+                                       "T125=", 
+                                       proteinChange))
+
+# add ages to p53mutscancersover100 and p53muts dfs
+clindataages <- clindatacombined %>% 
+  dplyr::select(c(sampleId, 
+                  starts_with("AGE"))) %>% 
+  distinct() %>% 
+  remove_empty("cols") # remove all cols which have only NA in them
+# %>%dplyr::select(-c(AGENT, 
+#           AGE_IN_DAYS, 
+#           AGE_CLASS,
+#           AGE_CURRENT,
+#           AGE_AT_INITIAL_DIAGNOSIS, 
+#           AGE_AT_LAST_KNOWN_CLINICAL_STATUS, 
+#           AGE_AT_CHEMOTHERAPY_STOP, 
+#           AGE_AT_RADIATION_START, 
+#           AGE_AT_RADIATION_STOP,
+#           AGE_AT_SPECIMEN_DIAGNOSIS,
+#           AGE_AT_CHEMOTHERAPY_START, 
+#           AGE_GROUP, 
+#           AGE_TESTING_YEARS))
+clindataages <- clindataages[!duplicated(clindataages$sampleId),]
+clindataages$Age_used <- clindataages$AGE
+table(is.na(clindataages$AGE))
+table(is.na(clindataages$Age_used)) # check how many are NA in column every time, should be decreasing over time
+clindataages <- clindataages %>% 
+  mutate(Age_used = ifelse(is.na(clindataages$Age_used),
+                           AGE_AT_DIAGNOSIS,
+                           Age_used))
+table(is.na(clindataages$Age_used))
+clindataages <- clindataages %>%
+  mutate(Age_used = ifelse(is.na(clindataages$Age_used),
+                           AGE_AT_DX,
+                           Age_used))
+table(is.na(clindataages$Age_used))
+# clindataages <- clindataages %>%
+#   mutate(Age_used = ifelse(is.na(clindataages$Age_used),
+#                            AGE_YRS,
+#                            Age_used))
+table(is.na(clindataages$Age_used))
+clindataages <- clindataages %>%
+  mutate(Age_used = ifelse(is.na(clindataages$Age_used),
+                           AGE_AT_PROCUREMENT,
+                           Age_used))
+table(is.na(clindataages$Age_used))
+clindataages <- clindataages %>%
+  mutate(Age_used = ifelse(is.na(clindataages$Age_used),
+                           AGE_AT_LAST_FOLLOWUP,
+                           Age_used))
+table(is.na(clindataages$Age_used)) 
+clindataages <- clindataages %>%
+  mutate(Age_used = ifelse(is.na(clindataages$Age_used),
+                           AGE_CURRENT,
+                           Age_used))
+table(is.na(clindataages$Age_used)) # still don't have all ages annotated but these are best possible ages added
+clindataages <- clindataages %>% 
+  dplyr::select(c(sampleId, 
+                  Age_used)) %>% 
+  # drop_na() %>% 
+  distinct() 
+
+# p53mutscancersover100 <- left_join(p53mutscancersover100, 
+#                                    clindataages, 
+#                                    by = 'sampleId')
+# table(is.na(p53mutscancersover100$Age_used)) # not all muts have ages associated w/ them as evidenced by TRUE NAs
+# class(p53mutscancersover100$Age_used) <- 'numeric'
+# p53mutscancersover100 <- p53mutscancersover100 %>% 
+#   transform(Age_stratum = ifelse(Age_used < 20,
+#                                  "0-19",
+#                                  "notyet")) %>% 
+#   transform(Age_stratum = ifelse(Age_used >= 20 & Age_used < 30,
+#                                  "20-29",
+#                                  Age_stratum)) %>% 
+#   transform(Age_stratum = ifelse(Age_used >= 30 & Age_used < 40,
+#                                  "30-39",
+#                                  Age_stratum)) %>% 
+#   transform(Age_stratum = ifelse(Age_used >= 40 & Age_used < 50,
+#                                  "40-49",
+#                                  Age_stratum)) %>% 
+#   transform(Age_stratum = ifelse(Age_used >= 50 & Age_used < 60,
+#                                  "50-59",
+#                                  Age_stratum)) %>% 
+#   transform(Age_stratum = ifelse(Age_used >= 60 & Age_used < 70,
+#                                  "60-69",
+#                                  Age_stratum)) %>% 
+#   transform(Age_stratum = ifelse(Age_used >= 70 & Age_used < 80,
+#                                  "70-79",
+#                                  Age_stratum)) %>% 
+#   transform(Age_stratum = ifelse(Age_used >= 80,
+#                                  "80 and up",
+#                                  Age_stratum)) %>% # some pts repeated in studies but ages not updated
+#   transform(Age_stratum = ifelse(patientId %in% c("TCGA-06-0190"),
+#                                  "60-69",
+#                                  Age_stratum)) %>% # some pts repeated in studies but ages not updated
+#   transform(Age_stratum = ifelse(patientId %in% c("TCGA-06-0210"),
+#                                  "70-79",
+#                                  Age_stratum)) %>% # some pts repeated in studies but ages not updated
+#   transform(Age_stratum = ifelse(patientId %in% c("TCGA-06-0221"),
+#                                  "30-39",
+#                                  Age_stratum)) %>% # some pts repeated in studies but ages not updated
+#   transform(Age_used = ifelse(patientId %in% c("TCGA-06-0190"),
+#                               "62",
+#                               Age_used)) %>% # some pts repeated in studies but ages not updated
+#   transform(Age_used = ifelse(patientId %in% c("TCGA-06-0210"),
+#                               "72",
+#                               Age_used)) %>% # some pts repeated in studies but ages not updated
+#   transform(Age_used = ifelse(patientId %in% c("TCGA-06-0221"),
+#                               "31",
+#                               Age_used)) %>% 
+#   # drop_na(Age_stratum) %>% 
+#   distinct()
+
+p53muts <- left_join(p53muts, 
+                     clindataages, 
+                     by = 'sampleId')
+table(is.na(p53muts$Age_used)) # not all muts have ages associated with them as evidenced by TRUE NAs
+class(p53muts$Age_used) <- 'numeric'
+p53muts <- p53muts %>% 
+  transform(Age_stratum = ifelse(Age_used < 20,
+                                 "0-19",
+                                 "notyet")) %>% 
+  transform(Age_stratum = ifelse(Age_used >= 20 & Age_used < 30,
+                                 "20-29",
+                                 Age_stratum)) %>% 
+  transform(Age_stratum = ifelse(Age_used >= 30 & Age_used < 40,
+                                 "30-39",
+                                 Age_stratum)) %>% 
+  transform(Age_stratum = ifelse(Age_used >= 40 & Age_used < 50,
+                                 "40-49",
+                                 Age_stratum)) %>% 
+  transform(Age_stratum = ifelse(Age_used >= 50 & Age_used < 60,
+                                 "50-59",
+                                 Age_stratum)) %>% 
+  transform(Age_stratum = ifelse(Age_used >= 60 & Age_used < 70,
+                                 "60-69",
+                                 Age_stratum)) %>% 
+  transform(Age_stratum = ifelse(Age_used >= 70 & Age_used < 80,
+                                 "70-79",
+                                 Age_stratum)) %>% 
+  transform(Age_stratum = ifelse(Age_used >= 80,
+                                 "80 and up",
+                                 Age_stratum)) %>% # some pts repeated in studies but ages not updated
+  transform(Age_stratum = ifelse(patientId %in% c("TCGA-06-0190"),
+                                 "60-69",
+                                 Age_stratum)) %>% # some pts repeated in studies but ages not updated
+  transform(Age_stratum = ifelse(patientId %in% c("TCGA-06-0210"),
+                                 "70-79",
+                                 Age_stratum)) %>% # some pts repeated in studies but ages not updated
+  transform(Age_stratum = ifelse(patientId %in% c("TCGA-06-0221"),
+                                 "30-39",
+                                 Age_stratum)) %>% # some pts repeated in studies but ages not updated
+  transform(Age_used = ifelse(patientId %in% c("TCGA-06-0190"),
+                              "62",
+                              Age_used)) %>% # some pts repeated in studies but ages not updated
+  transform(Age_used = ifelse(patientId %in% c("TCGA-06-0210"),
+                              "72",
+                              Age_used)) %>% # some pts repeated in studies but ages not updated
+  transform(Age_used = ifelse(patientId %in% c("TCGA-06-0221"),
+                              "31",
+                              Age_used)) %>% 
+  # drop_na(Age_stratum) %>% 
+  distinct()
+
+# add sexes to p53mutscancersover100 and p53muts dfs
+clindatasexes <- clindatacombined %>% 
+  dplyr::select(c(sampleId, 
+                  SEX)) %>% 
+  distinct()
+clindatasexes <- clindatasexes[!duplicated(clindatasexes$sampleId),]
+# clindatasexes <- clindatasexes %>% 
+#   drop_na()
+
+# p53mutscancersover100 <- left_join(p53mutscancersover100, 
+#                                    clindatasexes, 
+#                                    by = 'sampleId')
+# p53mutscancersover100 <- p53mutscancersover100 %>%
+#   transform(SEX = ifelse(CANCER_TYPE_DETAILED %in% c("Uterine Carcinosarcoma/Uterine Malignant Mixed Mullerian Tumor",
+#                                                      "Breast Invasive Carcinoma, NOS",
+#                                                      "Serous Ovarian Cancer"),
+#                          "Female",
+#                          SEX))
+# # p53mutscancersover100 <- p53mutscancersover100 %>% 
+# #   drop_na(SEX)
+# p53mutscancersover100 <- p53mutscancersover100 %>% 
+#   transform(SEX = ifelse(SEX %in% c("FEMALE"),
+#                          "Female",
+#                          SEX)) %>% 
+#   transform(SEX = ifelse(SEX %in% c("MALE"),
+#                          "Male",
+#                          SEX)) %>% 
+#   transform(SEX = ifelse(SEX %in% c("U") | is.na(SEX),
+#                          "Unknown",
+#                          SEX)) %>% 
+#   transform(SEX = ifelse(patientId %in% c("TCGA-06-0210"), # some pts repeated in studies but sexes not updated
+#                          "Female",
+#                          SEX)) %>% 
+#   transform(SEX = ifelse(patientId %in% c("TCGA-06-0190",
+#                                           "TCGA-06-0221"), # some pts repeated in studies but sexes not updated
+#                          "Male",
+#                          SEX))  
+
+p53muts <- left_join(p53muts, 
+                     clindatasexes, 
+                     by = 'sampleId')
+p53muts <- p53muts %>%
+  transform(SEX = ifelse(CANCER_TYPE_DETAILED %in% c("Uterine Carcinosarcoma/Uterine Malignant Mixed Mullerian Tumor",
+                                                     "Breast Invasive Carcinoma, NOS",
+                                                     "Serous Ovarian Cancer"),
+                         "Female",
+                         SEX))
+# p53muts <- p53muts %>% 
+#   drop_na(SEX)
+p53muts <- p53muts %>% 
+  transform(SEX = ifelse(SEX %in% c("FEMALE"),
+                         "Female",
+                         SEX)) %>% 
+  transform(SEX = ifelse(SEX %in% c("MALE"),
+                         "Male",
+                         SEX)) %>% 
+  transform(SEX = ifelse(SEX %in% c("U") | is.na(SEX),
+                         "Unknown",
+                         SEX)) %>% 
+  transform(SEX = ifelse(patientId %in% c("TCGA-06-0210"), # some pts repeated in studies but sexes not updated
+                         "Female",
+                         SEX)) %>% 
+  transform(SEX = ifelse(patientId %in% c("TCGA-06-0190",
+                                          "TCGA-06-0221"), # some pts repeated in studies but sexes not updated
+                         "Male",
+                         SEX)) 
+
+# update clin data sexes and ages too
+clindatacombined <- Reduce(full_join, 
+                           list((clindatacombined %>% 
+                                   dplyr::select(-c(SEX))), # don't want to retain old sexes
+                                clindataages,
+                                clindatasexes)) %>% 
+  remove_empty("cols")
+
+class(clindatacombined$Age_used) <- 'numeric'
+clindatacombined <- clindatacombined %>% 
+  transform(Age_stratum = ifelse(Age_used < 20,
+                                 "0-19",
+                                 "notyet")) %>% 
+  transform(Age_stratum = ifelse(Age_used >= 20 & Age_used < 30,
+                                 "20-29",
+                                 Age_stratum)) %>% 
+  transform(Age_stratum = ifelse(Age_used >= 30 & Age_used < 40,
+                                 "30-39",
+                                 Age_stratum)) %>% 
+  transform(Age_stratum = ifelse(Age_used >= 40 & Age_used < 50,
+                                 "40-49",
+                                 Age_stratum)) %>% 
+  transform(Age_stratum = ifelse(Age_used >= 50 & Age_used < 60,
+                                 "50-59",
+                                 Age_stratum)) %>% 
+  transform(Age_stratum = ifelse(Age_used >= 60 & Age_used < 70,
+                                 "60-69",
+                                 Age_stratum)) %>% 
+  transform(Age_stratum = ifelse(Age_used >= 70 & Age_used < 80,
+                                 "70-79",
+                                 Age_stratum)) %>% 
+  transform(Age_stratum = ifelse(Age_used >= 80,
+                                 "80 and up",
+                                 Age_stratum)) %>% # some pts repeated in studies but ages not updated
+  transform(Age_stratum = ifelse(patientId %in% c("TCGA-06-0190"),
+                                 "60-69",
+                                 Age_stratum)) %>% # some pts repeated in studies but ages not updated
+  transform(Age_stratum = ifelse(patientId %in% c("TCGA-06-0210"),
+                                 "70-79",
+                                 Age_stratum)) %>% # some pts repeated in studies but ages not updated
+  transform(Age_stratum = ifelse(patientId %in% c("TCGA-06-0221"),
+                                 "30-39",
+                                 Age_stratum)) %>% # some pts repeated in studies but ages not updated
+  transform(Age_used = ifelse(patientId %in% c("TCGA-06-0190"),
+                              "62",
+                              Age_used)) %>% # some pts repeated in studies but ages not updated
+  transform(Age_used = ifelse(patientId %in% c("TCGA-06-0210"),
+                              "72",
+                              Age_used)) %>% # some pts repeated in studies but ages not updated
+  transform(Age_used = ifelse(patientId %in% c("TCGA-06-0221"),
+                              "31",
+                              Age_used)) %>% 
+  remove_empty("cols") %>% 
+  distinct()
+
+clindatacombined <- clindatacombined %>%
+  transform(SEX = ifelse(CANCER_TYPE_DETAILED %in% c("Uterine Carcinosarcoma/Uterine Malignant Mixed Mullerian Tumor",
+                                                     "Breast Invasive Carcinoma, NOS",
+                                                     "Serous Ovarian Cancer"),
+                         "Female",
+                         SEX)) %>% 
+  transform(SEX = ifelse(SEX %in% c("FEMALE"),
+                         "Female",
+                         SEX)) %>% 
+  transform(SEX = ifelse(SEX %in% c("MALE"),
+                         "Male",
+                         SEX)) %>% 
+  transform(SEX = ifelse(SEX %in% c("U") | is.na(SEX),
+                         "Unknown",
+                         SEX)) %>% 
+  transform(SEX = ifelse(patientId %in% c("TCGA-06-0210"), # some pts repeated in studies but sexes not updated
+                         "Female",
+                         SEX)) %>% 
+  transform(SEX = ifelse(patientId %in% c("TCGA-06-0190",
+                                          "TCGA-06-0221"), # some pts repeated in studies but sexes not updated
+                         "Male",
+                         SEX)) %>% 
+  remove_empty("cols") 
+
+
+
+# ignore this, it loses info and still has same number of rows as regular full join
+# full_join((clindatacombined %>% # match on fewest cols to be safe since dfs edited along the way
+#              dplyr::select(-c(#patientId,
+#                               #sampleId,
+#                               #CANCER_TYPE,
+#                               #CANCER_TYPE_DETAILED,
+#                               SAMPLE_TYPE,
+#                               RACE,
+#                               ETHNICITY,
+#                               COUNTRY,
+#                               TMB_NONSYNONYMOUS,
+#                               MUTATION_COUNT,
+#                               Age_used,
+#                               SEX,
+#                               Age_stratum))),
+#           (p53muts %>%
+#              dplyr::select(-c(#patientId,
+#                               #sampleId,
+#                               #CANCER_TYPE,
+#                               #CANCER_TYPE_DETAILED,
+#                               SAMPLE_TYPE,
+#                               RACE,
+#                               ETHNICITY,
+#                               COUNTRY,
+#                               TMB_NONSYNONYMOUS,
+#                               MUTATION_COUNT,
+#                               Age_used,
+#                               SEX,
+#                               Age_stratum))))
+
+
+# identify pts with multiple distinct mutations and remove them, so that only have pts with 1 mut each
+dup_muts_pts <- p53muts %>% 
+  dplyr::select(c(proteinChange, 
+                  patientId)) %>% 
+  group_by(patientId) %>% 
+  filter(n() > 1) %>% # first get all pts with multiple entries regardless of muts
+  distinct() %>% # only keep pts with multiple entries and multiple distinct muts
+  group_by(patientId) %>% 
+  filter(n() > 1) %>% # get all pts with multiple distinct muts
+  arrange(patientId) %>%
+  pull(patientId) %>%
+  unique()
+
+p53muts <- p53muts %>%
+  subset(!(patientId %in% dup_muts_pts)) %>%
+  distinct()
+
+
+#make subset of p53muts which only have cancers with at least 100 samples; not changing object name
+p53mutscancersover100 <- p53muts
+# %>% subset(p53muts$CANCER_TYPE_DETAILED %in% cancersover100$CANCER_TYPE_DETAILED)
+
+#check that cancers in new subset of p53 muts are only those with over 100 samples
+#all(p53mutscancersover100$CANCER_TYPE_DETAILED %in% cancersover100$CANCER_TYPE_DETAILED) #should be TRUE
+
+#identify which of 100+ samples cancers don't have p53 muts and will not be included in pivot tables
+#cancersover100$CANCER_TYPE_DETAILED[!cancersover100$CANCER_TYPE_DETAILED %in% p53mutscancersover100$CANCER_TYPE_DETAILED] #can search orig p53muts for ID'd cancers to confirm their absence
+
+
+# find patients listed once or multiple times, subset data to such patients, and compare if equivalent
+ptswithcancer <- p53mutscancersover100 %>% 
+  dplyr::count(patientId, 
+               #Age_used, # duplicates b/c if pts repeated across studies (rare) could have missing ages
+               #CANCER_TYPE, # duplicates b/c slightly different cancer name despite same age and detailed cancer
+               CANCER_TYPE_DETAILED, 
+               sort = TRUE) %>% 
+  distinct() %>% 
+  remove_rownames()
+ptswithcancer <- ptswithcancer %>% 
+  dplyr::count(patientId,
+               sort = TRUE) %>% 
+  distinct() %>% 
+  remove_rownames()
+
+solepts <- ptswithcancer %>% 
+  subset(n == 1) %>% 
+  remove_rownames()
+solepts <- solepts[order(-solepts$n),] %>% 
+  remove_rownames()
+p53mutssolecancer <- p53mutscancersover100 %>% 
+  subset(patientId %in% solepts$patientId) %>% 
+  distinct()
+all(p53mutssolecancer$patientId %in% solepts$patientId) # should be TRUE in console
+
+multpts <- ptswithcancer %>% 
+  subset(n > 1) %>% 
+  remove_rownames()
+multpts <- multpts[order(-multpts$n),] %>% 
+  remove_rownames()
+p53mutsmultcancer <- p53mutscancersover100 %>% 
+  subset(patientId %in% multpts$patientId) %>% 
+  distinct()
+all(p53mutsmultcancer$patientId %in% multpts$patientId) # should be TRUE in console
+
+# not all multpts actually have mult cancers because called diff cancers in diff studies where same pts repeated, but since can't change cancer types listed b/c don't know which one is correct, inevitably counted mult times
+
+# not worth doing separate mult vs sole analyses b/c most of mult not actually mult and are so few
+
+# however, since most key analyses done on p53mutsover100 df, just make that df have only sole pts to match better with germline
+p53mutscancersover100 <- p53mutscancersover100 %>% 
+  subset(patientId %in% solepts$patientId) %>% 
+  remove_empty("cols") %>% 
+  distinct()
+
+p53muts <- p53muts %>% 
+  subset(patientId %in% solepts$patientId) %>% 
+  remove_empty("cols") %>% 
+  distinct()
+
+# need to add mut info to clindata for future calcs of muts out of all possible somatic cancers
+clindatacombined <- clindatacombined %>% # do by sample so that if mult cancers in pt, only mut marked
+  mutate(p53mut = ifelse(sampleId %in% p53muts_forclindata$sampleId,
+                         "yes", 
+                         "no")) %>% 
+  remove_empty("cols") %>%
+  distinct()
+
+# because # of rows changes when p53muts added to clindatacombined, keep as separate df just for specific pos calcs across all possible somatic cancers
+clindatacombined_forpos <- full_join(clindatacombined, 
+                                     p53muts_forclindata) %>% 
+  remove_empty("cols") %>%
+  distinct()
+
+# save p53muts and clin data as tables and rds objects
+write_csv(p53muts %>% 
+            remove_empty("cols"), 
+          file = "C:/Users/nwali/Downloads/p53muts.csv")
+
+write_csv(p53mutscancersover100 %>% 
+            remove_empty("cols"),
+          file = "C:/Users/nwali/Downloads/p53mutscancersover100.csv")
+
+write_csv(clindatacombined %>% 
+            remove_empty("cols"),
+          file = "C:/Users/nwali/Downloads/clindatacombined.csv")
+
+write_csv(clindatacombined_forpos %>% 
+            remove_empty("cols"),
+          file = "C:/Users/nwali/Downloads/clindatacombined_forpos.csv")
+
+saveRDS(p53muts %>% 
+          remove_empty("cols"), 
+        file = "C:/Users/nwali/Downloads/p53muts.rds")
+
+saveRDS(p53mutscancersover100 %>% 
+          remove_empty("cols"),
+        file = "C:/Users/nwali/Downloads/p53mutscancersover100.rds")
+
+saveRDS(clindatacombined %>% 
+          remove_empty("cols"),
+        file = "C:/Users/nwali/Downloads/clindatacombined.rds")
+
+saveRDS(clindatacombined_forpos %>% 
+          remove_empty("cols"),
+        file = "C:/Users/nwali/Downloads/clindatacombined_forpos.rds")
+
+
+
+
+
+
+#### pivot tables ####
+
+#make pivot table based on mutation type, sorted by descending counts for rows and columns
+muttypepivot <- PivotTable$new()
+muttypepivot$addData(p53mutscancersover100)
+muttypepivot$addRowDataGroups("CANCER_TYPE_DETAILED")
+muttypepivot$addColumnDataGroups("mutationType")
+muttypepivot$defineCalculation(calculationName = "Count of distinct individuals", 
+                               summariseExpression = "n_distinct(patientId)")
+muttypepivot$sortColumnDataGroups(levelNumber = 1, 
+                                  orderBy = "calculation", 
+                                  sortOrder = "desc")
+muttypepivot$sortRowDataGroups(levelNumber = 1,
+                               orderBy = "calculation", 
+                               sortOrder = "desc")
+muttypepivot$evaluatePivot()
+
+#make pivot table as dataframe for further calculations
+pivotdf <- muttypepivot$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  remove_rownames()
+
+# make pivot table on prevalence of p53 muts across all somatic cancers
+
+# don't really need this pivot since i can just keep total row of per cancer for overall proportion
+# mutsomatic <- PivotTable$new()
+# mutsomatic$addData(clindatacombined)
+# mutsomatic$addRowDataGroups("p53mut")
+# mutsomatic$defineCalculation(calculationName = "Count of distinct individuals", 
+#                                    summariseExpression = "n_distinct(patientId)")
+# mutsomatic$sortColumnDataGroups(levelNumber = 1, 
+#                                       orderBy = "calculation", 
+#                                       sortOrder = "desc")
+# mutsomatic$sortRowDataGroups(levelNumber = 1,
+#                                    orderBy = "calculation", 
+#                                    sortOrder = "desc")
+# mutsomatic$evaluatePivot()
+
+muttissuesomatic <- PivotTable$new()
+muttissuesomatic$addData(clindatacombined)
+muttissuesomatic$addRowDataGroups("CANCER_TYPE_DETAILED")
+muttissuesomatic$addColumnDataGroups("p53mut")
+muttissuesomatic$defineCalculation(calculationName = "Count of distinct individuals", 
+                                   summariseExpression = "n_distinct(patientId)")
+muttissuesomatic$sortColumnDataGroups(levelNumber = 1, 
+                                      orderBy = "calculation", 
+                                      sortOrder = "desc")
+muttissuesomatic$sortRowDataGroups(levelNumber = 1,
+                                   orderBy = "calculation", 
+                                   sortOrder = "desc")
+muttissuesomatic$evaluatePivot()
+
+# need to get actual mut prevalence across all somatic cancers
+# pivottabler takes too long; make pivot table using dplyr, widen table to make cols = muts, add totals
+mutpossomaticpivot <- clindatacombined_forpos %>% 
+  group_by(CANCER_TYPE_DETAILED, 
+           proteinChange) %>%
+  summarise(n = n_distinct(patientId)) %>%
+  arrange(-n)
+mutpossomaticpivot <- pivot_wider(mutpossomaticpivot, 
+                           names_from = proteinChange, 
+                           values_from = n) 
+
+# can't adorn_totals because it just adds rows and columns up, doesn't do distinct indiv like pivottabler, so need to make 1 row/col dfs of each distinct number of individuals for each position and cancer and add to pivot
+# first getting distinct indivs for each mut and adding to pivot df
+zed <- lapply(colnames(mutpossomaticpivot), 
+              FUN = function(x) clindatacombined_forpos %>%
+                subset(proteinChange == x) %>% 
+                pull(patientId) %>% 
+                n_distinct())
+names(zed) <- colnames(mutpossomaticpivot) # ensure list names are muts
+zed <- reshape2::melt(zed) %>% 
+  column_to_rownames("L1") %>% 
+  as.matrix() %>% 
+  t() %>% 
+  as.data.frame() %>% 
+  remove_rownames()
+zed[1,1] <- "Total" # rename 0 placeholder as Total
+
+pivotdfpos_somatic <- bind_rows(mutpossomaticpivot,
+                        zed)
+
+# now getting distinct indivs for each cancer and adding to pivot df
+zed <- lapply(mutpossomaticpivot$CANCER_TYPE_DETAILED,
+              FUN = function(x) clindatacombined_forpos %>%
+                subset(CANCER_TYPE_DETAILED == x) %>% 
+                pull(patientId) %>% 
+                n_distinct())
+names(zed) <- mutpossomaticpivot$CANCER_TYPE_DETAILED
+zed <- reshape2::melt(zed) %>% 
+  dplyr::rename(CANCER_TYPE_DETAILED = L1,
+                Total = value)
+
+pivotdfpos_somatic <- full_join(pivotdfpos_somatic,
+                        zed,
+                        by = "CANCER_TYPE_DETAILED")
+
+# add total distinct indivs as final df total
+pivotdfpos_somatic[nrow(pivotdfpos_somatic),ncol(pivotdfpos_somatic)] <- n_distinct(clindatacombined_forpos$patientId)
+
+# add num of pts who dont have mut
+pivotdfpos_somatic[nrow(pivotdfpos_somatic),"NA"] <- (setdiff(unique(clindatacombined_forpos$patientId), 
+                                                              unique(p53muts$patientId)) %>%
+                                                        length())
+
+# add num pts per cancer/total to cancer col, divide across for prop of muts per cancer/total, remove total col and rownames
+pivotdfpos_somatic_calc <- pivotdfpos_somatic %>% 
+  subset(Total >= 50) %>% # not removing bottom total since we want that as part of barchart
+  mutate(CANCER_TYPE_DETAILED = paste0(CANCER_TYPE_DETAILED,
+                                       " (",
+                                       format(Total, 
+                                              big.mark = ",", 
+                                              trim = TRUE),
+                                       " individuals)")) %>%
+  mutate_at(vars(2:Total), 
+            .funs = ~./Total) %>% 
+  subset(select = -c(Total)) %>%
+  remove_rownames()
+
+# melt for tables, barcharts, heatmaps later on
+pivotdfpos_somatic_melted <- pivotdfpos_somatic_calc %>%
+  reshape2::melt() %>% 
+  dplyr::rename(Mutation = variable, 
+                Cancer = CANCER_TYPE_DETAILED, 
+                Proportion = value)
+
+# make pivot tables as dataframes for further calculations
+# pivotdf_mutsomatic <- mutsomatic$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+#   remove_rownames()
+
+pivotdf_muttissuesomatic <- muttissuesomatic$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  remove_rownames()
+
+# #add counts of cancer distinct samples to help to divide pivot table rows by # distinct samples
+# cancersover100used <- cancersover100 %>% 
+#   subset(cancersover100$CANCER_TYPE_DETAILED %in% pivotdf$CANCER_TYPE_DETAILED)
+# pivotdfnobottomtotal <- pivotdf %>% 
+#   subset(CANCER_TYPE_DETAILED != "Total")
+# pivotdfnobottomtotal <- merge(pivotdfnobottomtotal, 
+#                               cancersover100used, 
+#                               by = "CANCER_TYPE_DETAILED")
+# 
+# #check correct joining of distinct sample counts to pivot table by concatenating key columns
+# testagain <- as.list(paste0(cancersover100used$CANCER_TYPE_DETAILED, 
+#                             cancersover100used$count))
+# testagain2 <- as.list(paste0(pivotdfnobottomtotal$CANCER_TYPE_DETAILED, 
+#                              pivotdfnobottomtotal$count))
+# all(testagain2 %in% testagain) #should be TRUE if joined correctly as it checks if all pivot columns exactly in main
+# 
+# #divide pivot table rows by # distinct samples
+# pivotdfnobottomtotal <- pivotdfnobottomtotal %>%
+#   mutate_at(vars(2:Total), 
+#             .funs = ~./count)
+# 
+# #remove counts and total columns so that they're not included in heatmap or any other visualization
+# pivotdfnobottomtotal <- pivotdfnobottomtotal %>% 
+#   subset(select = -c(count, 
+#                      Total)) %>% 
+#   remove_rownames()
+
+#make heatmap with ggplot2
+
+# #make dataframe into long form for ggplot2 
+# data_melt <- reshape2::melt(pivotdfnobottomtotal) %>% 
+#   dplyr::rename(Mutation = variable,
+#                 Cancer = CANCER_TYPE_DETAILED, 
+#                 Prevalence = value)
+# head(data_melt)
+# 
+# #remove mutations with less than 1% prevalence in distinct samples
+# data_meltover0.01 <- data_melt %>% 
+#   subset(Prevalence >= 0.01)
+# 
+# #sort cancers by lowest to highest missense mutation prevalence for heatmap
+# missensemutorder = data_meltover0.01[data_meltover0.01$Mutation == 'Missense_Mutation',]
+# data_meltover0.01$Cancer = factor(data_meltover0.01$Cancer, 
+#                                   levels = missensemutorder$Cancer[order(missensemutorder$Prevalence)])
+
+# #make ggplot heatmap
+# ggplotheatmap <- ggplot(data_meltover0.01, 
+#                         aes(x = Mutation, 
+#                             y = Cancer)) + 
+#   geom_tile(aes(fill = Prevalence)) + 
+#   ggtitle("# muts/# distinct samples") +
+#   scale_fill_gradient(low = "white",
+#                       high = "red", 
+#                       na.value = "white") + 
+#   scale_x_discrete(position = "top", 
+#                    expand = c(0,0)) + 
+#   scale_y_discrete(expand = c(0,0)) +
+#   scale_fill_continuous(breaks = seq(0, 
+#                                      0.8,
+#                                      by = 0.1), 
+#                         low = "white", 
+#                         high = "red", 
+#                         na.value = "white") +
+#   theme_classic() + 
+#   theme(axis.text.x = element_text(angle = 45, 
+#                                    hjust = 0), 
+#         axis.text = element_text(color = "black"),
+#         axis.title = element_text(color = "black"),
+#         plot.title = element_text(hjust = 0.5)) 
+# ggplotheatmap
+# save_plot(file = "C:/Users/nwali/Downloads/hm.svg", 
+#           ggplotheatmap, 
+#           base_width = 10, 
+#           base_height = 12)
+#can identify which class your axes are in ggplot2 with below function, can help when trying to do expand = c(0,0) to remove padding between axes and tickmarks and labels
+#class(layer_scales(ggplotheatmap)$y) or $x
+
+# #make interactive heatmap with plotly
+# plotlymap <- ggplotly(ggplotheatmap, 
+#                       autosize = FALSE, 
+#                       height = 1500, 
+#                       width = 1000) %>% 
+#   layout(xaxis = list(side = "top"), 
+#          title = list(text = "# muts/# distinct samples", 
+#                       y = 1, 
+#                       x = 1), 
+#          yaxis = list(title = list(standoff = 5))) 
+# plotlymap
+#save plotly as svg, not really working though...
+#orca(p = plotlymap, file = "C:/Users/nwali/Downloads/test.svg")
+#save plotly as interactive html
+#devtools::install_github('ramnathv/htmlwidgets', force = TRUE)
+#htmlwidgets::saveWidget(plotlymap, file = "C:/Users/nwali/Downloads/test.html", selfcontained = TRUE)
+
+#make 100% stacked barchart based on cancers with at least 100 indivs
+#remove bottom total row again
+pivotdfnobottomtotal100muts <- pivotdf %>% 
+  subset(CANCER_TYPE_DETAILED != "Total")
+
+#subset dataframe to cancers with at least 100 indivs ; not changing object name
+pivotdfnobottomtotal100muts <- pivotdfnobottomtotal100muts %>% 
+  subset(Total >= 50) %>%
+  mutate(CANCER_TYPE_DETAILED = paste0(CANCER_TYPE_DETAILED,
+                                       " (",
+                                       format(Total, 
+                                              big.mark = ",", 
+                                              trim = TRUE),
+                                       " individuals)"))
+
+pivotdf_muttissuesomatic100muts <- pivotdf_muttissuesomatic %>% 
+  subset(Total >= 50) %>% # not removing bottom total since we want that as part of barchart
+  mutate(CANCER_TYPE_DETAILED = paste0(CANCER_TYPE_DETAILED,
+                                       " (",
+                                       format(Total, 
+                                              big.mark = ",", 
+                                              trim = TRUE),
+                                       " individuals)"))
+
+#divide each column by total # indiv
+pivotdfnobottomtotal100muts <- pivotdfnobottomtotal100muts %>%
+  mutate_at(vars(2:Total), 
+            .funs = ~./Total)
+
+pivotdf_muttissuesomatic100muts <- pivotdf_muttissuesomatic100muts %>%
+  mutate_at(vars(2:Total), 
+            .funs = ~./Total)
+
+#remove total column so it's not included in barchart
+pivotdfnobottomtotal100muts <- pivotdfnobottomtotal100muts %>% 
+  subset(select = -c(Total)) %>%
+  remove_rownames()
+
+pivotdf_muttissuesomatic100muts <- pivotdf_muttissuesomatic100muts %>% 
+  subset(select = -c(Total)) %>%
+  remove_rownames()
+
+#melt dataframe and rename columns to use for ggplot2 100% stacked barchart
+data_barchart <- reshape2::melt(pivotdfnobottomtotal100muts) %>% 
+  dplyr::rename(Mutation = variable, 
+                Cancer = CANCER_TYPE_DETAILED, 
+                Proportion = value)
+head(data_barchart)
+
+data_muttissuesomatic <- reshape2::melt(pivotdf_muttissuesomatic100muts) %>% 
+  dplyr::rename(Mutation = variable, 
+                Cancer = CANCER_TYPE_DETAILED, 
+                Proportion = value)
+
+#sort cancers by lowest to highest missense mutation proportion for stacked barchart
+missensemutorderbarchart = data_barchart[data_barchart$Mutation == 'Missense_Mutation',]
+data_barchart$Cancer = factor(data_barchart$Cancer, 
+                              levels = missensemutorderbarchart$Cancer[order(missensemutorderbarchart$Proportion)])
+
+# call low-frequency cancers as other for subsequent pivot tables and work
+p53mutscancersover100 <- p53mutscancersover100 %>% 
+  transform(Cancer_Label = ifelse(CANCER_TYPE_DETAILED %in% gsub(" \\(.*", 
+                                                                 "",
+                                                                 pivotdfnobottomtotal100muts$CANCER_TYPE_DETAILED),
+                                  CANCER_TYPE_DETAILED, 
+                                  "OTHER"))
+
+# save table and object
+write_csv(p53mutscancersover100,
+          file = "C:/Users/nwali/Downloads/p53mutscancersover100.csv")
+
+saveRDS(p53mutscancersover100,
+        file = "C:/Users/nwali/Downloads/p53mutscancersover100.rds")
+
+# because many muts per pt, adding up to beyond 100% so ggplot2 automatically scaling down numbers to add to 100%, which is why plot looks uneven; order of cancers is accurate for highest to lowest missense, but the values depicted are different from the real values because ggplot2 has already scaled them, can't 'fit' the values here either because we actually need to see all muts' actual percentages, rather than binarizing and keeping accurate percentages for what we want to see and scaling down other percentages
+
+#make 100% stacked barchart with ggplot2 with reversed missense order i.e. highest to lowest
+ggplotstackedbarchart <- ggplot(data_barchart, 
+                                aes(x = Cancer, 
+                                    y = Proportion, 
+                                    fill = Mutation)) +
+  geom_bar(position = "fill",
+           stat = "identity") + 
+  ggtitle("Mutation Types vs. Cancers in Individuals with Somatic p53 Mutations in cBioPortal") + 
+  ylab("Proportion of distinct individuals") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0, 0), 
+                     breaks = scales::pretty_breaks(n = 6)) + 
+  scale_x_discrete(limits = rev(levels(data_barchart$Cancer)), 
+                   expand = c(0, 0)) + 
+  scale_fill_manual(values = c("#009E73",
+                               "#000000",
+                               "#CC79A7",
+                               "#0072B2",
+                               "#999999",
+                               "#F0E442",
+                               "#56B4E9",
+                               "#D55E00",
+                               "lightgray",
+                               "#E69F00")) +         
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   vjust = 1,
+                                   hjust = 1),
+        axis.text = element_text(color = "black",
+                                 size = 12,
+                                 vjust = 0.5), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(5,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,5,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,5,0, "mm")),
+        legend.title = element_text(face = "bold",
+                                    size = 14, 
+                                    color = "black"),
+        legend.text = element_text(size = 12, 
+                                   color = "black"),
+        plot.margin = margin(2,2,2,35, 
+                             unit = "mm")) 
+ggplotstackedbarchart
+save_plot(file = "C:/Users/nwali/Downloads/barchart.svg", 
+          ggplotstackedbarchart, 
+          base_width = 18, 
+          base_height = 10,
+          limitsize = FALSE)
+
+# make stacked barchart of p53 mut prevalence in all somatic pts and within cancers
+stackedbarchart_muttissuesomatic <- ggplot(data_muttissuesomatic %>%
+                                             mutate(temp = ifelse(str_detect(Cancer, 
+                                                                             "Total") & Mutation == "yes",
+                                                                  "total",
+                                                                  as.character(Mutation))) %>%
+                                             mutate(temp = ifelse((gsub(" \\(.*", 
+                                                                        "",
+                                                                        Cancer) %in% gsub(" \\(.*", 
+                                                                                          "", pivotdfnobottomtotal100muts$CANCER_TYPE_DETAILED)) & Mutation == "yes",
+                                                                  "subset",
+                                                                  temp)), 
+                                           aes(x = factor(Cancer,
+                                                          levels = (data_muttissuesomatic %>% 
+                                                                      subset(Mutation == "yes") %>% 
+                                                                      arrange(-Proportion) %>% 
+                                                                      pull(Cancer) %>%
+                                                                      unique())), 
+                                               y = Proportion, 
+                                               fill = factor(temp,
+                                                             levels = c("yes", 
+                                                                        "subset",
+                                                                        "total", 
+                                                                        "no"))
+                                               # relevel(as.factor(Mutation),
+                                               #              ref = "yes")
+                                           )) +
+  geom_bar(position = "fill",
+           stat = "identity") + 
+  ggtitle("Presence of Somatic p53 Mutations in Individuals with Cancer in cBioPortal") + 
+  ylab("Proportion of distinct individuals") +
+  xlab("Cancer") +
+  labs(fill = "p53 mutated") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0, 0), 
+                     breaks = scales::pretty_breaks(n = 6)) + 
+  scale_x_discrete(expand = c(0, 0)) + 
+  scale_fill_manual(
+    #breaks = c("yes",
+    #           "no"),
+    labels = c("yes", 
+               "yes; subset", 
+               "yes; total", 
+               "no"),
+    values = c("yes" = "skyblue",#"#56B4E9"
+               "subset" = "#0072B2",
+               "total" = "black",#"#D55E00"
+               "no" = "gray90")) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   vjust = 1,
+                                   hjust = 1),
+        axis.text = element_text(color = "black",
+                                 size = 12,
+                                 vjust = 0.5), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(5,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,5,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,5,0, "mm")),
+        legend.title = element_text(face = "bold",
+                                    size = 14, 
+                                    color = "black"),
+        legend.text = element_text(size = 12, 
+                                   color = "black"),
+        plot.margin = margin(2,2,2,78, 
+                             unit = "mm")) 
+stackedbarchart_muttissuesomatic
+save_plot(file = "C:/Users/nwali/Downloads/stackedbarchart_muttissuesomatic.svg",
+          stackedbarchart_muttissuesomatic,
+          base_width = 32, 
+          base_height = 12.5,
+          limitsize = FALSE)
+
+# make horiz stacked barchart
+stackedbarchart_muttissuesomatic_horiz <- ggplot(data_muttissuesomatic %>%
+                                                   mutate(Proportion = ifelse(is.na(Proportion),
+                                                                              0,
+                                                                              Proportion)) %>%
+                                                   mutate(temp = ifelse(str_detect(Cancer, 
+                                                                                   "Total") & Mutation == "yes",
+                                                                        "total",
+                                                                        as.character(Mutation))) %>%
+                                                   mutate(temp = ifelse((gsub(" \\(.*", 
+                                                                              "",
+                                                                              Cancer) %in% gsub(" \\(.*", 
+                                                                                                "", pivotdfnobottomtotal100muts$CANCER_TYPE_DETAILED)) & Mutation == "yes",
+                                                                        "subset",
+                                                                        temp)), 
+                                                 aes(x = factor(Cancer,
+                                                                levels = (data_muttissuesomatic %>% 
+                                                                            subset(Mutation == "yes") %>% 
+                                                                            arrange(-Proportion) %>% 
+                                                                            pull(Cancer) %>%
+                                                                            unique())), 
+                                                     y = Proportion, 
+                                                     fill = factor(temp,
+                                                                   levels = c("yes", 
+                                                                              "subset",
+                                                                              "total", 
+                                                                              "no"))
+                                                     # relevel(as.factor(Mutation),
+                                                     #              ref = "yes")
+                                                 )) +
+  geom_bar(position = position_fill(reverse = TRUE),
+           stat = "identity") + # add percents of yes to barchart
+  geom_text(aes(label = ifelse(Proportion %in% (data_muttissuesomatic %>% 
+                                                  mutate(Proportion = ifelse(is.na(Proportion),
+                                                                             0,
+                                                                             Proportion)) %>%
+                                                  subset(temp != "no") %>% 
+                                                  pull(Proportion)),
+                               paste0(plyr::round_any(Proportion * 100,
+                                                      0.1
+                                                      #,
+                                               #f = ceiling
+                                               ),
+                               "%"),
+                               "")
+                  ),
+            position = position_fill(reverse = TRUE),
+            color = "black",
+            size = 4.5,
+            fontface = "bold",
+            alpha = 0.5, # level of transparency (lower is more transparent)
+            vjust = 0.5,
+            hjust = -0.25) +
+  ggtitle("Presence of Somatic p53 Mutations in Individuals with Cancer in cBioPortal") + 
+  ylab("Proportion of distinct individuals") +
+  xlab("Cancer") +
+  labs(fill = "p53 mutated") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0, 0), 
+                     breaks = scales::pretty_breaks(n = 6),
+                     position = "right") + 
+  scale_x_discrete(expand = c(0, 0),
+                   limits = rev) + 
+  scale_fill_manual(
+    #breaks = c("yes",
+    #           "no"),
+    labels = c("yes", 
+               "yes; subset", 
+               "yes; total", 
+               "no"),
+    values = c("yes" = "skyblue",#"#56B4E9"
+               "subset" = "#0072B2",
+               "total" = "black",#"#D55E00"
+               "no" = "gray90")) +
+  theme_classic() + 
+  coord_flip(ylim = c(0, 1.04)) +
+  theme(axis.text.x = element_text(angle = 0, 
+                                   hjust = 0.5), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x.top = element_text(margin = unit(c(0,0,10,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,10,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,10,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.box.spacing = margin(30), # increase space between legend and plot
+        legend.justification = "top", # put legend in top right of plot
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        axis.text.y = element_text(vjust = 0.5))
+stackedbarchart_muttissuesomatic_horiz
+save_plot("C:/Users/nwali/Downloads/stackedbarchart_muttissuesomatic_horiz.svg",
+          stackedbarchart_muttissuesomatic_horiz,
+          base_width = 18.5, 
+          base_height = 26,
+          limitsize = FALSE)
+
+# #make horiz stacked barchart
+# barchart_horiz <- ggplot(data_barchart, 
+#                          aes(x = Cancer, 
+#                              y = Proportion, 
+#                              fill = Mutation)) +
+#   geom_bar(position = position_fill(reverse = TRUE),
+#            stat = "identity") + 
+#   ggtitle("Mutation Types vs. Cancers in Individuals with Somatic p53 Mutations in cBioPortal") + 
+#   ylab("Proportion of distinct individuals") +
+#   scale_x_discrete(expand = c(0, 0)) +
+#   scale_y_continuous(labels = scales::percent_format(), 
+#                      expand = c(0, 0), 
+#                      breaks = scales::pretty_breaks(n = 6), 
+#                      position = "right") + 
+#   theme_classic() +
+#   coord_flip() +
+#   theme(axis.text.x = element_text(angle = 0,
+#                                    hjust = 0.5),
+#         plot.title = element_text(hjust = 0.5,
+#                                   face = "bold",
+#                                   color = "black",
+#                                   size = 16),
+#         axis.text = element_text(color = "black",
+#                                  size = 12,
+#                                  vjust = 0.5), 
+#         axis.title = element_text(color = "black",
+#                                   face = "bold",
+#                                   size = 14),
+#         legend.title = element_text(face = "bold",
+#                                     size = 14, 
+#                                     color = "black"),
+#         legend.text = element_text(size = 12, 
+#                                    color = "black"),
+#         axis.text.y = element_text(vjust = 0.5))
+# barchart_horiz
+# save_plot(file = "C:/Users/nwali/Downloads/barchart_horiz.svg", 
+#           barchart_horiz, 
+#           base_width = 14, 
+#           base_height = 10)
+
+# #make interactive stacked barchart with plotly
+# plotlybarchart <- ggplotly(ggplotstackedbarchart, 
+#                            autosize = FALSE,
+#                            height = 800) %>% 
+#   layout(title = list(text = "# muts/# total muts",
+#                       xanchor = 'center',
+#                       yanchor =  'top'), 
+#          xaxis = list(title = list(standoff = 5)),
+#          yaxis = list(title = list(standoff = 1))) 
+# plotlybarchart
+#save plotly as interactive html
+#devtools::install_github('ramnathv/htmlwidgets', force = TRUE)
+#htmlwidgets::saveWidget(plotlybarchart, file = "C:/Users/nwali/Downloads/test.html", selfcontained = TRUE)
+
+#make pivot tables based on mutation position, sorted by descending counts for rows and columns
+# mutpospivot <- PivotTable$new()
+# mutpospivot$addData(p53mutscancersover100)
+# mutpospivot$addRowDataGroups("CANCER_TYPE_DETAILED")
+# mutpospivot$addColumnDataGroups("proteinChange")
+# mutpospivot$defineCalculation(calculationName = "Count of distinct individuals",
+#                               summariseExpression = "n_distinct(patientId)")
+# mutpospivot$sortColumnDataGroups(levelNumber = 1, 
+#                                  orderBy = "calculation",
+#                                  sortOrder = "desc")
+# mutpospivot$sortRowDataGroups(levelNumber = 1, 
+#                               orderBy = "calculation", 
+#                               sortOrder = "desc")
+# mutpospivot$evaluatePivot()
+
+#make pivot table as dataframe for further calculations
+# pivotdfpos <- mutpospivot$asDataFrame(rowGroupsAsColumns = TRUE) %>% remove_rownames()
+
+# because pivottabler taking too long, make pivot table using dplyr, widen table to make cols = muts, add totals
+mutpospivot <- p53mutscancersover100 %>% 
+  group_by(CANCER_TYPE_DETAILED, 
+           proteinChange) %>%
+  summarise(n = n_distinct(patientId)) %>%
+  arrange(-n)
+mutpospivot <- pivot_wider(mutpospivot, 
+                           names_from = proteinChange, 
+                           values_from = n) 
+
+# can't adorn_totals because it just adds rows and columns up, doesn't do distinct indiv like pivottabler, so need to make 1 row/col dfs of each distinct number of individuals for each position and cancer and add to pivot
+# first getting distinct indivs for each mut and adding to pivot df
+zed <- lapply(colnames(mutpospivot), 
+              FUN = function(x) p53mutscancersover100 %>%
+                subset(proteinChange == x) %>% 
+                pull(patientId) %>% 
+                n_distinct())
+names(zed) <- colnames(mutpospivot) # ensure list names are muts
+zed <- reshape2::melt(zed) %>% 
+  column_to_rownames("L1") %>% 
+  as.matrix() %>% 
+  t() %>% 
+  as.data.frame() %>% 
+  remove_rownames()
+zed[1,1] <- "Total" # rename 0 placeholder as Total
+
+pivotdfpos <- bind_rows(mutpospivot,
+                        zed)
+
+# now getting distinct indivs for each cancer and adding to pivot df
+zed <- lapply(mutpospivot$CANCER_TYPE_DETAILED,
+              FUN = function(x) p53mutscancersover100 %>%
+                subset(CANCER_TYPE_DETAILED == x) %>% 
+                pull(patientId) %>% 
+                n_distinct())
+names(zed) <- mutpospivot$CANCER_TYPE_DETAILED
+zed <- reshape2::melt(zed) %>% 
+  dplyr::rename(CANCER_TYPE_DETAILED = L1,
+                Total = value)
+
+pivotdfpos <- full_join(pivotdfpos,
+                        zed,
+                        by = "CANCER_TYPE_DETAILED")
+
+# although not necessary, can add total distinct indivs as final df total
+pivotdfpos[nrow(pivotdfpos),ncol(pivotdfpos)] <- n_distinct(p53mutscancersover100$patientId)
+
+# get mut pos of pts with less prevalent cancers
+
+# prepared it this way as well just in case pivottabler becomes unusuably slow later on
+# mutposotherpivot <- p53mutscancersover100 %>% 
+#   subset(Cancer_Label == "OTHER") %>% 
+#   group_by(CANCER_TYPE_DETAILED, 
+#            proteinChange) %>%
+#   summarise(n = n_distinct(patientId)) %>%
+#   arrange(-n)
+# mutposotherpivot <- pivot_wider(mutposotherpivot, 
+#                            names_from = proteinChange, 
+#                            values_from = n) 
+# 
+# # can't adorn_totals because it just adds rows and columns up, doesn't do distinct indiv like pivottabler, so need to make 1 row/col dfs of each distinct number of individuals for each posotherition and cancer and add to pivot
+# # first getting distinct indivs for each mut and adding to pivot df
+# zed <- lapply(colnames(mutposotherpivot), 
+#               FUN = function(x) p53mutscancersover100 %>%
+#                 subset(Cancer_Label == "OTHER") %>% 
+#                 subset(proteinChange == x) %>% 
+#                 pull(patientId) %>% 
+#                 n_distinct())
+# names(zed) <- colnames(mutposotherpivot) # ensure list names are muts
+# zed <- reshape2::melt(zed) %>% 
+#   column_to_rownames("L1") %>% 
+#   as.matrix() %>% 
+#   t() %>% 
+#   as.data.frame() %>% 
+#   remove_rownames()
+# zed[1,1] <- "Total" # rename 0 placeholder as Total
+# 
+# pivotdfposother <- bind_rows(mutposotherpivot,
+#                         zed)
+# 
+# # now getting distinct indivs for each cancer and adding to pivot df
+# zed <- lapply(mutposotherpivot$CANCER_TYPE_DETAILED,
+#               FUN = function(x) p53mutscancersover100 %>%
+#                 subset(Cancer_Label == "OTHER") %>% 
+#                 subset(CANCER_TYPE_DETAILED == x) %>% 
+#                 pull(patientId) %>% 
+#                 n_distinct())
+# names(zed) <- mutposotherpivot$CANCER_TYPE_DETAILED
+# zed <- reshape2::melt(zed) %>% 
+#   dplyr::rename(CANCER_TYPE_DETAILED = L1,
+#                 Total = value)
+# 
+# pivotdfposother <- full_join(pivotdfposother,
+#                         zed,
+#                         by = "CANCER_TYPE_DETAILED")
+# 
+# # although not necessary, can add total distinct indivs as final df total
+# pivotdfposother[nrow(pivotdfposother),ncol(pivotdfposother)] <- n_distinct(
+#   p53mutscancersover100 
+#   %>% subset(Cancer_Label == "OTHER") %>% 
+#     pull(patientId)
+#   )
+
+mutposotherpivot <- PivotTable$new()
+mutposotherpivot$addData(p53mutscancersover100 %>% subset(Cancer_Label == "OTHER"))
+mutposotherpivot$addRowDataGroups("CANCER_TYPE_DETAILED")
+mutposotherpivot$addColumnDataGroups("proteinChange")
+mutposotherpivot$defineCalculation(calculationName = "Count of distinct individuals",
+                              summariseExpression = "n_distinct(patientId)")
+mutposotherpivot$sortColumnDataGroups(levelNumber = 1,
+                                 orderBy = "calculation",
+                                 sortOrder = "desc")
+mutposotherpivot$sortRowDataGroups(levelNumber = 1,
+                              orderBy = "calculation",
+                              sortOrder = "desc")
+mutposotherpivot$evaluatePivot()
+
+# make pivot table as dataframe for further calculations
+pivotdfposother <- mutposotherpivot$asDataFrame(rowGroupsAsColumns = TRUE) %>% remove_rownames()
+
+# change T125= to T125T for grid
+colnames(pivotdfposother) <- gsub("T125=",
+                                  "T125T",
+                                  colnames(pivotdfposother))
+
+#make 100% stacked barchart based on cancers with at least 100 indivs
+#remove bottom total row again
+pivotdfposnobottomtotal <- pivotdfpos %>% 
+  subset(CANCER_TYPE_DETAILED != "Total")
+
+#subset to cancers with at least 100 total p53 indivs; not changing object name, add # indivs to cancers
+pivotdfposnobottomtotal100muts <- pivotdfposnobottomtotal %>% 
+  subset(Total >= 50) %>%
+  mutate(CANCER_TYPE_DETAILED = paste0(CANCER_TYPE_DETAILED,
+                                       " (",
+                                       format(Total, 
+                                              big.mark = ",", 
+                                              trim = TRUE),
+                                       " individuals)"))
+
+#divide pivot table rows by # distinct indiv
+pivotdfposnobottomtotal100muts <- pivotdfposnobottomtotal100muts %>%
+  mutate_at(vars(2:Total), 
+            .funs = ~./Total)
+
+#remove total column so that not included in heatmap or any other visualization
+pivotdfposnobottomtotal100muts <- pivotdfposnobottomtotal100muts %>% 
+  subset(select = -c(Total))
+
+# #make dataframe into long form for ggplot2 
+# datapos_melt <- reshape2::melt(pivotdfposnobottomtotal100muts) %>% 
+#   dplyr::rename(Mutation = variable, 
+#                 Cancer = CANCER_TYPE_DETAILED, 
+#                 Prevalence = value) 
+# head(datapos_melt)
+# 
+# #remove mutations with less than 1% prevalence in distinct samples
+# datapos_meltover0.01 <- datapos_melt %>% 
+#   subset(Prevalence >= 0.01) 
+
+# also get mut types of less common cancers
+muttypeotherpivot <- PivotTable$new()
+muttypeotherpivot$addData(p53mutscancersover100 %>% subset(Cancer_Label == "OTHER"))
+muttypeotherpivot$addRowDataGroups("CANCER_TYPE_DETAILED")
+muttypeotherpivot$addColumnDataGroups("mutationType")
+muttypeotherpivot$defineCalculation(calculationName = "Count of distinct individuals", 
+                                    summariseExpression = "n_distinct(patientId)")
+muttypeotherpivot$sortColumnDataGroups(levelNumber = 1, 
+                                       orderBy = "calculation", 
+                                       sortOrder = "desc")
+muttypeotherpivot$sortRowDataGroups(levelNumber = 1,
+                                    orderBy = "calculation", 
+                                    sortOrder = "desc")
+muttypeotherpivot$evaluatePivot()
+
+#make pivot table as dataframe for further calculations
+pivotdf_othercancers <- muttypeotherpivot$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  remove_rownames()
+
+# can't really make pivots of ages because not sufficiently annotated, CODE NOT EDITED FOR MOST ACCURACY
+# make pivot tables of age vs cancer, age vs mutation type, and age vs pos
+agetissue <- PivotTable$new()
+agetissue$addData(p53mutscancersover100)
+agetissue$addRowDataGroups("Age_stratum")
+agetissue$addColumnDataGroups("Cancer_Label")
+agetissue$defineCalculation(calculationName = "Count of distinct individuals",
+                            summariseExpression = "n_distinct(patientId)")
+agetissue$sortColumnDataGroups(levelNumber = 1,
+                               orderBy = "calculation",
+                               sortOrder = "desc")
+agetissue$sortRowDataGroups(levelNumber = 1,
+                            orderBy = "calculation",
+                            sortOrder = "desc")
+agetissue$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+# get ages of pts with less common cancers
+agetissueother <- PivotTable$new()
+agetissueother$addData(p53mutscancersover100 %>% subset(Cancer_Label == "OTHER"))
+agetissueother$addRowDataGroups("CANCER_TYPE_DETAILED")
+agetissueother$addColumnDataGroups("Age_stratum")
+agetissueother$defineCalculation(calculationName = "Count of distinct individuals",
+                            summariseExpression = "n_distinct(patientId)")
+agetissueother$sortColumnDataGroups(levelNumber = 1,
+                               orderBy = "calculation",
+                               sortOrder = "desc")
+agetissueother$sortRowDataGroups(levelNumber = 1,
+                            orderBy = "calculation",
+                            sortOrder = "desc")
+agetissueother$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+# agetype <- PivotTable$new()
+# agetype$addData(p53mutscancersover100)
+# agetype$addRowDataGroups("Age_stratum")
+# agetype$addColumnDataGroups("mutationType") 
+# agetype$defineCalculation(calculationName = "Count of distinct individuals", 
+#                                 summariseExpression = "n_distinct(patientId)")
+# agetype$sortColumnDataGroups(levelNumber = 1, 
+#                                    orderBy = "calculation", 
+#                                    sortOrder = "desc")
+# agetype$sortRowDataGroups(levelNumber = 1, 
+#                                 orderBy = "calculation", 
+#                                 sortOrder = "desc")
+# agetype$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+# 
+#make pivot tables as dataframes for further calculations
+pivotage <- agetissue$asDataFrame(rowGroupsAsColumns = TRUE) %>%
+  remove_rownames()
+
+pivotage_othercancers <- agetissueother$asDataFrame(rowGroupsAsColumns = TRUE) %>%
+  remove_rownames()
+
+# pivotage_type <- agetype$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+#   remove_rownames()
+# 
+# typical way to make pivot table of positions with pivottabler package:
+# agepos <- PivotTable$new()
+# agepos$addData(p53mutscancersover100)
+# agepos$addRowDataGroups("Age_stratum")
+# agepos$addColumnDataGroups("proteinChange") 
+# agepos$defineCalculation(calculationName = "Count of distinct individuals", 
+#                                summariseExpression = "n_distinct(patientId)")
+# agepos$sortColumnDataGroups(levelNumber = 1, 
+#                                   orderBy = "calculation", 
+#                                   sortOrder = "desc")
+# agepos$sortRowDataGroups(levelNumber = 1, 
+#                                orderBy = "calculation", 
+#                                sortOrder = "desc")
+# agepos$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+#make pivot tables as dataframes for further calculations
+# pivotage_pos <- agepos$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+#   remove_rownames()
+
+# #however, since pivot table of positions takes too long to make with this package, do via dplyr instead as below:
+# # because pivottabler taking too long, make pivot table using dplyr, widen table to make cols = muts, add totals 
+# agepos <- p53mutscancersover100 %>% 
+#   dplyr::count(Age_stratum, 
+#                proteinChange, 
+#                sort = TRUE)
+# agepos <- pivot_wider(agepos, 
+#                             names_from = proteinChange, 
+#                             values_from = n) 
+# pivotage_pos <- adorn_totals(agepos, 
+#                                    where = c("row", "col"))
+
+# make pivot tables of sex vs cancer, sex vs mutation type, and sex vs pos
+sextissue <- PivotTable$new()
+sextissue$addData(p53mutscancersover100)
+sextissue$addRowDataGroups("SEX")
+sextissue$addColumnDataGroups("Cancer_Label") 
+sextissue$defineCalculation(calculationName = "Count of distinct individuals", 
+                            summariseExpression = "n_distinct(patientId)")
+sextissue$sortColumnDataGroups(levelNumber = 1, 
+                               orderBy = "calculation", 
+                               sortOrder = "desc")
+sextissue$sortRowDataGroups(levelNumber = 1, 
+                            orderBy = "calculation", 
+                            sortOrder = "desc")
+sextissue$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+# get sexes of pts with less common cancers
+sextissueother <- PivotTable$new()
+sextissueother$addData(p53mutscancersover100 %>% subset(Cancer_Label == "OTHER"))
+sextissueother$addRowDataGroups("CANCER_TYPE_DETAILED") 
+sextissueother$addColumnDataGroups("SEX")
+sextissueother$defineCalculation(calculationName = "Count of distinct individuals", 
+                            summariseExpression = "n_distinct(patientId)")
+sextissueother$sortColumnDataGroups(levelNumber = 1, 
+                               orderBy = "calculation", 
+                               sortOrder = "desc")
+sextissueother$sortRowDataGroups(levelNumber = 1, 
+                            orderBy = "calculation", 
+                            sortOrder = "desc")
+sextissueother$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+sextype <- PivotTable$new()
+sextype$addData(p53mutscancersover100)
+sextype$addRowDataGroups("SEX")
+sextype$addColumnDataGroups("mutationType") 
+sextype$defineCalculation(calculationName = "Count of distinct individuals", 
+                          summariseExpression = "n_distinct(patientId)")
+sextype$sortColumnDataGroups(levelNumber = 1, 
+                             orderBy = "calculation", 
+                             sortOrder = "desc")
+sextype$sortRowDataGroups(levelNumber = 1, 
+                          orderBy = "calculation", 
+                          sortOrder = "desc")
+sextype$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+# get freq of codons affected
+codonfreqdf <- p53mutscancersover100 %>% 
+  mutate(Codon = abs((parse_number(as.character(proteinChange), 
+                                   na = character())))) %>%
+  mutate(Codon = ifelse(grepl("_", # assign indefinite splices, indels, etc as 0 like germline
+                              proteinChange),
+                        0, 
+                        Codon))
+
+codonfreq <- PivotTable$new()
+codonfreq$addData(codonfreqdf)
+codonfreq$addRowDataGroups("Codon") 
+codonfreq$defineCalculation(calculationName = "Count of distinct individuals", 
+                          summariseExpression = "n_distinct(patientId)")
+codonfreq$sortColumnDataGroups(levelNumber = 1, 
+                             orderBy = "calculation", 
+                             sortOrder = "desc")
+codonfreq$sortRowDataGroups(levelNumber = 1, 
+                          orderBy = "calculation", 
+                          sortOrder = "desc")
+codonfreq$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+#make pivot tables as dataframes for further calculations
+pivotsex <- sextissue$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  remove_rownames()
+
+pivotsex_othercancers <- sextissueother$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  remove_rownames()
+
+pivotsex_type <- sextype$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  remove_rownames()
+
+pivotcodonfreq <- codonfreq$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  remove_rownames()
+
+# typical way to make pivot table of positions with pivottabler packsex:
+# sexpos <- PivotTable$new()
+# sexpos$addData(p53mutscancersover100)
+# sexpos$addRowDataGroups("SEX")
+# sexpos$addColumnDataGroups("proteinChange") 
+# sexpos$defineCalculation(calculationName = "Count of distinct individuals", 
+#                                summariseExpression = "n_distinct(patientId)")
+# sexpos$sortColumnDataGroups(levelNumber = 1, 
+#                                   orderBy = "calculation", 
+#                                   sortOrder = "desc")
+# sexpos$sortRowDataGroups(levelNumber = 1, 
+#                                orderBy = "calculation", 
+#                                sortOrder = "desc")
+# sexpos$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+#make pivot tables as dataframes for further calculations
+# pivotsex_pos <- sexpos$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+#   remove_rownames()
+
+#however, since pivot table of positions takes too long to make with this packsex, do via dplyr instead as below:
+# because pivottabler taking too long, make pivot table using dplyr, widen table to make cols = muts, add totals 
+sexpos <- p53mutscancersover100 %>% 
+  group_by(SEX, 
+           proteinChange) %>%
+  summarise(n = n_distinct(patientId)) %>%
+  arrange(-n)
+sexpos <- pivot_wider(sexpos, 
+                      names_from = proteinChange, 
+                      values_from = n) 
+
+# can't adorn_totals because it just adds rows and columns up, doesn't do distinct indiv like pivottabler, so need to make 1 row/col dfs of each distinct number of individuals for each position and cancer and add to pivot
+# first getting distinct indivs for each mut and adding to pivot df
+zed <- lapply(colnames(sexpos), 
+              FUN = function(x) p53mutscancersover100 %>%
+                subset(proteinChange == x) %>% 
+                pull(patientId) %>% 
+                n_distinct())
+names(zed) <- colnames(sexpos) # ensure list names are muts
+zed <- reshape2::melt(zed) %>% 
+  column_to_rownames("L1") %>% 
+  as.matrix() %>% 
+  t() %>% 
+  as.data.frame() %>% 
+  remove_rownames()
+zed[1,1] <- "Total" # rename 0 placeholder as Total
+
+pivotsex_pos <- bind_rows(sexpos,
+                          zed)
+
+# now getting distinct indivs for each cancer and adding to pivot df
+zed <- lapply(sexpos$SEX,
+              FUN = function(x) p53mutscancersover100 %>%
+                subset(SEX == x) %>% 
+                pull(patientId) %>% 
+                n_distinct())
+names(zed) <- sexpos$SEX
+zed <- reshape2::melt(zed) %>% 
+  dplyr::rename(SEX = L1,
+                Total = value)
+
+pivotsex_pos <- full_join(pivotsex_pos,
+                          zed,
+                          by = "SEX")
+
+# although not necessary, can add total distinct indivs as final df total
+pivotsex_pos[nrow(pivotsex_pos),ncol(pivotsex_pos)] <- n_distinct(p53mutscancersover100$patientId)
+
+#remove bottom total row from dataframes so that it doesn't interfere with things later
+pivotagenobottom <- pivotage %>%
+  subset(Age_stratum != "Total") %>%
+  mutate(Age_stratum = paste0(Age_stratum,
+                              " (",
+                              format(Total, 
+                                     big.mark = ",", 
+                                     trim = TRUE),
+                              " individuals)")) %>%
+  remove_rownames()
+# pivotage_typenobottom <- pivotage_type %>% 
+#   subset(Age_stratum != "Total") %>% 
+#   remove_rownames()
+# pivotage_posnobottom <- pivotage_pos %>% 
+#   subset(Age_stratum != "Total" | is.na(Age_stratum)) %>% 
+#   remove_rownames()
+pivotsexnobottom <- pivotsex %>% 
+  subset(SEX != "Total") %>% 
+  mutate(SEX = paste0(SEX,
+                      " (",
+                      format(Total, 
+                             big.mark = ",", 
+                             trim = TRUE),
+                      " individuals)")) %>%
+  remove_rownames()
+pivotsex_typenobottom <- pivotsex_type %>% 
+  subset(SEX != "Total") %>% 
+  mutate(SEX = paste0(SEX,
+                      " (",
+                      format(Total, 
+                             big.mark = ",", 
+                             trim = TRUE),
+                      " individuals)")) %>%
+  remove_rownames()
+pivotsex_posnobottom <- pivotsex_pos %>% 
+  subset(SEX != "Total") %>% 
+  mutate(SEX = paste0(SEX,
+                      " (",
+                      format(Total, 
+                             big.mark = ",", 
+                             trim = TRUE),
+                      " individuals)")) %>%
+  remove_rownames()
+
+#subset dataframes to cancers and age strata with at least 100 indiv (should not cause any changes as all are over 100 anyways); not changing object names but less than 100 indivs now
+pivotagenobottom100muts <- pivotagenobottom %>%
+  subset(Total >= 50) %>% 
+  remove_rownames()
+# pivotage_typenobottom100muts <- pivotage_typenobottom %>% 
+#   subset(Total >= 100) %>% 
+#   remove_rownames() 
+# pivotage_posnobottom100muts <- pivotage_posnobottom %>% 
+#   subset(Total >= 100) %>% 
+#   remove_rownames() 
+pivotsexnobottom100muts <- pivotsexnobottom %>% 
+  subset(Total >= 50) %>% 
+  remove_rownames()
+pivotsex_typenobottom100muts <- pivotsex_typenobottom %>% 
+  subset(Total >= 50) %>% 
+  remove_rownames() 
+pivotsex_posnobottom100muts <- pivotsex_posnobottom %>% 
+  subset(Total >= 50) %>% 
+  remove_rownames() 
+
+#divide each column in dataframes by total number of mutations to get proportions
+pivotagenobottom100muts <- pivotagenobottom100muts %>%
+  mutate_at(vars(2:Total),
+            .funs = ~./Total) %>%
+  remove_rownames()
+# pivotage_typenobottom100muts <- pivotage_typenobottom100muts %>%
+#   mutate_at(vars(2:Total), 
+#             .funs = ~./Total) %>% 
+#   remove_rownames()
+# pivotage_posnobottom100muts <- pivotage_posnobottom100muts %>%
+#   mutate_at(vars(2:Total), 
+#             .funs = ~./Total) %>% 
+#   remove_rownames()
+pivotsexnobottom100muts <- pivotsexnobottom100muts %>%
+  mutate_at(vars(2:Total), 
+            .funs = ~./Total) %>% 
+  remove_rownames()
+pivotsex_typenobottom100muts <- pivotsex_typenobottom100muts %>%
+  mutate_at(vars(2:Total), 
+            .funs = ~./Total) %>% 
+  remove_rownames()
+pivotsex_posnobottom100muts <- pivotsex_posnobottom100muts %>%
+  mutate_at(vars(2:Total), 
+            .funs = ~./Total) %>% 
+  remove_rownames()
+
+#remove total column so it's not included in heatmaps
+pivotagenobottom100muts <- pivotagenobottom100muts %>%
+  subset(select = -c(Total)) %>%
+  remove_rownames()
+# pivotage_typenobottom100muts <- pivotage_typenobottom100muts %>% 
+#   subset(select = -c(Total)) %>% 
+#   remove_rownames()
+# pivotage_posnobottom100muts <- pivotage_posnobottom100muts %>% 
+#   subset(select = -c(Total)) %>% 
+#   remove_rownames()
+pivotsexnobottom100muts <- pivotsexnobottom100muts %>% 
+  subset(select = -c(Total)) %>% 
+  remove_rownames()
+pivotsex_typenobottom100muts <- pivotsex_typenobottom100muts %>% 
+  subset(select = -c(Total)) %>% 
+  remove_rownames()
+pivotsex_posnobottom100muts <- pivotsex_posnobottom100muts %>% 
+  subset(select = -c(Total)) %>% 
+  remove_rownames()
+
+# need to only have cancers which have 100 indiv or more
+# remove columns which don't have at least 100 indiv after checking df and using colnames() to see which cols to keep (actually at least 50 indiv)
+# not needed now that other labelled as such
+# pivotagenobottom100muts <- pivotagenobottom100muts %>% 
+#  dplyr::select(c(1:36)) 
+# pivotsexnobottom100muts <- pivotsexnobottom100muts %>% 
+#  dplyr::select(c(1:36)) 
+
+#melt dataframes and rename columns (not doing ggplot2 heatmap which requires melted data but easier to work with melted dataframes as can impose threshold cutoffs easier later on if needed, and need to melt for ggplot2 stacked barchart anyways)
+pivotage_melted <- reshape2::melt(pivotagenobottom100muts) %>%
+  dplyr::rename(Cancer = variable,
+                Age = Age_stratum,
+                Proportion = value)
+# pivotage_type_melted <- reshape2::melt(pivotage_typenobottom100muts) %>% 
+#   dplyr::rename(Mutation = variable, 
+#                 Age = Age_stratum, 
+#                 Proportion = value) 
+# pivotage_pos_melted <- reshape2::melt(pivotage_posnobottom100muts) %>% 
+#   dplyr::rename(Mutation = variable, 
+#                 Age = Age_stratum, 
+#                 Proportion = value)
+pivotsex_melted <- reshape2::melt(pivotsexnobottom100muts) %>% 
+  dplyr::rename(Cancer = variable, 
+                Proportion = value) 
+pivotsex_type_melted <- reshape2::melt(pivotsex_typenobottom100muts) %>% 
+  dplyr::rename(Mutation = variable, 
+                Proportion = value) 
+pivotsex_pos_melted <- reshape2::melt(pivotsex_posnobottom100muts) %>% 
+  dplyr::rename(Mutation = variable, 
+                Proportion = value)
+
+# #rename NA text rows in age pivot tables to "No age listed"
+pivotage_melted$Age <- str_replace(pivotage_melted$Age, 
+                                   "NA", 
+                                   "No age listed")
+
+# pivotage_melted$Age[pivotage_melted$Age == 'NA'] <- 'No age listed'
+# pivotage_type_melted$Age[pivotage_type_melted$Age == 'NA'] <- 'No age listed'
+# pivotage_pos_melted$Age[pivotage_pos_melted$Age == 'NA'] <- 'No age listed'
+
+# #remove mutations with no age listed since analysis is specifically looking for age-associated mutations
+# pivotage_melted <- pivotage_melted %>% 
+#   subset(Age != 'No age listed')
+# pivotage_type_melted <- pivotage_type_melted %>% 
+#   subset(Age != 'No age listed')
+# pivotage_pos_melted <- pivotage_pos_melted %>% 
+#   subset(Age != 'No age listed')
+
+#remove mutated codons with less than 1% proportion in total mutations (not needed for mutation types)
+# pivotage_pos_melted_over0.01 <- pivotage_pos_melted %>% 
+#   subset(Proportion >= 0.01) %>%
+#   remove_rownames()
+pivotsex_pos_melted_over0.01 <- pivotsex_pos_melted %>% 
+  subset(Mutation %in% (pivotsex_pos_melted %>%
+                          subset(Proportion >= 0.01) %>%
+                          pull(Mutation) %>%
+                          unique() %>%
+                          as.vector())) %>%
+  remove_rownames()
+
+#sort cancers by lowest to highest missense mutation proportion for stacked barchart
+# barchartorder_age = pivotage_type_melted[pivotage_type_melted$Mutation == 'Missense_Mutation',]
+# pivotage_type_melted$Age = factor(pivotage_type_melted$Age, 
+#                                         levels = barchartorder_age$Age[order(barchartorder_age$Proportion)])
+
+# barchartorder_age_tissue = pivotage_melted[pivotage_melted$Cancer == 'Breast Invasive Ductal Carcinoma',]
+# pivotage_melted$Age = factor(pivotage_melted$Age, 
+#                                         levels = barchartorder_age_tissue$Age[order(barchartorder_age_tissue$Proportion)])
+# 
+barchartorder_sex = pivotsex_type_melted[pivotsex_type_melted$Mutation == 'Missense_Mutation',]
+pivotsex_type_melted$SEX = factor(pivotsex_type_melted$SEX, 
+                                  levels = barchartorder_sex$SEX[order(barchartorder_sex$Proportion)])
+
+# barchartorder_sex_tissue = pivotsex_melted[pivotsex_melted$Cancer == 'Breast Invasive Ductal Carcinoma',]
+# pivotsex_melted$SEX = factor(pivotsex_melted$SEX, 
+#                                    levels = barchartorder_sex_tissue$SEX[order(barchartorder_sex_tissue$Proportion)])
+
+# # make 100% stacked barchart with ggplot2 with reversed missense order i.e. highest to lowest
+# ggplotstackedbarchart_age <- ggplot(pivotage_type_melted, 
+#                                            aes(x = Age, 
+#                                                y = Proportion, 
+#                                                fill = Mutation)) + 
+#   geom_bar(position = "fill", 
+#            stat = "identity") + 
+#   ggtitle("# muts/# total muts") + 
+#   scale_y_continuous(labels = scales::percent_format(), 
+#                      expand = c(0,0), 
+#                      breaks = scales::pretty_breaks(n = 6)) +
+#   scale_x_discrete(limits = rev(levels(pivotage_type_melted$Age)), 
+#                    expand = c(0,0)) +
+#   theme_classic() + 
+#   theme(axis.text.x = element_text(angle = 45, 
+#                                    hjust = 1, 
+#                                    vjust = 1), 
+#         axis.text = element_text(color = "black",
+#                                  size = 12), 
+#         axis.title = element_text(color = "black",
+#                                   face = "bold",
+#                                   size = 14),
+#         plot.title = element_text(hjust = 0.5,
+#                                   face = "bold",
+#                                   color = "black",
+#                                   size = 16),
+#         legend.text = element_text(color = "black",
+#                                    size = 12),
+#         legend.title = element_text(color = "black",
+#                                     face = "bold",
+#                                     size = 14))
+# ggplotstackedbarchart_age
+# save_plot(file = "C:/Users/nwali/Downloads/barchart_age.svg",
+#           ggplotstackedbarchart_age,
+#           base_width = 6.5,
+#           base_height = 5)
+
+# make 100% stacked barchart with ggplot2
+# make OTHER as last level in list of cancers for barchart
+pivotage_melted$Cancer <- factor(pivotage_melted$Cancer,
+                                 levels = as.character(c((sort(levels(pivotage_melted$Cancer)))[(sort(levels(pivotage_melted$Cancer))) != "OTHER"],
+                                                         "OTHER")))
+
+
+ggplotstackedbarchart_age_tissue <- ggplot(pivotage_melted,
+                                           aes(x = Age,
+                                               y = Proportion,
+                                               fill = Cancer)) +
+  geom_bar(position = "fill",
+           stat = "identity") +
+  ggtitle("Cancers vs. Ages of Cancer Diagnoses in Individuals \nwith Somatic p53 Mutations in cBioPortal") +
+  xlab("Age when diagnosed (years)") +
+  ylab("Proportion of distinct individuals") +
+  scale_y_continuous(labels = scales::percent_format(),
+                     expand = c(0,0),
+                     breaks = scales::pretty_breaks(n = 6)) +
+  scale_x_discrete(
+    #limits = rev(levels(pivotage_melted$Age)),
+    expand = c(0,0)) +
+  scale_fill_manual(values = c(#"#c670e5",
+    "limegreen",
+    "#84007e",
+    "#4342b3",
+    "#ff8ea5",
+    "#7e9900",
+    "#50006c",
+    "#e03e97",
+    "#930002",
+    "#ba0069",
+    "#006f17",
+    "lavender",
+    "#420f48",
+    "#eea52d",
+    "#6294ff",
+    "#cade66",
+    "#02e9c7",
+    "#806300",
+    #"#c4379f",
+    #"#5a1500",
+    "#004584",
+    "#ff865d",
+    #"#ada9ff",
+    "#007e3e",
+    "#eea3ff",
+    "#630021",
+    "#002670",
+    #"#ffa4d8",
+    "#a44c00",
+    "#d388be",
+    "#ebd386",
+    "red",
+    "#ff7f7d",
+    "#62742e",
+    "gray80",
+    "black")) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(5,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,5,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,5,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        plot.margin = margin(0,10,0,10, "mm"))
+ggplotstackedbarchart_age_tissue
+save_plot(file = "C:/Users/nwali/Downloads/barchart_age_tissue.svg",
+          ggplotstackedbarchart_age_tissue,
+          base_width = 16,
+          base_height = 7.5,
+          limitsize = FALSE)
+
+# because stacked barchart too crowded, make faceted barchart of age vs number of pts per cancer
+barchart_facet_age_tissue <- ggplot(pivotagenobottom %>% 
+                                      dplyr::select(-c(Total)) %>% 
+                                      dplyr::mutate(Age_stratum = gsub("NA",
+                                                                       "No age listed",
+                                                                       Age_stratum)) %>%
+                                      reshape2::melt() %>% 
+                                      dplyr::rename(Age = Age_stratum,
+                                                    Cancer = variable, 
+                                                    Num_Distinct_Pts = value) 
+                                    #%>%
+                                      # subset(!str_detect(Cancer, 
+                                      #                    "OTHER"))
+                                    ,
+                                    aes(x = factor(Cancer,
+                                                   levels = 
+                                                     c(
+                                                     sort(unique(colnames(pivotagenobottom %>% 
+                                                                            dplyr::select(-c(
+                                                                              OTHER,
+                                                                              Total, 
+                                                                              Age_stratum)))))
+                                                     ,
+                                                     "OTHER")
+                                                   ),
+                                        y = Num_Distinct_Pts,
+                                        fill = factor(Cancer,
+                                                      levels = 
+                                                        c(
+                                                        sort(unique(colnames(pivotagenobottom %>% 
+                                                                               dplyr::select(-c(
+                                                                                 OTHER,
+                                                                                 Total, 
+                                                                                 Age_stratum)))))
+                                                        ,
+                                                        "OTHER")
+                                                      ))) + 
+  geom_bar(stat = "identity", 
+           position = position_dodge2()) + # to keep some space b/t barcharts in same mut
+  ggtitle("Cancers vs. Ages of Cancer Diagnoses in Individuals with Somatic p53 Mutations in cBioPortal") +
+  xlab("Cancer") +
+  ylab("Number of distinct individuals") +
+  labs(fill = "Cancer") +
+  facet_wrap2(. ~ Age,
+              #strip.position = "right",
+              #labeller = labeller(groupwrap = label_wrap_gen(10)), # wrap labels on right based on characters
+              ncol = 3,
+              axes = "all", # show internal axes but without x labels
+              remove_labels = "x") + # show internal axes but without x labels
+  guides(fill = guide_legend(ncol = 1)) + 
+  scale_y_continuous(expand = c(0,0)) +
+  scale_x_discrete(expand = c(0,0)) +
+  coord_cartesian(ylim = c(0, (pivotagenobottom %>% 
+                                 subset(!str_detect(Age_stratum,
+                                                    "NA")) %>% 
+                                 dplyr::select(-c(Total)) %>% 
+                                 reshape2::melt() %>% 
+                                 pull(value) %>% 
+                                 na.omit() %>% 
+                                 max() %>% 
+                                 plyr::round_any(500, 
+                                                 ceiling)))) + # shorter y axis since no age listed is dwarfing actual cancers
+  scale_fill_manual(values = c(#"#c670e5",
+    "limegreen",
+    "#84007e",
+    "#4342b3",
+    "#ff8ea5",
+    "#7e9900",
+    "#50006c",
+    "#e03e97",
+    "#930002",
+    "#ba0069",
+    "#006f17",
+    "lavender",
+    "#420f48",
+    "#eea52d",
+    "#6294ff",
+    "#cade66",
+    "#02e9c7",
+    "#806300",
+    #"#c4379f",
+    #"#5a1500",
+    "#004584",
+    "#ff865d",
+    #"#ada9ff",
+    "#007e3e",
+    "#eea3ff",
+    "#630021",
+    "#002670",
+    #"#ffa4d8",
+    "#a44c00",
+    "#d388be",
+    "#ebd386",
+    "red",
+    "#ff7f7d",
+    "#62742e",
+    "gray80"
+    ,
+    "black"
+    )) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(10,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,10,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,10,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        legend.box.spacing = margin(30), # increase space between legend and plot
+        legend.justification = "top", # put legend in top right of plot
+        #legend.position = c(,), # c(0,0) bottom left, c(1,1) top-right within plot
+        strip.background = element_blank(),
+        strip.text = element_text(color = "black",
+                                  size = 14,
+                                  face = "bold",
+                                  margin = margin(0,0,5,0, "mm")),
+        panel.spacing.y = unit(-16, "lines"),
+        panel.spacing.x = unit(2, "lines"),
+        plot.margin = margin(0,0,0,10, unit = "mm"))
+barchart_facet_age_tissue
+save_plot(file = "C:/Users/nwali/Downloads/barchart_facet_age_tissue.svg",
+          barchart_facet_age_tissue,
+          base_width = 30,
+          base_height = 13.25,
+          limitsize = FALSE)
+
+
+
+# # make horizontal barchart of age
+# ggplotstackedbarchart_age_horiz <- ggplot(pivotage_type_melted, 
+#                                                  aes(x = Age, 
+#                                                      y = Proportion, 
+#                                                      fill = Mutation)) + 
+#   geom_bar(position = position_fill(reverse = TRUE), 
+#            stat = "identity") + 
+#   ggtitle("# muts/# total muts") + 
+#   scale_y_continuous(labels = scales::percent_format(), 
+#                      expand = c(0,0), 
+#                      breaks = scales::pretty_breaks(n = 6), 
+#                      position = "right") +
+#   scale_x_discrete(expand = c(0,0)) + 
+#   theme_classic() +
+#   coord_flip() +
+#   theme(axis.text.x = element_text(angle = 0,
+#                                    hjust = 0.5), 
+#         axis.text = element_text(color = "black",
+#                                  size = 12), 
+#         axis.title = element_text(color = "black",
+#                                   face = "bold",
+#                                   size = 14),
+#         plot.title = element_text(hjust = 0.5,
+#                                   face = "bold",
+#                                   color = "black",
+#                                   size = 16),
+#         legend.text = element_text(color = "black",
+#                                    size = 12),
+#         legend.title = element_text(color = "black",
+#                                     face = "bold",
+#                                     size = 14),
+#         axis.text.y = element_text(vjust = 0.5))
+# ggplotstackedbarchart_age_horiz
+# save_plot(file = "C:/Users/nwali/Downloads/barchart_age_horiz.svg",
+#           ggplotstackedbarchart_age_horiz,
+#           base_width = 7.5,
+#           base_height = 4)
+
+# because many muts per pt, adding up to beyond 100% so ggplot2 automatically scaling down numbers to add to 100%, which is why plot looks uneven; order of sexes is accurate for highest to lowest missense, but the values depicted are different from the real values because ggplot2 has already scaled them, can't 'fit' the values here either because we actually need to see all muts' actual percentages, rather than binarizing and keeping accurate percentages for what we want to see and scaling down other percentages
+
+# make 100% stacked barchart with ggplot2 with reversed missense order i.e. highest to lowest
+ggplotstackedbarchart_sex <- ggplot(pivotsex_type_melted, 
+                                    aes(x = SEX, 
+                                        y = Proportion, 
+                                        fill = Mutation)) + 
+  geom_bar(position = "fill", 
+           stat = "identity") + 
+  ggtitle("Mutation Types vs. Sexes in \nIndividuals with Cancer and \nSomatic p53 Mutations in cBioPortal") + 
+  xlab("Sex") +
+  ylab("Proportion of distinct individuals") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 6)) +
+  scale_x_discrete(
+    #limits = rev(levels(pivotsex_type_melted$SEX)), 
+    expand = c(0,0)) +
+  scale_fill_manual(values = c("#009E73",
+                               "#000000",
+                               "#CC79A7",
+                               "#0072B2",
+                               "#999999",
+                               "#F0E442",
+                               "#56B4E9",
+                               "#D55E00",
+                               "lightgray",
+                               "#E69F00")) + 
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = margin(5,0,0,0,"mm")),
+        axis.title.y = element_text(margin = margin(0,5,0,0,"mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,5,0, 
+                                                  unit = "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        plot.margin = margin(0,0,0,10, unit = "mm"))
+ggplotstackedbarchart_sex
+save_plot(file = "C:/Users/nwali/Downloads/barchart_sex.svg",
+          ggplotstackedbarchart_sex,
+          base_width = 5.75,
+          base_height = 6.5,
+          limitsize = FALSE)
+
+# make 100% stacked barchart with ggplot2
+# make OTHER as last level in list of cancers for barchart
+pivotsex_melted$Cancer <- factor(pivotsex_melted$Cancer,
+                                 levels = as.character(c((sort(levels(pivotsex_melted$Cancer)))[(sort(levels(pivotsex_melted$Cancer))) != "OTHER"],
+                                                         "OTHER")))
+
+ggplotstackedbarchart_sex_tissue <- ggplot(pivotsex_melted,
+                                           aes(x = SEX,
+                                               y = Proportion,
+                                               fill = Cancer)) +
+  geom_bar(position = "fill",
+           stat = "identity") +
+  ggtitle("Cancers vs. Sexes in Individuals \nwith Somatic p53 Mutations in cBioPortal") +
+  xlab("Sex") +
+  ylab("Proportion of distinct individuals") +
+  scale_y_continuous(labels = scales::percent_format(),
+                     expand = c(0,0),
+                     breaks = scales::pretty_breaks(n = 6)) +
+  scale_x_discrete(
+    #limits = rev(levels(pivotsex_melted$SEX)),
+    expand = c(0,0)) +
+  scale_fill_manual(values = c(#"#c670e5",
+    "limegreen",
+    "#84007e",
+    "#4342b3",
+    "#ff8ea5",
+    "#7e9900",
+    "#50006c",
+    "#e03e97",
+    "#930002",
+    "#ba0069",
+    "#006f17",
+    "lavender",
+    "#420f48",
+    "#eea52d",
+    "#6294ff",
+    "#cade66",
+    "#02e9c7",
+    "#806300",
+    #"#c4379f",
+    #"#5a1500",
+    "#004584",
+    "#ff865d",
+    #"#ada9ff",
+    "#007e3e",
+    "#eea3ff",
+    "#630021",
+    "#002670",
+    #"#ffa4d8",
+    "#a44c00",
+    "#d388be",
+    "#ebd386",
+    "red",
+    "#ff7f7d",
+    "#62742e",
+    "gray80",
+    "black")) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(5,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,5,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,5,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        plot.margin = margin(0,10,0,15, "mm"))
+ggplotstackedbarchart_sex_tissue
+save_plot(file = "C:/Users/nwali/Downloads/barchart_sex_tissue.svg",
+          ggplotstackedbarchart_sex_tissue,
+          base_width = 13.5,
+          base_height = 7,
+          limitsize = FALSE)
+
+# because stacked barchart too crowded, make faceted barchart of sex vs number of pts per cancer
+barchart_facet_sex_tissue <- ggplot(pivotsexnobottom %>% 
+                                      dplyr::select(-c(Total)) %>% 
+                                      reshape2::melt() %>% 
+                                      dplyr::rename(Cancer = variable, 
+                                                    Num_Distinct_Pts = value) 
+                                    # %>%
+                                    #   subset(!str_detect(Cancer, 
+                                    #                      "OTHER"))
+                                    ,
+                                    aes(x = factor(Cancer,
+                                                   levels = 
+                                                     c(
+                                                     sort(unique(colnames(pivotsexnobottom %>% 
+                                                                            dplyr::select(-c(
+                                                                              OTHER,
+                                                                              Total, 
+                                                                              SEX)))))
+                                                   ,
+                                                   "OTHER")
+                                    ),
+                                    y = Num_Distinct_Pts,
+                                    fill = factor(Cancer,
+                                                  levels = 
+                                                    c(
+                                                    sort(unique(colnames(pivotsexnobottom %>% 
+                                                                           dplyr::select(-c(
+                                                                             OTHER,
+                                                                             Total, 
+                                                                             SEX)))))
+                                                  ,
+                                                  "OTHER")
+                                    ))) + 
+  geom_bar(stat = "identity", 
+           position = position_dodge2()) + # to keep some space b/t barcharts in same mut
+  ggtitle("Cancers vs. Sex in Individuals with Somatic p53 Mutations in cBioPortal") +
+  xlab("Cancer") +
+  ylab("Number of distinct individuals") +
+  labs(fill = "Cancer") +
+  facet_wrap2(. ~ SEX,
+              #strip.position = "right",
+              #labeller = labeller(groupwrap = label_wrap_gen(10)), # wrap labels on right based on characters
+              ncol = 2,
+              axes = "all", # show internal axes but without x labels
+              remove_labels = "x") + # show internal axes but without x labels
+  guides(fill = guide_legend(ncol = 1)) + 
+  scale_y_continuous(expand = c(0,0)) +
+  scale_x_discrete(expand = c(0,0)) +
+  coord_cartesian(ylim = c(0, (pivotsexnobottom %>% 
+                                 dplyr::select(-c(Total)) %>% 
+                                 reshape2::melt() %>% 
+                                 pull(value) %>% 
+                                 na.omit() %>% 
+                                 max() %>% 
+                                 plyr::round_any(500, 
+                                                 ceiling)))) +
+  scale_fill_manual(values = c(#"#c670e5",
+    "limegreen",
+    "#84007e",
+    "#4342b3",
+    "#ff8ea5",
+    "#7e9900",
+    "#50006c",
+    "#e03e97",
+    "#930002",
+    "#ba0069",
+    "#006f17",
+    "lavender",
+    "#420f48",
+    "#eea52d",
+    "#6294ff",
+    "#cade66",
+    "#02e9c7",
+    "#806300",
+    #"#c4379f",
+    #"#5a1500",
+    "#004584",
+    "#ff865d",
+    #"#ada9ff",
+    "#007e3e",
+    "#eea3ff",
+    "#630021",
+    "#002670",
+    #"#ffa4d8",
+    "#a44c00",
+    "#d388be",
+    "#ebd386",
+    "red",
+    "#ff7f7d",
+    "#62742e",
+    "gray80"
+    ,
+    "black"
+    )) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(10,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,10,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,10,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        legend.box.spacing = margin(30), # increase space between legend and plot
+        #legend.justification = "top", # put legend in top right of plot
+        #legend.position = c(,), # c(0,0) bottom left, c(1,1) top-right within plot
+        strip.background = element_blank(),
+        strip.text = element_text(color = "black",
+                                  size = 14,
+                                  face = "bold",
+                                  margin = margin(0,0,5,0, "mm")),
+        #panel.spacing.y = unit(-16, "lines"),
+        panel.spacing.x = unit(3, "lines"),
+        plot.margin = margin(0,0,0,10, unit = "mm"))
+barchart_facet_sex_tissue
+save_plot(file = "C:/Users/nwali/Downloads/barchart_facet_sex_tissue.svg",
+          barchart_facet_sex_tissue,
+          base_width = 26,
+          base_height = 16,
+          limitsize = FALSE)
+
+# # make horizontal barchart of sex
+# ggplotstackedbarchart_sex_horiz <- ggplot(pivotsex_type_melted, 
+#                                                  aes(x = SEX, 
+#                                                      y = Proportion, 
+#                                                      fill = Mutation)) + 
+#   geom_bar(position = position_fill(reverse = TRUE), 
+#            stat = "identity") + 
+#   ggtitle(paste0("# muts/# total muts \n(n = ",
+#                  format(with(pivotsex_type, 
+#                              sum(Total[Total >= 100 & Total <= pivotsex_type[1, ncol(pivotsex_type)]])), 
+#                         big.mark = ",",
+#                         trim = TRUE),
+#                  " muts)")) + 
+#   xlab("Sex") +
+#   scale_y_continuous(labels = scales::percent_format(), 
+#                      expand = c(0,0), 
+#                      breaks = scales::pretty_breaks(n = 6), 
+#                      position = "right") +
+#   scale_x_discrete(expand = c(0,0)) + 
+#   theme_classic() +
+#   coord_flip() +
+#   theme(axis.text.x = element_text(angle = 0,
+#                                    hjust = 0.5), 
+#         axis.text = element_text(color = "black",
+#                                  size = 12), 
+#         axis.title = element_text(color = "black",
+#                                   face = "bold",
+#                                   size = 14),
+#         plot.title = element_text(hjust = 0.5,
+#                                   face = "bold",
+#                                   color = "black",
+#                                   size = 16),
+#         legend.text = element_text(color = "black",
+#                                    size = 12),
+#         legend.title = element_text(color = "black",
+#                                     face = "bold",
+#                                     size = 14),
+#         axis.text.y = element_text(vjust = 0.5))
+# ggplotstackedbarchart_sex_horiz
+# save_plot(file = "C:/Users/nwali/Downloads/barchart_sex_horiz.svg",
+#           ggplotstackedbarchart_sex_horiz,
+#           base_width = 7.5,
+#           base_height = 3.8)
+
+#sort cancers by lowest to highest point mutation prevalence for heatmap (all cancers must have this mutation at 1% prevalence otherwise it will make cancers NA)
+#mutposorder = datapos_meltover0.01[datapos_meltover0.01$Mutation == 'R248Q',]
+#datapos_meltover0.01$Cancer = factor(datapos_meltover0.01$Cancer, levels = mutposorder$Cancer[order(mutposorder$Prevalence, na.last = FALSE)])
+
+# #make ggplot heatmap
+# ggplotposheatmap <- ggplot(datapos_meltover0.01, 
+#                            aes(x = Mutation, 
+#                                y = Cancer)) + 
+#   geom_tile(aes(fill = Prevalence)) + 
+#   ggtitle("# muts/# distinct samples, ≥ 1% prevalence") +
+#   scale_fill_gradient(low = "white", 
+#                       high = "red", 
+#                       na.value = "white") + 
+#   scale_y_discrete(expand = c(0,0)) + 
+#   scale_x_discrete(position = "top", 
+#                    expand = c(0,0)) + 
+#   scale_fill_continuous(breaks = seq(0, 
+#                                      0.2, 
+#                                      by = 0.025), 
+#                         low = "white", 
+#                         high = "red", 
+#                         na.value = "white") +
+#   theme_classic() + 
+#   theme(axis.text.x = element_text(angle = 45,
+#                                    hjust = 0), 
+#         axis.text = element_text(color = "black"), 
+#         axis.title = element_text(color = "black"),
+#         plot.title = element_text(hjust = 0.5)) 
+# ggplotposheatmap
+# save_plot(file = "C:/Users/nwali/Downloads/poshm.svg", 
+#           ggplotposheatmap, 
+#           base_width = 20, 
+#           base_height = 6.5)
+
+#need to prepare pheatmap clustering heatmap, with tissue types as row annotations and p53 domains and sorted positions as column annotations
+#make 2 dataframes of annotations, either with rownames as cancer types or p53 mutations, so that columns of 1 dataframe have cancer tissue for row annotations and 2nd dataframe has codon number and domain for column annotations - dataframes are what will be added to pheatmap
+#for heatmaps, display whatever has at least 1% value AND display all unfiltered data
+#remake mutation type heatmap with tissue clustering and position heatmap with tissue and domain clustering and sorted order of codons
+
+# #create new dataframe of positions with 1% prevalence and keep distinct positions
+# posused <- data.frame(datapos_meltover0.01$Mutation, 
+#                       stringsAsFactors = FALSE) %>% 
+#   dplyr::rename(Mutation = datapos_meltover0.01.Mutation) %>% 
+#   distinct() %>% 
+#   remove_rownames()
+# head(posused)
+# 
+# #add codon number to dataframe of positions at 1% prevalence 
+# posused <- posused %>% 
+#   mutate(Codon = parse_number(as.character(Mutation), 
+#                               na = character())) %>% 
+#   remove_rownames()
+# 
+# #add p53 domains to dataframe of positions at 1% prevalence (domain positions defined per Joruiz et al. Cancers (Basel) 2020 doi: 10.3390/cancers12113422 Figure 1; DBD loops defined per Cho et al Science 1994 doi: 10.1126/science.8023157)
+# posused <- posused %>% 
+#   transform(Domain = ifelse(Codon <= 39, 
+#                             "TAD1", 
+#                             "notyet")) %>% 
+#   transform(Domain = ifelse(Codon >= 40 & Codon <= 61, 
+#                             "TAD2", 
+#                             Domain)) %>% 
+#   transform(Domain = ifelse(Codon >= 62 & Codon <= 93, 
+#                             "PRD", 
+#                             Domain)) %>% 
+#   transform(Domain = ifelse(Codon >= 94 & Codon <= 289, 
+#                             "DBD",
+#                             Domain)) %>% 
+#   transform(Domain = ifelse(Codon >= 112 & Codon <= 124, 
+#                             "DBD L1 loop", 
+#                             Domain)) %>% 
+#   transform(Domain = ifelse(Codon >= 163 & Codon <= 195, 
+#                             "DBD L2 loop", 
+#                             Domain)) %>% 
+#   transform(Domain = ifelse(Codon >= 236 & Codon <= 251, 
+#                             "DBD L3 loop", 
+#                             Domain)) %>% 
+#   transform(Domain = ifelse(Codon >= 290 & Codon <= 324, 
+#                             "HD", 
+#                             Domain)) %>% 
+#   transform(Domain = ifelse(Codon >= 325 & Codon <= 356, 
+#                             "OD", 
+#                             Domain)) %>% 
+#   transform(Domain = ifelse(Codon >= 357, 
+#                             "CTD", 
+#                             Domain))
+
+#add residue function to dataframe of positions
+# first need to read in functional and structural annotations of p53 for all codons, obtained from: https://tp53.isb-cgc.org/view_data?bq_view_name=MutationView and downloaded as-is with no filters
+#how to get to download page --> https://tp53.isb-cgc.org/ --> Functional/Structural Data --> Data Downloads Functional/Structural Data --> Functional/structural data in TP53 with their annotations (includes validated polymorphisms) --> click Preview icon to get to filterable data table --> download entire table without filters
+origfunction <- read.csv(file = "C:/Users/nwali/Downloads/MutationView_r20.csv", 
+                         sep = ",",
+                         header = TRUE) %>% 
+  remove_rownames()
+
+#only keep distinct rows (should not change anything)
+origfunction <- origfunction %>% 
+  distinct()
+
+#pull out key columns needed for annotation i.e. codon number and residue function, condense down to distinct codons
+length(unique(origfunction$Codon_number)) # tells you how many distinct codons there should be in final data
+origfxcleaned <- origfunction %>% 
+  dplyr::select(c(Codon_number, 
+                  ProtDescription,
+                  Residue_function,
+                  SIFTClass,
+                  DNE_LOFclass))  %>%
+  mutate(ProtDescription = gsub("p.",
+                                "",
+                                ProtDescription)) %>% 
+  distinct()
+
+#sort by ascending codon
+origfxcleaned <- origfxcleaned[order(origfxcleaned$Codon_number),] %>% 
+  remove_rownames()
+
+#rename codon_number column to codon and protdescription to mutation to facilitate merging dataframes later
+origfxcleaned <- origfxcleaned %>% 
+  dplyr::rename(Codon = Codon_number,
+                Mutation = ProtDescription)
+
+# read in arsenic-trioxide (ATO) rescuable p53 muts compiled in germline muts analyses
+mut_rescued <- readRDS(file = "C:\\Users\\nwali\\Downloads\\mut_rescued.rds")
+
+# #merge residue functions to posused dataframe
+# posused <- left_join(posused, 
+#                       origfxcleaned, 
+#                       by = "Codon")
+# 
+# #sort position dataframe by ascending codon
+# posused <- posused[order(posused$Codon),] %>% 
+#   remove_rownames()
+# head(posused)
+# 
+# #need rownames to be things to match for annotation in pheatmap, so add positions to rownames
+# rownames(posused) <- posused$Mutation
+# head(posused)
+# 
+# #as some annotations are NA and will not show up in heatmap annotations, need to actually write cells as NA text
+# posused <- posused %>% 
+#   replace_na(list(Domain = 'NA', 
+#                   Residue_function = 'NA'))
+# 
+# #create new dataframe of cancers which are used in heatmap and keep distinct cancers 
+# cancersused <- data.frame(datapos_meltover0.01$Cancer, 
+#                           stringsAsFactors = FALSE) %>% 
+#   dplyr::rename(Cancer = datapos_meltover0.01.Cancer) %>% 
+#   distinct() %>% 
+#   remove_rownames()
+# head(cancersused)
+# 
+# #add tissue to dataframe of cancer 
+# cancersused <- cancersused %>% 
+#   transform(Tissue = ifelse(Cancer %in% c("Breast Invasive Carcinoma (NOS)", 
+#                                           "Breast Invasive Ductal Carcinoma"), 
+#                             "Breast", 
+#                             "notyet")) %>% 
+#   transform(Tissue = ifelse(Cancer %in% c("Anaplastic Astrocytoma",
+#                                           "Astrocytoma", 
+#                                           "Glioblastoma Multiforme", 
+#                                           "Oligoastrocytoma"), 
+#                             "Brain", 
+#                             Tissue)) %>% 
+#   transform(Tissue = ifelse(Cancer %in% c("Bladder Urothelial Carcinoma"),
+#                             "Bladder", 
+#                             Tissue)) %>% 
+#   transform(Tissue = ifelse(Cancer %in% c("Colon Adenocarcinoma", 
+#                                           "Colorectal Adenocarcinoma", 
+#                                           "Rectal Adenocarcinoma"), 
+#                             "Colon/Rectum", 
+#                             Tissue)) %>% 
+#   transform(Tissue = ifelse(Cancer %in% c("Esophageal Adenocarcinoma",
+#                                           "Esophageal Squamous Cell Carcinoma",
+#                                           "Gastric Adenocarcinoma", 
+#                                           "Ampullary Carcinoma", 
+#                                           "Cholangiocarcinoma", 
+#                                           "Extrahepatic Cholangiocarcinoma",
+#                                           "Gallbladder Adenocarcinoma", 
+#                                           "Hepatocellular Carcinoma", 
+#                                           "Hepatocellular Carcinoma plus Intrahepatic Cholangiocarcinoma",
+#                                           "Intrahepatic Cholangiocarcinoma", 
+#                                           "Pancreatic Adenocarcinoma"), 
+#                             "Foregut", 
+#                             Tissue)) %>% 
+#   transform(Tissue = ifelse(Cancer %in% c("Cutaneous Melanoma", "Melanoma",
+#                                           "Cutaneous Squamous Cell Carcinoma", 
+#                                           "Skin Cancer, Non-Melanoma"), 
+#                             "Skin",
+#                             Tissue)) %>% 
+#   transform(Tissue = ifelse(Cancer %in% c("High-Grade Serous Ovarian Cancer", 
+#                                           "Serous Ovarian Cancer",
+#                                           "Uterine Carcinosarcoma/Uterine Malignant Mixed Mullerian Tumor", 
+#                                           "Uterine Endometrioid Carcinoma",
+#                                           "Uterine Serous Carcinoma/Uterine Papillary Serous Carcinoma"),
+#                             "Gynecologic", 
+#                             Tissue)) %>% 
+#   transform(Tissue = ifelse(Cancer %in% c("Lung Squamous Cell Carcinoma",
+#                                           "Non-Small Cell Lung Cancer", 
+#                                           "Small Cell Lung Cancer"), 
+#                             "Lung", 
+#                             Tissue)) %>% 
+#   transform(Tissue = ifelse(Cancer %in% c("Head and Neck Squamous Cell Carcinoma"),
+#                             "Head and Neck", 
+#                             Tissue)) %>%
+#   transform(Tissue = ifelse(Cancer %in% c("Leiomyosarcoma"),
+#                             "Smooth Muscle",
+#                             Tissue)) %>%
+#   transform(Tissue = ifelse(Cancer %in% c("Osteosarcoma"),
+#                             "Bone",
+#                             Tissue)) %>%
+#   transform(Tissue = ifelse(Cancer %in% c("Prostate Adenocarcinoma"),
+#                             "Prostate", 
+#                             Tissue))
+# 
+# #add germ layers to dataframe of cancer
+# cancersused <- cancersused %>%
+#   transform(Germ_Layer = ifelse(Tissue %in% c("Foregut", 
+#                                               "Bladder", 
+#                                               "Colon/Rectum",
+#                                               "Lung", 
+#                                               "Prostate"), 
+#                                 "Endoderm", 
+#                                 "notyet")) %>% 
+#   transform(Germ_Layer = ifelse(Tissue %in% c("Blood", 
+#                                               "Smooth Muscle",
+#                                               "Bone",
+#                                               "Gynecologic"), 
+#                                 "Mesoderm", 
+#                                 Germ_Layer)) %>% 
+#   transform(Germ_Layer = ifelse(Tissue %in% c("Skin", 
+#                                               "Brain", 
+#                                               "Breast"), 
+#                                 "Ectoderm", 
+#                                 Germ_Layer)) %>% 
+#   transform(Germ_Layer = ifelse(Tissue %in% c("Head and Neck"), 
+#                                 "Ectoderm/Endoderm", 
+#                                 Germ_Layer))
+# 
+# #sort dataframe of cancer by alphabetical germ layer, alphabetical tissue, and then by alphabetical cancer
+# cancersused <- cancersused[with(cancersused, 
+#                                 order(Germ_Layer, 
+#                                       Tissue, 
+#                                       Cancer)), ] %>% 
+#   remove_rownames()
+# head(cancersused)
+# 
+# #need rownames to be things to match for annotation in pheatmap, so add cancers to rownames
+# rownames(cancersused) <- cancersused$Cancer
+# head(cancersused)
+
+# #convert melted dataframe to matrix for pheatmap, filling anything below 0.01 as 0 although not 0 in reality, just placeholder to not have errors in making heatmap later on
+# pos_matrix <- datapos_meltover0.01 %>% 
+#   reshape2::acast(Cancer ~ Mutation, 
+#                   value.var = 'Prevalence', 
+#                   fill = '0')
+# class(pos_matrix) <- "numeric"
+# 
+# #set up annotation dataframes to just have column used for annotation, otherwise all columns used for annotation in heatmap
+# posused_annotate <- posused %>% 
+#  dplyr::select(-c(Mutation,
+#             Codon))
+# cancersused_annotate <- cancersused %>%
+#  dplyr::select(-Cancer)
+
+# #order domain by p53 domain and residue function as factors so that they are maintained in legend too
+# unique(posused_annotate$Domain) #to find list of domains in order to use as factors
+# posused_annotate$Domain <- factor(posused_annotate$Domain, 
+#                                   levels = c("TAD1", 
+#                                              "PRD", 
+#                                              "DBD", 
+#                                              "DBD L2 loop", 
+#                                              "DBD L3 loop", 
+#                                              "HD", 
+#                                              "OD"))
+# 
+# sort(as.vector(unique(posused_annotate$Residue_function))) #to find list of residue functions in order to use as factors
+# posused_annotate$Residue_function <- factor(posused_annotate$Residue_function, 
+#                                             levels = c("ADP-ribosylation",
+#                                                        "Buried", 
+#                                                        "DNA binding", 
+#                                                        "Exposed", 
+#                                                        "Partially exposed", 
+#                                                        "Phosphorylation site",  
+#                                                        "Tetramerisation", 
+#                                                        "Zn binding", 
+#                                                        "NA"))
+#create pheatmap
+#library(pheatmap)
+# color <- colorRampPalette((c("white", "red")))(50)
+# display.brewer.all(colorblindFriendly = TRUE)
+# annotationcolor <- list(Domain = RColorBrewer::brewer.pal(n = 7, 
+#                                                           name = "Set2"), 
+#                         Residue_function = RColorBrewer::brewer.pal(n = 9,
+#                                                                     name = "Pastel1"),
+#                         Tissue = RColorBrewer::brewer.pal(n = 11, 
+#                                                           name = "Paired"),
+#                         Germ_Layer = RColorBrewer::brewer.pal(n = 4,
+#                                                               name = "Dark2"))
+# annotationcolornamed <- list(Domain = c(TAD1 = "#E78AC3", 
+#                                         PRD = "#FC8D62", 
+#                                         DBD = "#E5C494", 
+#                                         `DBD L2 loop` = "#FFD92F", 
+#                                         `DBD L3 loop` = "#A6D854", 
+#                                         HD = "#66C2A5", 
+#                                         OD = "#8DA0CB"), 
+#                              Residue_function = c("ADP-ribosylation" = "#FFFFCC",
+#                                                   "Buried" = "#B3CDE3", 
+#                                                   "DNA binding" = "#FBB4AE", 
+#                                                   "Exposed" = "#DECBE4", 
+#                                                   "Partially exposed" = "#CCEBC5", 
+#                                                   "Phosphorylation site" = "#E5D8BD",  
+#                                                   "Tetramerisation" = "#FED9A6", 
+#                                                   "Zn binding" = "#FDDAEC", 
+#                                                   "NA" = "#F2F2F2"),
+#                              Tissue = c(Bladder = "#E30B5C", 
+#                                         Brain = "#FF10F0", 
+#                                         Breast = "#FF7F00", 
+#                                         `Colon/Rectum` = "#FDBF6F", 
+#                                         Foregut = "black", 
+#                                         Gynecologic = "#B2DF8A", 
+#                                         `Head and Neck` = "#33A02C", 
+#                                         Lung = "#A6CEE3", 
+#                                         Prostate = "#1F78B4", 
+#                                         Skin = "#CAB2D6", 
+#                                         `Smooth Muscle` = "#6A3D9A"),
+#                              Germ_Layer = c(Ectoderm = "#1B9E77",
+#                                             `Ectoderm/Endoderm` = "#D95F02",
+#                                             Endoderm = "#7570B3",
+#                                             Mesoderm = "#E7298A"))
+
+# pheatmap::pheatmap(pos_matrix, 
+#          main = "# muts/# distinct samples, ≥ 1% prevalence", 
+#          annotation_col = posused_annotate, 
+#          annotation_row = cancersused_annotate, 
+#          color = color, na_col = "white", 
+#          annotation_colors = annotationcolornamed, 
+#          filename = "C:/Users/nwali/Downloads/pheatmap.pdf", 
+#          width = 20, 
+#          height = 8, 
+#          border_color = NA)
+# dev.off() #run multiple times until following error shows up: Error in dev.off() : cannot shut down device 1 (the null device)
+
+#order matrix based on codon order and tissue so that heatmap organized by tissue type and ascending codon
+# pos_matrix_ordered <- pos_matrix[rownames(cancersused_annotate),rownames(posused_annotate)]
+
+# #create pheatmap with ordered tissues and codons
+# pheatmap::pheatmap(pos_matrix_ordered, 
+#          main = "# muts/# distinct samples, ≥ 1% prevalence", 
+#          annotation_col = posused_annotate, 
+#          annotation_row = cancersused_annotate, 
+#          color = color, 
+#          cluster_rows = FALSE, 
+#          cluster_cols = FALSE, 
+#          na_col = "white", 
+#          annotation_colors = annotationcolornamed, 
+#          filename = "C:/Users/nwali/Downloads/pheatmap_ordered.pdf", 
+#          width = 20, 
+#          height = 7, 
+#          border_color = NA)
+# dev.off() #run multiple times until following error shows up: Error in dev.off() : cannot shut down device 1 (the null device)
+
+#create pheatmap for # mutated codons divided by total # indivs
+#melt dataframe although not doing ggplot because easier to identify ≥ 1% proportion mutated codons
+datapospheatmap_melt <- reshape2::melt(pivotdfposnobottomtotal100muts) %>% 
+  dplyr::rename(Mutation = variable, 
+                Cancer = CANCER_TYPE_DETAILED, 
+                Proportion = value) 
+head(datapospheatmap_melt)
+
+#remove mutations with less than 1% proportion in total indivs
+datapospheatmap_meltover0.01 <- datapospheatmap_melt %>% 
+  subset(Mutation %in% (datapospheatmap_melt %>% 
+                          subset(Proportion >= 0.01) %>%
+                          pull(Mutation) %>% 
+                          unique() %>% 
+                          as.vector()))
+
+#create new dataframe of positions with 1% proportion and keep distinct positions
+posused_totalmuts <- data.frame(datapospheatmap_meltover0.01$Mutation, 
+                                stringsAsFactors = FALSE) %>%
+  dplyr::rename(Mutation = datapospheatmap_meltover0.01.Mutation) %>% 
+  distinct() %>%
+  remove_rownames()
+
+# pos_totalmuts_age <- data.frame(pivotage_pos_melted_over0.01$Mutation,
+#                                       stringsAsFactors = FALSE) %>% 
+#   dplyr::rename(Mutation = pivotage_pos_melted_over0.01.Mutation) %>% 
+#   distinct() %>% 
+#   remove_rownames()
+
+pos_totalmuts_sex <- data.frame(pivotsex_pos_melted_over0.01$Mutation,
+                                stringsAsFactors = FALSE) %>% 
+  dplyr::rename(Mutation = pivotsex_pos_melted_over0.01.Mutation) %>% 
+  distinct() %>% 
+  remove_rownames()
+
+#add codon number to dataframe of positions at 1% proportion 
+posused_totalmuts <- posused_totalmuts %>% 
+  mutate(Codon = abs((parse_number(as.character(Mutation), 
+                                   na = character())))) %>% 
+  remove_rownames()
+
+# pos_totalmuts_age <- pos_totalmuts_age %>% 
+# mutate(Codon = abs((parse_number(as.character(Mutation), 
+#                                  na = character())))) %>% 
+#   remove_rownames()
+
+pos_totalmuts_sex <- pos_totalmuts_sex %>% 
+  mutate(Codon = abs((parse_number(as.character(Mutation), 
+                                   na = character())))) %>% 
+  remove_rownames()
+
+#add p53 domains to dataframe of positions at 1% proportion (domain positions defined per Joruiz et al. Cancers (Basel) 2020 doi: 10.3390/cancers12113422 Figure 1; DBD loops defined per Cho et al Science 1994 doi: 10.1126/science.8023157)
+posused_totalmuts <- posused_totalmuts %>% 
+  transform(Domain = ifelse(Codon <= 39, 
+                            "TAD1", 
+                            "notyet")) %>%
+  transform(Domain = ifelse(Codon >= 40 & Codon <= 61, 
+                            "TAD2", 
+                            Domain)) %>% 
+  transform(Domain = ifelse(Codon >= 62 & Codon <= 93, 
+                            "PRD", 
+                            Domain)) %>% 
+  transform(Domain = ifelse(Codon >= 94 & Codon <= 289, 
+                            "DBD",
+                            Domain)) %>% 
+  transform(Domain = ifelse(Codon >= 112 & Codon <= 124,
+                            "DBD L1 loop",
+                            Domain)) %>% 
+  transform(Domain = ifelse(Codon >= 163 & Codon <= 195, 
+                            "DBD L2 loop",
+                            Domain)) %>% 
+  transform(Domain = ifelse(Codon >= 236 & Codon <= 251,
+                            "DBD L3 loop", 
+                            Domain)) %>% 
+  transform(Domain = ifelse(Codon >= 290 & Codon <= 324, 
+                            "HD",
+                            Domain)) %>% 
+  transform(Domain = ifelse(Codon >= 325 & Codon <= 356, 
+                            "OD", 
+                            Domain)) %>% 
+  transform(Domain = ifelse(Codon >= 357, 
+                            "CTD", 
+                            Domain)) %>%
+  transform(Rescued = ifelse(Mutation %in% mut_rescued,
+                             "Rescued by treatment",
+                             "Not documented"))
+
+# pos_totalmuts_age <- pos_totalmuts_age %>% 
+#   transform(Domain = ifelse(Codon <= 39, 
+#                             "TAD1", 
+#                             "notyet")) %>%
+#   transform(Domain = ifelse(Codon >= 40 & Codon <= 61, 
+#                             "TAD2", 
+#                             Domain)) %>% 
+#   transform(Domain = ifelse(Codon >= 62 & Codon <= 93, 
+#                             "PRD", 
+#                             Domain)) %>% 
+#   transform(Domain = ifelse(Codon >= 94 & Codon <= 289, 
+#                             "DBD",
+#                             Domain)) %>% 
+#   transform(Domain = ifelse(Codon >= 112 & Codon <= 124,
+#                             "DBD L1 loop",
+#                             Domain)) %>% 
+#   transform(Domain = ifelse(Codon >= 163 & Codon <= 195, 
+#                             "DBD L2 loop",
+#                             Domain)) %>% 
+#   transform(Domain = ifelse(Codon >= 236 & Codon <= 251,
+#                             "DBD L3 loop", 
+#                             Domain)) %>% 
+#   transform(Domain = ifelse(Codon >= 290 & Codon <= 324, 
+#                             "HD",
+#                             Domain)) %>% 
+#   transform(Domain = ifelse(Codon >= 325 & Codon <= 356, 
+#                             "OD", 
+#                             Domain)) %>% 
+#   transform(Domain = ifelse(Codon >= 357, 
+#                             "CTD", 
+#                             Domain)) %>%
+#   transform(Rescued = ifelse(Mutation %in% mut_rescued,
+#                              "Rescued by treatment",
+#                              "Not documented"))
+
+pos_totalmuts_sex <- pos_totalmuts_sex %>% 
+  transform(Domain = ifelse(Codon <= 39, 
+                            "TAD1", 
+                            "notyet")) %>%
+  transform(Domain = ifelse(Codon >= 40 & Codon <= 61, 
+                            "TAD2", 
+                            Domain)) %>% 
+  transform(Domain = ifelse(Codon >= 62 & Codon <= 93, 
+                            "PRD", 
+                            Domain)) %>% 
+  transform(Domain = ifelse(Codon >= 94 & Codon <= 289, 
+                            "DBD",
+                            Domain)) %>% 
+  transform(Domain = ifelse(Codon >= 112 & Codon <= 124,
+                            "DBD L1 loop",
+                            Domain)) %>% 
+  transform(Domain = ifelse(Codon >= 163 & Codon <= 195, 
+                            "DBD L2 loop",
+                            Domain)) %>% 
+  transform(Domain = ifelse(Codon >= 236 & Codon <= 251,
+                            "DBD L3 loop", 
+                            Domain)) %>% 
+  transform(Domain = ifelse(Codon >= 290 & Codon <= 324, 
+                            "HD",
+                            Domain)) %>% 
+  transform(Domain = ifelse(Codon >= 325 & Codon <= 356, 
+                            "OD", 
+                            Domain)) %>% 
+  transform(Domain = ifelse(Codon >= 357, 
+                            "CTD", 
+                            Domain)) %>%
+  transform(Rescued = ifelse(Mutation %in% mut_rescued,
+                             "Rescued by treatment",
+                             "Not documented"))
+
+#merge residue functions and SIFT/DNE parameters to posused dataframes
+posused_totalmuts <- left_join(posused_totalmuts, 
+                               origfxcleaned %>% 
+                                 dplyr::select(c(Codon,
+                                                 Residue_function)) %>%
+                                 distinct(), 
+                               by = "Codon")
+posused_totalmuts <- left_join(posused_totalmuts, 
+                               origfxcleaned %>% 
+                                 dplyr::select(c(Mutation,
+                                                 SIFTClass,
+                                                 DNE_LOFclass)) %>%
+                                 distinct(), 
+                               by = "Mutation")
+# pos_totalmuts_age <- left_join(pos_totalmuts_age, 
+#                                       origfxcleaned, 
+#                                       by = "Codon")
+pos_totalmuts_sex <- left_join(pos_totalmuts_sex, 
+                               origfxcleaned %>% 
+                                 dplyr::select(c(Codon,
+                                                 Residue_function)) %>%
+                                 distinct(), 
+                               by = "Codon")
+pos_totalmuts_sex <- left_join(pos_totalmuts_sex, 
+                               origfxcleaned %>% 
+                                 dplyr::select(c(Mutation,
+                                                 SIFTClass,
+                                                 DNE_LOFclass)) %>%
+                                 distinct(), 
+                               by = "Mutation")
+
+#add mut type to df of age vs pos and sex vs pos for alluvials
+types_muts <- p53mutscancersover100 %>% 
+  dplyr::select(c(proteinChange, 
+                  mutationType)) %>% 
+  dplyr::rename(Mutation = proteinChange, 
+                Type = mutationType) %>% 
+  distinct() 
+
+types_muts <- types_muts %>% 
+  mutate(Type = ifelse(Mutation %in% (types_muts %>% 
+                                        subset(Mutation %in% (types_muts[duplicated(types_muts$Mutation),
+                                                                         "Mutation"] %>% 
+                                                                unique())) %>%
+                                        arrange(Mutation) %>% 
+                                        pull(Mutation) %>% 
+                                        unique() %>% 
+                                        str_subset(pattern = "_splice$")),
+                       "Splice_Site",
+                       Type)) %>% 
+  mutate(Type = ifelse(Mutation %in% (types_muts %>% 
+                                        subset(Mutation %in% (types_muts[duplicated(types_muts$Mutation),
+                                                                         "Mutation"] %>% 
+                                                                unique())) %>%
+                                        arrange(Mutation) %>% 
+                                        pull(Mutation) %>% 
+                                        unique() %>% 
+                                        str_subset(pattern = "\\*$")),
+                       "Nonsense_Mutation",
+                       Type)) %>% 
+  distinct() 
+
+# pos_totalmuts_age <- left_join(pos_totalmuts_age,
+#                                       types_muts,
+#                                       by = "Mutation")
+
+# pos_totalmuts_sex <- left_join(pos_totalmuts_sex,
+#                                       types_muts,
+#                                       by = "Mutation")
+
+#sort position dataframe by ascending codon
+posused_totalmuts <- posused_totalmuts[order(posused_totalmuts$Codon),] %>% 
+  remove_rownames()
+# pos_totalmuts_age <- pos_totalmuts_age[order(pos_totalmuts_age$Codon),] %>% 
+#   remove_rownames()
+pos_totalmuts_sex <- pos_totalmuts_sex[order(pos_totalmuts_sex$Codon),] %>% 
+  remove_rownames()
+
+#need rownames to be things to match for annotation in pheatmap, so add positions to rownames
+rownames(posused_totalmuts) <- posused_totalmuts$Mutation
+# rownames(pos_totalmuts_age) <- pos_totalmuts_age$Mutation
+rownames(pos_totalmuts_sex) <- pos_totalmuts_sex$Mutation
+
+#as some annotations are NA and will not show up in heatmap annotations, need to actually write cells as NA text
+posused_totalmuts <- posused_totalmuts %>% 
+  replace_na(list(Domain = 'NA', 
+                  Residue_function = 'NA',
+                  SIFTClass = 'NA',
+                  DNE_LOFclass = 'NA'))
+# pos_totalmuts_age <- pos_totalmuts_age %>% 
+#   replace_na(list(Domain = 'NA', 
+#                   Residue_function = 'NA',
+# SIFTClass = 'NA',
+# DNE_LOFclass = 'NA'))
+pos_totalmuts_sex <- pos_totalmuts_sex %>% 
+  replace_na(list(Domain = 'NA', 
+                  Residue_function = 'NA',
+                  SIFTClass = 'NA',
+                  DNE_LOFclass = 'NA'))
+
+#create new dataframe of cancers which are used in heatmap and keep distinct cancers 
+cancersused_totalmuts <- data.frame(datapospheatmap_meltover0.01$Cancer, 
+                                    stringsAsFactors = FALSE) %>% 
+  dplyr::rename(Cancer = datapospheatmap_meltover0.01.Cancer) %>% 
+  distinct() %>% 
+  remove_rownames()
+
+#confirm that age and sex and mutation dfs have same cancers and thus don't need to redo annotations df prep
+# table(sort(unique(datapospheatmap_meltover0.01$Cancer)) == sort(as.character(unique(pivotage_melted$Cancer)))) # should be all 35 TRUE in console 
+
+table(sort(unique(datapospheatmap_meltover0.01$Cancer)) == sort(as.character(unique(pivotsex_melted$Cancer)))) # should be all 35 TRUE in console
+
+#add tissue to dataframe of cancer 
+cancersused_totalmuts <- cancersused_totalmuts %>% 
+  mutate(Cancer_temp = gsub(" \\(.*",
+                            "",
+                            Cancer)) %>%
+  mutate(Tissue = ifelse(Cancer_temp %in% c("Breast Invasive Carcinoma, NOS", 
+                                            "Breast Invasive Ductal Carcinoma",
+                                            "Breast Invasive Lobular Carcinoma",
+                                            "Breast Mixed Ductal and Lobular Carcinoma"), 
+                         "Breast", 
+                         "notyet")) %>% 
+  mutate(Tissue = ifelse(Cancer_temp %in% c("Anaplastic Astrocytoma",
+                                            "Astrocytoma", 
+                                            "Glioblastoma Multiforme", 
+                                            "Oligoastrocytoma",
+                                            "High-Grade Glioma, NOS",
+                                            "Glioma, Other",
+                                            "Oligodendroglioma"), 
+                         "Brain",
+                         Tissue)) %>% 
+  mutate(Tissue = ifelse(Cancer_temp %in% c("Bladder Urothelial Carcinoma"),
+                         "Bladder", 
+                         Tissue)) %>% 
+  mutate(Tissue = ifelse(Cancer_temp %in% c("Colon Adenocarcinoma", 
+                                            "Colorectal Adenocarcinoma", 
+                                            "Rectal Adenocarcinoma"), 
+                         "Colon/Rectum", 
+                         Tissue)) %>% 
+  mutate(Tissue = ifelse(Cancer_temp %in% c("Esophageal Adenocarcinoma",
+                                            "Esophageal Squamous Cell Carcinoma",
+                                            "Gastric Adenocarcinoma", 
+                                            "Tubular Stomach Adenocarcinoma",
+                                            "Ampullary Carcinoma", 
+                                            "Cholangiocarcinoma", 
+                                            "Extrahepatic Cholangiocarcinoma",
+                                            "Gallbladder Adenocarcinoma",
+                                            "Hepatocellular Carcinoma",
+                                            "Hepatocellular Carcinoma plus Intrahepatic Cholangiocarcinoma",
+                                            "Intrahepatic Cholangiocarcinoma", 
+                                            "Pancreatic Adenocarcinoma",
+                                            "Perihilar Cholangiocarcinoma"), 
+                         "Foregut", 
+                         Tissue)) %>% 
+  mutate(Tissue = ifelse(Cancer_temp %in% c("Cutaneous Melanoma",
+                                            "Melanoma",
+                                            "Cutaneous Squamous Cell Carcinoma",
+                                            "Skin Cancer, Non-Melanoma"), 
+                         "Skin",
+                         Tissue)) %>% 
+  mutate(Tissue = ifelse(Cancer_temp %in% c("High-Grade Serous Ovarian Cancer", 
+                                            "Serous Ovarian Cancer", 
+                                            "Uterine Carcinosarcoma/Uterine Malignant Mixed Mullerian Tumor", 
+                                            "Uterine Endometrioid Carcinoma", 
+                                            "Uterine Serous Carcinoma/Uterine Papillary Serous Carcinoma"),
+                         "Gynecologic", 
+                         Tissue)) %>% 
+  mutate(Tissue = ifelse(Cancer_temp %in% c("Lung Squamous Cell Carcinoma", 
+                                            "Non-Small Cell Lung Cancer",
+                                            "Small Cell Lung Cancer", 
+                                            "Lung Adenocarcinoma"), 
+                         "Lung",
+                         Tissue)) %>% 
+  mutate(Tissue = ifelse(Cancer_temp %in% c("Head and Neck Squamous Cell Carcinoma"),
+                         "Head and Neck", 
+                         Tissue)) %>%
+  mutate(Tissue = ifelse(Cancer_temp %in% c("Leiomyosarcoma"),
+                         "Smooth Muscle", 
+                         Tissue)) %>%
+  mutate(Tissue = ifelse(Cancer_temp %in% c("Prostate Adenocarcinoma"),
+                         "Prostate", 
+                         Tissue)) %>%
+  mutate(Tissue = ifelse(Cancer_temp %in% c("Diffuse Large B-Cell Lymphoma, NOS"), 
+                         "Blood",
+                         Tissue)) %>%
+  mutate(Tissue = ifelse(Cancer_temp %in% c("Osteosarcoma"), 
+                         "Bone",
+                         Tissue)) %>%
+  mutate(Tissue = ifelse(Cancer_temp %in% c("Renal Clear Cell Carcinoma"), 
+                         "Kidney",
+                         Tissue)) %>%
+  dplyr::select(-c(Cancer_temp))
+
+#add germ layers to dataframe of cancer
+cancersused_totalmuts <- cancersused_totalmuts %>%
+  mutate(Germ_Layer = ifelse(Tissue %in% c("Foregut", 
+                                           "Bladder",
+                                           "Colon/Rectum", 
+                                           "Lung", 
+                                           "Prostate"), 
+                             "Endoderm", 
+                             "notyet")) %>% 
+  mutate(Germ_Layer = ifelse(Tissue %in% c("Blood", 
+                                           "Smooth Muscle",
+                                           "Bone",
+                                           "Gynecologic",
+                                           "Kidney"), 
+                             "Mesoderm", 
+                             Germ_Layer)) %>% 
+  mutate(Germ_Layer = ifelse(Tissue %in% c("Skin", 
+                                           "Brain",
+                                           "Breast"), 
+                             "Ectoderm", 
+                             Germ_Layer)) %>% 
+  mutate(Germ_Layer = ifelse(Tissue %in% c("Head and Neck"), 
+                             "Ectoderm/Endoderm", 
+                             Germ_Layer))
+
+#sort dataframe of cancer by alphabetical germ layer, alphabetical tissue, and then by alphabetical cancer
+cancersused_totalmuts <- cancersused_totalmuts[with(cancersused_totalmuts, 
+                                                    order(Germ_Layer, 
+                                                          Tissue,
+                                                          Cancer)), ] %>% remove_rownames()
+
+#need rownames to be things to match for annotation in pheatmap, so add cancers to rownames
+rownames(cancersused_totalmuts) <- cancersused_totalmuts$Cancer
+
+#convert melted dataframe to matrix for pheatmap, filling anything below 0.01 as 0 although not 0 in reality, just placeholder to not have errors in making heatmap later on
+pos_matrix_totalmuts <- datapospheatmap_meltover0.01 %>% 
+  reshape2::acast(Cancer ~ Mutation,
+                  value.var = 'Proportion', 
+                  fill = '0')
+class(pos_matrix_totalmuts) <- "numeric"
+
+# age_matrix <- pivotage_melted %>% 
+#   reshape2::acast(Age ~ Cancer, 
+#                   value.var = 'Proportion', 
+#                   fill = '0')
+# class(age_matrix) <- "numeric"
+# 
+# age_type_matrix <- pivotage_type_melted %>% 
+#   reshape2::acast(Age ~ Mutation, 
+#                   value.var = 'Proportion', 
+#                   fill = '0')
+# class(age_type_matrix) <- "numeric"
+# 
+# age_pos_matrix <- pivotage_pos_melted_over0.01 %>% 
+#   reshape2::acast(Age ~ Mutation, 
+#                   value.var = 'Proportion', 
+#                   fill = '0')
+# class(age_pos_matrix) <- "numeric"
+
+# sex_matrix <- pivotsex_melted %>% 
+#   reshape2::acast(SEX ~ Cancer, 
+#                   value.var = 'Proportion', 
+#                   fill = '0')
+# class(sex_matrix) <- "numeric"
+# 
+# sex_type_matrix <- pivotsex_type_melted %>% 
+#   reshape2::acast(SEX ~ Mutation, 
+#                   value.var = 'Proportion', 
+#                   fill = '0')
+# class(sex_type_matrix) <- "numeric"
+
+sex_pos_matrix <- pivotsex_pos_melted_over0.01 %>% 
+  reshape2::acast(SEX ~ Mutation, 
+                  value.var = 'Proportion', 
+                  fill = '0')
+class(sex_pos_matrix) <- "numeric"
+
+#set up annotation dataframes to just have column used for annotation, otherwise all columns used for annotation in heatmap
+posused_totalmuts_annotate <- posused_totalmuts %>% 
+  dplyr::select(-c(Mutation, 
+                   Codon))
+# mutinfo_annotate_age <- pos_totalmuts_age %>% 
+#  dplyr::select(-c(Mutation, 
+#             Codon,
+#             Type))
+mutinfo_annotate_sex <- pos_totalmuts_sex %>% 
+  dplyr::select(-c(Mutation, 
+                   Codon,
+                   #Type
+  ))
+cancersused_totalmuts_annotate <- cancersused_totalmuts %>%
+  dplyr::select(-c(Cancer,
+                   Tissue))
+
+#collapse different iterations of ADP-ribosylation, e.g. site and site not written, into 1 version
+posused_totalmuts_annotate <- posused_totalmuts_annotate %>% 
+  transform(Residue_function = ifelse(Residue_function %in% c("ADP-ribosylation"),
+                                      "ADP-ribosylation site",
+                                      Residue_function))
+
+#order domain by p53 domain and residue function as factors so that they are maintained in legend too
+unique(posused_totalmuts_annotate$Domain) #to find list of domains in order to use as factors
+posused_totalmuts_annotate$Domain <- factor(posused_totalmuts_annotate$Domain, 
+                                            levels = c("TAD1", 
+                                                       "TAD2", 
+                                                       "PRD", 
+                                                       "DBD", 
+                                                       "DBD L1 loop",
+                                                       "DBD L2 loop", 
+                                                       "DBD L3 loop", 
+                                                       "HD", 
+                                                       "OD", 
+                                                       "CTD"))
+
+sort(as.vector(unique(posused_totalmuts_annotate$Residue_function))) #to find list of residue functions in order to use as factors
+posused_totalmuts_annotate$Residue_function <- factor(posused_totalmuts_annotate$Residue_function, 
+                                                      levels = c("Acetylation/Methylation/Ubiquitination site",
+                                                                 "Acetylation/Ubiquitination site",
+                                                                 "ADP-ribosylation site",
+                                                                 "Buried",
+                                                                 "DNA binding",
+                                                                 "Exposed",
+                                                                 "Isoaspartyl methylation site",
+                                                                 "Methylation site",
+                                                                 "Partially exposed",
+                                                                 "Phosphorylation site",
+                                                                 #"Phosphorylation/O-GlcNAcylation site",
+                                                                 "S-glutathionylation site",
+                                                                 "Tetramerisation",
+                                                                 "Tetramerisation/Methylation site",
+                                                                 "Transactivation",
+                                                                 "Ubiquitination site",
+                                                                 "Zn binding",
+                                                                 "NA"))
+
+posused_totalmuts_annotate$Rescued <- factor(posused_totalmuts_annotate$Rescued, 
+                                             levels = sort(as.vector(unique(posused_totalmuts_annotate$Rescued)),
+                                                           decreasing = TRUE))
+
+posused_totalmuts_annotate$SIFTClass <- factor(posused_totalmuts_annotate$SIFTClass, 
+                                               levels = c("Damaging",
+                                                          "Tolerated",
+                                                          "NA"))
+
+posused_totalmuts_annotate$DNE_LOFclass <- factor(posused_totalmuts_annotate$DNE_LOFclass,
+                                                  levels = c("DNE_LOF",
+                                                             "notDNE_LOF",
+                                                             "notDNE_notLOF",
+                                                             "unclass.",
+                                                             "NA"))
+
+# unique(mutinfo_annotate_age$Domain) #to find list of domains in order to use as factors
+# mutinfo_annotate_age$Domain <- factor(mutinfo_annotate_age$Domain, 
+#                                             levels = c("PRD", 
+#                                                        "DBD",  
+#                                                        "DBD L2 loop", 
+#                                                        "DBD L3 loop", 
+#                                                        "HD", 
+#                                                        "OD"))
+# 
+# sort(as.vector(unique(mutinfo_annotate_age$Residue_function))) #to find list of residue functions in order to use as factors
+# mutinfo_annotate_age$Residue_function <- factor(mutinfo_annotate_age$Residue_function, 
+#                                                       levels = c("Buried", 
+#                                                                  "DNA binding", 
+#                                                                  "Exposed", 
+#                                                                  "Partially exposed", 
+#                                                                  "Phosphorylation site",
+#                                                                  "Tetramerisation/Methylation site",
+#                                                                  "Zn binding", 
+#                                                                  "NA"))
+
+unique(mutinfo_annotate_sex$Domain) #to find list of domains in order to use as factors
+mutinfo_annotate_sex$Domain <- factor(mutinfo_annotate_sex$Domain, 
+                                      levels = c(#"TAD1",
+                                        "PRD",
+                                        "DBD",  
+                                        "DBD L2 loop", 
+                                        "DBD L3 loop", 
+                                        "HD",
+                                        "OD"))
+
+sort(as.vector(unique(mutinfo_annotate_sex$Residue_function))) #to find list of residue functions in order to use as factors
+mutinfo_annotate_sex$Residue_function <- factor(mutinfo_annotate_sex$Residue_function, 
+                                                levels = c("Buried", 
+                                                           "DNA binding", 
+                                                           "Exposed", 
+                                                           #"Phosphorylation site",
+                                                           "Zn binding",
+                                                           "NA"))
+
+mutinfo_annotate_sex$Rescued <- factor(mutinfo_annotate_sex$Rescued, 
+                                       levels = sort(as.vector(unique(mutinfo_annotate_sex$Rescued)),
+                                                     decreasing = TRUE))
+
+mutinfo_annotate_sex$SIFTClass <- factor(mutinfo_annotate_sex$SIFTClass, 
+                                         levels = c("Damaging",
+                                                    "Tolerated",
+                                                    "NA"))
+
+mutinfo_annotate_sex$DNE_LOFclass <- factor(mutinfo_annotate_sex$DNE_LOFclass,
+                                            levels = c("DNE_LOF",
+                                                       "notDNE_LOF",
+                                                       "notDNE_notLOF",
+                                                       "unclass.",
+                                                       "NA"))
+
+#create pheatmap
+# #show all color-blind friendly palettes in RColorBrewer
+# display.brewer.all(colorblindFriendly = TRUE)
+# 
+# #need to extend color-blind palette colors because not enough colors for all annotations in the chosen palette
+# longercolorSet2 <- colorRampPalette(brewer.pal(8, "Set2"))(length(unique(posused_totalmuts_annotate$Domain)))
+# longercolorPastel1 <- colorRampPalette(brewer.pal(9, "Pastel1"))(length(unique(posused_totalmuts_annotate$Residue_function)))
+
+#assign color hex codes to annotations
+# annotationcolor_totalmuts <- list(Domain = longercolorSet2, 
+#                                   Residue_function = longercolorPastel1,
+#                                   Tissue = RColorBrewer::brewer.pal(n = 12, name = "Paired"),
+#                                   Germ_Layer = RColorBrewer::brewer.pal(n = 4, name = "Dark2"))
+annotationcolornamed_totalmuts <- list(
+  Domain = c(TAD1 = "darkgray",
+             TAD2 = "lightblue",
+             PRD = "#E78AC3", 
+             DBD = "#FFD92F",
+             `DBD L1 loop` = "#FC8D62", 
+             `DBD L2 loop` = "#8DA0CB", 
+             `DBD L3 loop` = "brown",
+             HD = "#A6D854",
+             OD = "#D3D3D3",
+             CTD = "red"), 
+  Residue_function = c(`Acetylation/Methylation/Ubiquitination site` = "lavender",
+                       `Acetylation/Ubiquitination site` = "hotpink",
+                       `ADP-ribosylation site` = "#B2DF8A",
+                       Buried = "#FF10F0",
+                       `DNA binding` = "#6A3D9A",
+                       Exposed = "#1F78B4",
+                       `Isoaspartyl methylation site` = "#F2F2F2",
+                       `Methylation site` = "lightpink",
+                       `Partially exposed` = "#A6CEE3",
+                       `Phosphorylation site` = "#33A02C",
+                       #`Phosphorylation/O-GlcNAcylation site` = "#D2DFCF",
+                       `S-glutathionylation site` = "aquamarine",
+                       Tetramerisation = "#8B8000",
+                       `Tetramerisation/Methylation site` = "#CAB2D6",
+                       `Transactivation` = "#FEE1AE",
+                       `Ubiquitination site` = "#FF7F00",
+                       `Zn binding` = "#E30B5C",
+                       `NA` = "#5A5A5A"),
+  Germ_Layer = c(Ectoderm = "#7570B3",
+                 `Ectoderm/Endoderm` = "#E7298A",
+                 Endoderm = "#D95F02",
+                 Mesoderm = "#1B9E77"),
+  Rescued = c(`Rescued by treatment` = "forestgreen",
+              `Not documented` = "ivory2"),
+  SIFTClass = c(`Damaging` = "hotpink3", 
+                `Tolerated` = "aliceblue",
+                `NA` = "dimgray"),
+  DNE_LOFclass = c(`DNE_LOF` = "maroon",    
+                   `notDNE_LOF` = "sienna1",
+                   `notDNE_notLOF` = "slategray1",
+                   `unclass.` = "linen",
+                   `NA` = "darkslategray"))
+
+# annotationcolorage <- list(Domain = RColorBrewer::brewer.pal(n = 6, name = "Set2"), 
+#                                   Residue_function = RColorBrewer::brewer.pal(n = 8, name = "Paired"),
+#                                   Tissue = RColorBrewer::brewer.pal(n = 12, name = "Paired"),
+#                                   Germ_Layer = RColorBrewer::brewer.pal(n = 4, name = "Dark2"))
+# annotationcolornamedage <- list(
+#   Domain = c(PRD = "#DEC197", 
+#              DBD = "#B3B3B3", 
+#              `DBD L2 loop` = "#F8D348",
+#              `DBD L3 loop` = "#C7D846", 
+#              HD = "#66C2A5", 
+#              OD = "#A89BB0"), 
+#   Residue_function = c(Buried = "#BBD7D9",
+#                        `DNA binding` = "#FBB4AE",
+#                        Exposed = "#CCEBC5",
+#                        `Partially exposed` = "#F4D9DC",
+#                        `Phosphorylation site` = "#FED9A6",
+#                        `Tetramerisation/Methylation site` = "#E5D8BD",
+#                        `Zn binding` = "#CBC4D1",
+#                        `NA` = "#F2F2F2"),
+#   Tissue = c(Bladder = "#E30B5C", 
+#              Blood = "#FF10F0", 
+#              Brain = "#B15928", 
+#              Breast = "#FF7F00", 
+#              `Colon/Rectum` = "#FDBF6F", 
+#              Foregut = "black", 
+#              Gynecologic = "#B2DF8A", 
+#              `Head and Neck` = "#33A02C", 
+#              Lung = "#A6CEE3", 
+#              Prostate = "#1F78B4", 
+#              Skin = "#CAB2D6", 
+#              `Smooth Muscle` = "#6A3D9A"),
+#   Germ_Layer = c(Ectoderm = "#1B9E77",
+#                  `Ectoderm/Endoderm` = "#D95F02",
+#                  Endoderm = "#7570B3",
+#                  Mesoderm = "#E7298A"))
+# 
+# annotationcolorsex <- list(Domain = RColorBrewer::brewer.pal(n = 4, name = "Set2"), 
+#                                   Residue_function = RColorBrewer::brewer.pal(n = 4, name = "Paired"),
+#                                   Tissue = RColorBrewer::brewer.pal(n = 12, name = "Paired"),
+#                                   Germ_Layer = RColorBrewer::brewer.pal(n = 4, name = "Dark2"))
+annotationcolornamedsex <- list(
+  Domain = c(#TAD1 = "darkgray",
+    PRD = "#E78AC3",
+    DBD = "#FFD92F", 
+    `DBD L2 loop` = "#8DA0CB", 
+    `DBD L3 loop` = "brown",
+    HD = "#A6D854",
+    OD = "#D3D3D3"), 
+  Residue_function = c(Buried = "#FF10F0",
+                       `DNA binding` = "#6A3D9A",
+                       Exposed = "#1F78B4",
+                       #`Phosphorylation site` = "#33A02C",
+                       `Zn binding` = "#E30B5C",
+                       `NA` = "#5A5A5A"),
+  Germ_Layer = c(Ectoderm = "#7570B3",
+                 `Ectoderm/Endoderm` = "#E7298A",
+                 Endoderm = "#D95F02",
+                 Mesoderm = "#1B9E77"),
+  Rescued = c(`Rescued by treatment` = "forestgreen",
+              `Not documented` = "ivory2"),
+  SIFTClass = c(`Damaging` = "hotpink3", 
+                `Tolerated` = "aliceblue",
+                `NA` = "dimgray"),
+  DNE_LOFclass = c(`DNE_LOF` = "maroon",    
+                   `notDNE_LOF` = "sienna1",
+                   `notDNE_notLOF` = "slategray1",
+                   `unclass.` = "linen",
+                   `NA` = "darkslategray"))
+
+# pheatmap::pheatmap(pos_matrix_totalmuts, 
+#          main = "# muts/# total muts, ≥ 1% proportion", 
+#          annotation_col = posused_totalmuts_annotate, 
+#          annotation_row = cancersused_totalmuts_annotate, 
+#          color = color, 
+#          na_col = "white", 
+#          annotation_colors = annotationcolornamed_totalmuts, 
+#          filename = "C:/Users/nwali/Downloads/pheatmap_totalmuts.pdf", 
+#          width = 30, 
+#          height = 8, 
+#          border_color = NA)
+# dev.off() #run multiple times until following error shows up: Error in dev.off() : cannot shut down device 1 (the null device)
+
+# change T125= to T125T for heatmap
+colnames(pos_matrix_totalmuts) <- gsub("T125=",
+                                       "T125T",
+                                       colnames(pos_matrix_totalmuts))
+
+colnames(sex_pos_matrix) <- gsub("T125=",
+                                 "T125T",
+                                 colnames(sex_pos_matrix))
+
+rownames(posused_totalmuts_annotate) <- gsub("T125=",
+                                             "T125T",
+                                             rownames(posused_totalmuts_annotate))
+
+rownames(mutinfo_annotate_sex) <- gsub("T125=",
+                                       "T125T",
+                                       rownames(mutinfo_annotate_sex))
+
+#order matrix based on codon order and tissue so that heatmap organized by tissue type and ascending codon
+pos_matrix_ordered_totalmuts <- pos_matrix_totalmuts[rownames(cancersused_totalmuts_annotate),rownames(posused_totalmuts_annotate)]
+# age_matrix_ordered <- age_matrix[,rownames(cancersused_totalmuts_annotate)]
+# age_pos_matrix_ordered <- age_pos_matrix[,rownames(mutinfo_annotate_age)]
+# sex_matrix_ordered <- sex_matrix[,rownames(cancersused_totalmuts_annotate %>%
+#                                              rownames_to_column("Cancer_temp") %>%
+#                                              mutate(Cancer = gsub(" \\(.*",
+#                                                                   "",
+#                                                                   Cancer_temp)) %>%
+#                                              column_to_rownames("Cancer"))]
+sex_pos_matrix_ordered <- sex_pos_matrix[,rownames(mutinfo_annotate_sex)]
+
+# #create pheatmap with ordered tissues and codons
+# pheatmap::pheatmap(pos_matrix_ordered_totalmuts, 
+#          main = "# muts/# total muts, ≥ 1% proportion", 
+#          annotation_col = posused_totalmuts_annotate, 
+#          annotation_row = cancersused_totalmuts_annotate, 
+#          color = color, 
+#          cluster_rows = FALSE, 
+#          cluster_cols = FALSE, 
+#          na_col = "white", 
+#          annotation_colors = annotationcolornamed_totalmuts, 
+#          filename = "C:/Users/nwali/Downloads/pheatmap_ordered_totalmuts.pdf", 
+#          width = 30, 
+#          height = 8, 
+#          border_color = NA)
+# dev.off() #run multiple times until following error shows up: Error in dev.off() : cannot shut down device 1 (the null device)
+
+#try making better formatted heatmap with complexheatmap
+
+#need to recreate annotations as annotation class for complexheatmap
+# row_ha_1 <- ComplexHeatmap::rowAnnotation(df = cancersused_annotate,
+#                                           col = annotationcolornamed, 
+#                                           annotation_label = c("Tissue", 
+#                                                                "Germ Layer"),
+#                                           na_col = "white", 
+#                                           show_annotation_name = FALSE)
+# column_ha_1 <- ComplexHeatmap::columnAnnotation(df = posused_annotate,
+#                                                 col = annotationcolornamed,
+#                                                 annotation_label = c("Domain", 
+#                                                                      "Feature"), 
+#                                                 na_col = "white",
+#                                                 show_annotation_name = FALSE)
+# 
+row_ha_2 <- ComplexHeatmap::rowAnnotation(df = cancersused_totalmuts_annotate,
+                                          col = annotationcolornamed_totalmuts,  
+                                          annotation_label = "Germ Layer", 
+                                          na_col = "white", 
+                                          show_annotation_name = TRUE, 
+                                          annotation_name_gp = gpar(fontsize = 10,
+                                                                    fontface = "bold"))
+column_ha_2 <- ComplexHeatmap::columnAnnotation(df = posused_totalmuts_annotate, 
+                                                col = annotationcolornamed_totalmuts,
+                                                annotation_label = c("Domain", 
+                                                                     "Rescued", 
+                                                                     "Feature", 
+                                                                     "SIFT", 
+                                                                     "DNE"
+                                                ), 
+                                                na_col = "white", 
+                                                show_annotation_name = TRUE, 
+                                                annotation_name_side = c("left", "left", "left", "left", "left"), 
+                                                annotation_name_gp = gpar(fontsize = 10,
+                                                                          fontface = "bold"),
+                                                annotation_legend_param = list(Domain = list(direction = "horizontal",
+                                                                                             ncol = 1),
+                                                                               Residue_function = list(direction = "horizontal",
+                                                                                                       ncol = 2),
+                                                                               
+                                                                               DNE_LOFclass = list(direction = "horizontal",
+                                                                                                   ncol = 1)))
+# column_ha_age_cancer <- ComplexHeatmap::columnAnnotation(df = cancersused_totalmuts_annotate, 
+#                                                          col = annotationcolornamedage, 
+#                                                          annotation_label = c("Tissue", 
+#                                                                               "Germ Layer"),
+#                                                          na_col = "white", 
+#                                                          show_annotation_name = FALSE)
+# column_ha_age_pos <- ComplexHeatmap::columnAnnotation(df = mutinfo_annotate_age, 
+#                                                       col = annotationcolornamedage, 
+#                                                       annotation_label = c("Domain", 
+#                                                                            "Feature"), 
+#                                                       na_col = "white", 
+#                                                       show_annotation_name = FALSE)
+# column_ha_sex_cancer <- ComplexHeatmap::columnAnnotation(df = cancersused_totalmuts_annotate %>%
+#                                                            rownames_to_column("Cancer_temp") %>%
+#                                                            mutate(Cancer = gsub(" \\(.*",
+#                                                                                 "",
+#                                                                                 Cancer_temp)) %>%
+#                                                            column_to_rownames("Cancer"), 
+#                                                          col = annotationcolornamedsex,  
+#                                                          annotation_label = "Germ Layer", 
+#                                                          na_col = "white", 
+#                                                          show_annotation_name = TRUE, 
+#                                                          annotation_name_gp = gpar(fontsize = 10,
+#                                                                                    fontface = "bold"))
+column_ha_sex_pos <- ComplexHeatmap::columnAnnotation(df = mutinfo_annotate_sex, 
+                                                      col = annotationcolornamedsex, 
+                                                      annotation_label = c("Domain", 
+                                                                           "Rescued",
+                                                                           "Feature", 
+                                                                           "SIFT", 
+                                                                           "DNE" 
+                                                      ), 
+                                                      na_col = "white", 
+                                                      show_annotation_name = TRUE, 
+                                                      annotation_name_side = c("left", "left", "left", "left", "left"), 
+                                                      annotation_name_gp = gpar(fontsize = 10,
+                                                                                fontface = "bold"),
+                                                      annotation_legend_param = list(Domain = list(direction = "horizontal",
+                                                                                                   ncol = 1),
+                                                                                     Residue_function = list(direction = "horizontal",
+                                                                                                             ncol = 1),
+                                                                                     
+                                                                                     DNE_LOFclass = list(direction = "horizontal",
+                                                                                                         ncol = 1)))
+
+# svg(file = "C:/Users/nwali/Downloads/complexheatmap.svg", 
+#     width = 25, 
+#     height = 8)
+# complexhm <- ComplexHeatmap::Heatmap(pos_matrix_ordered,
+#                                      col = color,
+#                                      name = "Prevalence",
+#                                      na_col = "white",
+#                                      row_names_side = "left",
+#                                      column_names_side = "top",
+#                                      cluster_columns = FALSE,
+#                                      row_dend_side = "left",
+#                                      column_dend_side = "top",
+#                                      column_title = "# muts/# distinct samples, ≥ 1% prevalence",
+#                                      column_title_side = "top",
+#                                      column_title_gp = gpar(fontface = "bold"),
+#                                      row_names_gp = gpar(fontsize = 10),
+#                                      row_names_max_width = max_text_width(
+#                                        rownames(pos_matrix_ordered), 
+#                                        gp = gpar(fontsize = 10)),
+#                                      column_names_gp = gpar(fontsize = 10),
+#                                      top_annotation = column_ha_1,
+#                                      left_annotation = row_ha_1,
+#                                      heatmap_legend_param = list(at = seq(from = 0, 
+#                                                                           to = plyr::round_any(max(pos_matrix_ordered, na.rm = TRUE), 0.1, f = ceiling), 
+#                                                                           by = plyr::round_any(max(pos_matrix_ordered, na.rm = TRUE), 0.1, f = ceiling)/5)))
+# draw(complexhm)
+# dev.off() #run multiple times until following error shows up: Error in dev.off() : cannot shut down device 1 (the null device)
+
+# svg(file = "C:/Users/nwali/Downloads/complexheatmap_ordered.svg", 
+#     width = 25, 
+#     height = 8)
+# complexhm_ordered <- ComplexHeatmap::Heatmap(pos_matrix_ordered,
+#                                              col = color,
+#                                              name = "Prevalence",
+#                                              na_col = "white",
+#                                              row_names_side = "left",
+#                                              column_names_side = "top",
+#                                              cluster_rows = FALSE,
+#                                              cluster_columns = FALSE,
+#                                              row_dend_side = "left",
+#                                              column_dend_side = "top",
+#                                              column_title = "# muts/# distinct samples, ≥ 1% prevalence",
+#                                              column_title_side = "top",
+#                                              column_title_gp = gpar(fontface = "bold"),
+#                                              row_names_gp = gpar(fontsize = 10),
+#                                              row_names_max_width = max_text_width(
+#                                                rownames(pos_matrix_ordered), 
+#                                                gp = gpar(fontsize = 10)),
+#                                              column_names_gp = gpar(fontsize = 10),
+#                                              top_annotation = column_ha_1,
+#                                              left_annotation = row_ha_1,
+#                                              heatmap_legend_param = list(at = seq(from = 0, 
+#                                                                                   to = plyr::round_any(max(pos_matrix_ordered, na.rm = TRUE), 0.1, f = ceiling), 
+#                                                                                   by = plyr::round_any(max(pos_matrix_ordered, na.rm = TRUE), 0.1, f = ceiling)/5)))
+# draw(complexhm_ordered)
+# dev.off() #run multiple times until following error shows up: Error in dev.off() : cannot shut down device 1 (the null device)
+
+
+# svg(file = "C:/Users/nwali/Downloads/complexheatmap_ordered_totalmuts.svg", 
+#     width = 35, 
+#     height = 8)
+# complexhm_ordered_totalmuts <- ComplexHeatmap::Heatmap(pos_matrix_ordered_totalmuts,
+#                                                        col = color,
+#                                                        name = "Row Z-Score",
+#                                                        na_col = "white",
+#                                                        row_names_side = "left",
+#                                                        column_names_side = "top",
+#                                                        cluster_rows = FALSE,
+#                                                        cluster_columns = FALSE,
+#                                                        row_dend_side = "left",
+#                                                        column_dend_side = "top",
+#                                                        column_title = "# muts/# total muts, ≥ 1% proportion",
+#                                                        column_title_side = "top",
+#                                                        column_title_gp = gpar(fontface = "bold"),
+#                                                        row_names_gp = gpar(fontsize = 10),
+#                                                        row_names_max_width = max_text_width(
+#                                                          rownames(pos_matrix_ordered_totalmuts), 
+#                                                          gp = gpar(fontsize = 10)),
+#                                                        column_names_gp = gpar(fontsize = 10),
+#                                                        top_annotation = column_ha_2,
+#                                                        left_annotation = row_ha_2,
+#                                                        heatmap_legend_param = list(at = seq(from = 0, 
+#                                                                                             to = plyr::round_any(max(pos_matrix_ordered_totalmuts, na.rm = TRUE), 0.1, f = ceiling), 
+#                                                                                             by = plyr::round_any(max(pos_matrix_ordered_totalmuts, na.rm = TRUE), 0.1, f = ceiling)/5)))
+# draw(complexhm_ordered_totalmuts)
+# dev.off() #run multiple times until following error shows up: Error in dev.off() : cannot shut down device 1 (the null device)
+
+# don't need to make barchart data into heatmap, CODE NOT UPDATED AS A RESULT
+# #can create complexheatmap for mutation types stacked barchart data to see cancer clustering
+# #create new dataframe of cancers which were used in stacked barchart and keep distinct cancers 
+# cancersused_barchart <- data.frame(as.character(data_barchart$Cancer),
+#                                    stringsAsFactors = FALSE) %>% 
+#   dplyr::rename(Cancer = as.character.data_barchart.Cancer.) %>% 
+#   distinct() %>% 
+#   remove_rownames()
+# 
+# #add tissue to dataframe of cancer 
+# cancersused_barchart <- cancersused_barchart %>% 
+#   transform(Tissue = ifelse(Cancer %in% c("Breast Invasive Carcinoma, NOS", 
+#                                           "Breast Invasive Ductal Carcinoma"), 
+#                             "Breast", 
+#                             "notyet")) %>% 
+#   transform(Tissue = ifelse(Cancer %in% c("Anaplastic Astrocytoma", 
+#                                           "Astrocytoma",
+#                                           "Glioblastoma Multiforme",
+#                                           "Oligoastrocytoma"),
+#                             "Brain", 
+#                             Tissue)) %>% 
+#   transform(Tissue = ifelse(Cancer %in% c("Bladder Urothelial Carcinoma"),
+#                             "Bladder", 
+#                             Tissue)) %>% 
+#   transform(Tissue = ifelse(Cancer %in% c("Colon Adenocarcinoma",
+#                                           "Colorectal Adenocarcinoma",
+#                                           "Rectal Adenocarcinoma"), 
+#                             "Colon/Rectum",
+#                             Tissue)) %>% 
+#   transform(Tissue = ifelse(Cancer %in% c("Esophageal Adenocarcinoma", 
+#                                           "Esophageal Squamous Cell Carcinoma", 
+#                                           "Gastric Adenocarcinoma", 
+#                                           "Ampullary Carcinoma", 
+#                                           "Cholangiocarcinoma",
+#                                           "Extrahepatic Cholangiocarcinoma",
+#                                           "Gallbladder Adenocarcinoma", 
+#                                           "Hepatocellular Carcinoma",
+#                                           "Hepatocellular Carcinoma plus Intrahepatic Cholangiocarcinoma",
+#                                           "Intrahepatic Cholangiocarcinoma", 
+#                                           "Pancreatic Adenocarcinoma"),
+#                             "Foregut", 
+#                             Tissue)) %>% 
+#   transform(Tissue = ifelse(Cancer %in% c("Cutaneous Melanoma", "Melanoma",
+#                                           "Cutaneous Squamous Cell Carcinoma",
+#                                           "Skin Cancer, Non-Melanoma"),
+#                             "Skin", 
+#                             Tissue)) %>% 
+#   transform(Tissue = ifelse(Cancer %in% c("High-Grade Serous Ovarian Cancer", 
+#                                           "Serous Ovarian Cancer", 
+#                                           "Uterine Carcinosarcoma/Uterine Malignant Mixed Mullerian Tumor", 
+#                                           "Uterine Endometrioid Carcinoma", 
+#                                           "Uterine Serous Carcinoma/Uterine Papillary Serous Carcinoma"),
+#                             "Gynecologic",
+#                             Tissue)) %>% 
+#   transform(Tissue = ifelse(Cancer %in% c("Lung Squamous Cell Carcinoma", 
+#                                           "Non-Small Cell Lung Cancer", 
+#                                           "Small Cell Lung Cancer", 
+#                                           "Lung Adenocarcinoma"),
+#                             "Lung", 
+#                             Tissue)) %>% 
+#   transform(Tissue = ifelse(Cancer %in% c("Head and Neck Squamous Cell Carcinoma"),
+#                             "Head and Neck", 
+#                             Tissue)) %>%
+#   transform(Tissue = ifelse(Cancer %in% c("Leiomyosarcoma"),
+#                             "Smooth Muscle",
+#                             Tissue)) %>%
+#   transform(Tissue = ifelse(Cancer %in% c("Prostate Adenocarcinoma"),
+#                             "Prostate", 
+#                             Tissue)) %>%
+#   transform(Tissue = ifelse(Cancer %in% c("Osteosarcoma"),
+#                             "Bone", 
+#                             Tissue)) %>%
+#   transform(Tissue = ifelse(Cancer %in% c("Diffuse Large B-Cell Lymphoma, NOS"),
+#                             "Blood", 
+#                             Tissue))
+# 
+# #add germ layers to dataframe of cancer
+# cancersused_barchart <- cancersused_barchart %>%
+#   transform(Germ_Layer = ifelse(Tissue %in% c("Foregut", 
+#                                               "Bladder",
+#                                               "Colon/Rectum",
+#                                               "Lung", 
+#                                               "Prostate"), 
+#                                 "Endoderm", 
+#                                 "notyet")) %>% 
+#   transform(Germ_Layer = ifelse(Tissue %in% c("Blood", 
+#                                               "Smooth Muscle",
+#                                               "Bone",
+#                                               "Gynecologic"), 
+#                                 "Mesoderm", 
+#                                 Germ_Layer)) %>% 
+#   transform(Germ_Layer = ifelse(Tissue %in% c("Skin", 
+#                                               "Brain", 
+#                                               "Breast"), 
+#                                 "Ectoderm", 
+#                                 Germ_Layer)) %>% 
+#   transform(Germ_Layer = ifelse(Tissue %in% c("Head and Neck"), 
+#                                 "Ectoderm/Endoderm", 
+#                                 Germ_Layer))
+# 
+# #sort dataframe of cancer by alphabetical germ layer, alphabetical tissue, and then by alphabetical cancer
+# cancersused_barchart <- cancersused_barchart[with(cancersused_barchart, 
+#                                                   order(Germ_Layer, 
+#                                                         Tissue, 
+#                                                         Cancer)), ] %>% remove_rownames()
+# 
+# #need rownames to be things to match for annotation in pheatmap, so add cancers to rownames
+# rownames(cancersused_barchart) <- cancersused_barchart$Cancer
+# 
+# #convert melted dataframe to matrix for pheatmap, filling anything below 0.01 as 0 although not 0 in reality, just placeholder to not have errors in making heatmap later on
+# barchart_matrix <- data_barchart %>% 
+#   reshape2::acast(Cancer ~ Mutation,
+#                   value.var = 'Proportion', 
+#                   fill = '0')
+# class(barchart_matrix) <- "numeric"
+# 
+# #set up annotation dataframe to just have column used for annotation, otherwise all columns used for annotation in heatmap
+# cancersused_barchart_annotate <- cancersused_barchart %>% 
+#  dplyr::select(-Cancer)
+# 
+# #show all color-blind friendly palettes in RColorBrewer
+# display.brewer.all(colorblindFriendly = TRUE)
+# 
+# #assign color hex codes to annotations
+# # annotationcolor_barchart <- list(Tissue = RColorBrewer::brewer.pal(n = 12, name = "Paired"),
+# #                                  Germ_Layer = RColorBrewer::brewer.pal(n = 4, name = "Dark2"))
+# annotationcolornamed_barchart <- list(
+#   Tissue = c(Bladder = "#E30B5C", 
+#              Blood = "#FF10F0", 
+#              Brain = "#B15928", 
+#              Breast = "#FF7F00", 
+#              `Colon/Rectum` = "#FDBF6F", 
+#              Foregut = "black", 
+#              Gynecologic = "#B2DF8A", 
+#              `Head and Neck` = "#33A02C", 
+#              Lung = "#A6CEE3", 
+#              Prostate = "#1F78B4", 
+#              Skin = "#CAB2D6", 
+#              `Smooth Muscle` = "#6A3D9A"),
+#   Germ_Layer = c(Ectoderm = "#7570B3",
+#                  `Ectoderm/Endoderm` = "#E7298A",
+#                  Endoderm = "#D95F02",
+#                  Mesoderm = "#1B9E77"),
+#   Rescued = c(`Rescued by treatment` = "forestgreen",
+#               `Not documented` = "ivory2"),
+#   SIFTClass = c(`Damaging` = "hotpink3", 
+#                 `Tolerated` = "aliceblue",
+#                 `NA` = "dimgray"),
+#   DNE_LOFclass = c(`DNE_LOF` = "maroon",    
+#                    `notDNE_LOF` = "sienna1",
+#                    `notDNE_notLOF` = "slategray1",
+#                    `unclass.` = "linen",
+#                    `NA` = "darkslategray"))
+# 
+# #order matrix based on codon order and tissue so that heatmap organized by tissue type and ascending codon
+# barchart_matrix_ordered <- barchart_matrix[rownames(cancersused_barchart_annotate),]
+# 
+# #need to recreate annotations as annotation class for complexheatmap
+# row_ha_barchart <- ComplexHeatmap::rowAnnotation(df = cancersused_barchart_annotate,
+#                                                  col = annotationcolornamed_barchart,
+#                                                  annotation_label = c("Tissue",
+#                                                                       "Germ Layer"),
+#                                                  na_col = "white", 
+#                                                  show_annotation_name = FALSE)
+
+#### splicing ####
+
+# indicate whether patients have splicing and isoform positions affected
+p53muts_forsplice <- p53muts %>% 
+  transform(Cancer_Label = ifelse(CANCER_TYPE_DETAILED %in% gsub(" \\(.*", 
+                                                                 "",
+                                                                 pivotdfnobottomtotal100muts$CANCER_TYPE_DETAILED),
+                                  CANCER_TYPE_DETAILED, 
+                                  "OTHER")) %>% 
+  mutate(Codon = abs((parse_number(as.character(proteinChange), 
+                                   na = character())))) %>% 
+  mutate(Isoform = ifelse(mutationType %in% (p53muts[grepl(pattern = "splice", 
+                                                           p53muts$mutationType, 
+                                                           ignore.case = TRUE),
+                                                     "mutationType"] %>% 
+                                               unique()) | Codon %in% (c(40, 133, 160)),
+                          "yes",
+                          "no")) %>% 
+  mutate(Isoform = ifelse(is.na(Isoform),
+                          "no",
+                          Isoform))
+
+p53mutssolecancer_forsplice <- p53mutssolecancer %>% 
+  mutate(Codon = abs((parse_number(as.character(proteinChange), 
+                                   na = character())))) %>% 
+  mutate(Isoform = ifelse(mutationType %in% (p53muts[grepl(pattern = "splice", 
+                                                           p53muts$mutationType, 
+                                                           ignore.case = TRUE),
+                                                     "mutationType"] %>% 
+                                               unique()) | Codon %in% (c(40, 133, 160)),
+                          "yes",
+                          "no")) %>% 
+  mutate(Isoform = ifelse(is.na(Isoform),
+                          "no",
+                          Isoform))
+
+p53mutsmultcancer_forsplice <- p53mutsmultcancer %>% 
+  mutate(Codon = abs((parse_number(as.character(proteinChange), 
+                                   na = character())))) %>% 
+  mutate(Isoform = ifelse(mutationType %in% (p53muts[grepl(pattern = "splice", 
+                                                           p53muts$mutationType, 
+                                                           ignore.case = TRUE),
+                                                     "mutationType"] %>% 
+                                               unique()) | Codon %in% (c(40, 133, 160)),
+                          "yes",
+                          "no")) %>% 
+  mutate(Isoform = ifelse(is.na(Isoform),
+                          "no",
+                          Isoform))
+
+# smaller df of less-frequent mut cancers for 1:1 matching cancers proportions with germline; subsetting to cancers of interest to reduce computational time, as all muts within the cancer will be picked up anyways without so many irrelevant 0 presence muts
+splicedf_match_germline <- p53muts_forsplice %>% 
+  filter(str_detect(CANCER_TYPE,
+                    "Brain|Glio|Ependy|Embryo|glio|astrocy|Neuroep|Sellar|Breast|Soft Tissue Sarcoma") | CANCER_TYPE_DETAILED %in% c("Adrenocortical Carcinoma",
+                                                                                                                                     "Osteosarcoma")) %>%
+  mutate(match_label = ifelse(CANCER_TYPE_DETAILED %in% c("Adrenocortical Carcinoma",
+                                                          "Osteosarcoma"),
+                              CANCER_TYPE_DETAILED,
+                              CANCER_TYPE)) %>%
+  mutate(match_label = dplyr::case_when(str_detect(match_label, "Breast") ~ "Breast, any",
+                                        str_detect(match_label, "Brain|Glio|Ependy|Embryo|glio|astrocy|Neuroep|Sellar") ~ "Brain, any",
+                                        TRUE ~ match_label))
+
+# make pivot tables for specific splice and other positions proportions across pts
+p53mutsspliceperpos <- PivotTable$new()
+p53mutsspliceperpos$addData(p53muts_forsplice)
+p53mutsspliceperpos$addRowDataGroups("Isoform") 
+p53mutsspliceperpos$addRowDataGroups("proteinChange", addTotal = FALSE) # don't keep overall totals
+p53mutsspliceperpos$defineCalculation(calculationName = "Count of distinct individuals",
+                                      summariseExpression = "n_distinct(patientId)")
+p53mutsspliceperpos$sortRowDataGroups(levelNumber = 2,
+                                      orderBy = "calculation",
+                                      sortOrder = "desc")
+p53mutsspliceperpos$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+p53mutssolespliceperpos <- PivotTable$new()
+p53mutssolespliceperpos$addData(p53mutssolecancer_forsplice)
+p53mutssolespliceperpos$addRowDataGroups("Isoform") 
+p53mutssolespliceperpos$addRowDataGroups("proteinChange", addTotal = FALSE) # don't keep overall totals
+p53mutssolespliceperpos$defineCalculation(calculationName = "Count of distinct individuals",
+                                          summariseExpression = "n_distinct(patientId)")
+p53mutssolespliceperpos$sortRowDataGroups(levelNumber = 2,
+                                          orderBy = "calculation",
+                                          sortOrder = "desc")
+p53mutssolespliceperpos$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+p53mutsmultspliceperpos <- PivotTable$new()
+p53mutsmultspliceperpos$addData(p53mutsmultcancer_forsplice)
+p53mutsmultspliceperpos$addRowDataGroups("Isoform") 
+p53mutsmultspliceperpos$addRowDataGroups("proteinChange", addTotal = FALSE) # don't keep overall totals
+p53mutsmultspliceperpos$defineCalculation(calculationName = "Count of distinct individuals",
+                                          summariseExpression = "n_distinct(patientId)")
+p53mutsmultspliceperpos$sortRowDataGroups(levelNumber = 2,
+                                          orderBy = "calculation",
+                                          sortOrder = "desc")
+p53mutsmultspliceperpos$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+p53mutssplicepercancerpos <- PivotTable$new()
+p53mutssplicepercancerpos$addData(p53muts_forsplice)
+p53mutssplicepercancerpos$addRowDataGroups("Isoform") 
+p53mutssplicepercancerpos$addRowDataGroups("proteinChange", addTotal = FALSE) # don't keep overall totals
+p53mutssplicepercancerpos$addColumnDataGroups("Cancer_Label")
+p53mutssplicepercancerpos$defineCalculation(calculationName = "Count of distinct individuals",
+                                            summariseExpression = "n_distinct(patientId)")
+p53mutssplicepercancerpos$sortRowDataGroups(levelNumber = 2,
+                                            orderBy = "calculation",
+                                            sortOrder = "desc")
+p53mutssplicepercancerpos$sortColumnDataGroups(levelNumber = 1,
+                                               orderBy = "calculation",
+                                               sortOrder = "desc")
+p53mutssplicepercancerpos$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+p53mutssplicepercancerpos_matchgermline <- PivotTable$new()
+p53mutssplicepercancerpos_matchgermline$addData(splicedf_match_germline)
+p53mutssplicepercancerpos_matchgermline$addRowDataGroups("Isoform") 
+p53mutssplicepercancerpos_matchgermline$addRowDataGroups("proteinChange", addTotal = FALSE) # don't keep overall totals
+p53mutssplicepercancerpos_matchgermline$addColumnDataGroups("match_label")
+p53mutssplicepercancerpos_matchgermline$defineCalculation(calculationName = "Count of distinct individuals",
+                                            summariseExpression = "n_distinct(patientId)")
+p53mutssplicepercancerpos_matchgermline$sortRowDataGroups(levelNumber = 2,
+                                            orderBy = "calculation",
+                                            sortOrder = "desc")
+p53mutssplicepercancerpos_matchgermline$sortColumnDataGroups(levelNumber = 1,
+                                               orderBy = "calculation",
+                                               sortOrder = "desc")
+p53mutssplicepercancerpos_matchgermline$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+# convert pivot tables to dfs
+p53mutsspliceperpos_pivot <- p53mutsspliceperpos$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>% 
+  dplyr::rename(Total = `Count of distinct individuals`) %>%
+  remove_rownames()
+
+p53mutssolespliceperpos_pivot <- p53mutssolespliceperpos$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>% 
+  dplyr::rename(Total = `Count of distinct individuals`) %>%
+  remove_rownames()
+
+p53mutsmultspliceperpos_pivot <- p53mutsmultspliceperpos$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>% 
+  dplyr::rename(Total = `Count of distinct individuals`) %>%
+  remove_rownames()
+
+p53mutssplicepercancerpos_pivot <- p53mutssplicepercancerpos$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>% 
+  remove_rownames()
+
+p53mutssplicepercancerpos_matchgermline_pivot <- p53mutssplicepercancerpos_matchgermline$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>% 
+  remove_rownames()
+
+# calculate proportions of pts with isoforms by dividing down, remove total row and column, add pt numbers
+p53mutsspliceperpos_pivot_calc <- p53mutsspliceperpos_pivot %>%
+  transform(Calc = Total/as.numeric(p53mutsspliceperpos_pivot[nrow(p53mutsspliceperpos_pivot), "Total"])) %>% 
+  transform(Patient = paste0("All with cancer (",
+                             format(as.numeric(p53mutsspliceperpos_pivot[nrow(p53mutsspliceperpos_pivot), "Total"]), 
+                                    big.mark = ",", 
+                                    trim = TRUE),
+                             " individuals)")) %>%
+  transform(Label = ifelse(Isoform == "yes",
+                           proteinChange,
+                           "Other")) %>%
+  subset(Isoform != "Total") %>%
+  dplyr::select(-Total)
+
+p53mutssolespliceperpos_pivot_calc <- p53mutssolespliceperpos_pivot %>%
+  transform(Calc = Total/as.numeric(p53mutssolespliceperpos_pivot[nrow(p53mutssolespliceperpos_pivot), "Total"])) %>% 
+  transform(Patient = paste0("One cancer (",
+                             format(as.numeric(p53mutssolespliceperpos_pivot[nrow(p53mutssolespliceperpos_pivot), "Total"]), 
+                                    big.mark = ",", 
+                                    trim = TRUE),
+                             " individuals)")) %>%
+  transform(Label = ifelse(Isoform == "yes",
+                           proteinChange,
+                           "Other")) %>%
+  subset(Isoform != "Total") %>%
+  dplyr::select(-Total)
+
+p53mutsmultspliceperpos_pivot_calc <- p53mutsmultspliceperpos_pivot %>%
+  transform(Calc = Total/as.numeric(p53mutsmultspliceperpos_pivot[nrow(p53mutsmultspliceperpos_pivot), "Total"])) %>% 
+  transform(Patient = paste0("Multiple cancers (",
+                             format(as.numeric(p53mutsmultspliceperpos_pivot[nrow(p53mutsmultspliceperpos_pivot), "Total"]), 
+                                    big.mark = ",", 
+                                    trim = TRUE),
+                             " individuals)")) %>%
+  transform(Label = ifelse(Isoform == "yes",
+                           proteinChange,
+                           "Other")) %>%
+  subset(Isoform != "Total") %>%
+  dplyr::select(-Total)
+
+p53mutssplicepercancerpos_pivot_calc <- p53mutssplicepercancerpos_pivot %>% # add num pts to cancer colnames
+  rename_at(vars(3:(ncol(.) - 1)),
+            ~ paste0(.,
+                     " (",
+                     format(as.numeric(p53mutssplicepercancerpos_pivot[nrow(p53mutssplicepercancerpos_pivot), .]), 
+                            big.mark = ",", 
+                            trim = TRUE),
+                     " individuals)")) %>% # divide down each col by last value i.e. total pts
+  mutate(across(where(is.numeric),
+                ~ .x/last(.x))) %>% 
+  mutate(Label = ifelse(Isoform == "yes",
+                        proteinChange,
+                        "Other")) %>%
+  subset(Isoform != "Total") %>%
+  dplyr::select(-Total)
+
+p53mutssplicepercancerpos_pivot_melted <- p53mutssplicepercancerpos_pivot_calc %>% 
+  reshape2::melt() %>% 
+  dplyr::rename(Cancer = variable,
+                Proportion = value)
+
+p53mutssplicepercancerpos_matchgermline_calc <- p53mutssplicepercancerpos_matchgermline_pivot %>% # add num pts to cancer colnames
+  rename_at(vars(3:(ncol(.) - 1)),
+            ~ paste0(.,
+                     " (",
+                     format(as.numeric(p53mutssplicepercancerpos_matchgermline_pivot[nrow(p53mutssplicepercancerpos_matchgermline_pivot), .]), 
+                            big.mark = ",", 
+                            trim = TRUE),
+                     " individuals)")) %>% # divide down each col by last value i.e. total pts
+  mutate(across(where(is.numeric),
+                ~ .x/last(.x))) %>% 
+  mutate(Label = ifelse(Isoform == "yes",
+                        proteinChange,
+                        "Other")) %>%
+  subset(Isoform != "Total") %>%
+  dplyr::select(-Total)
+
+p53mutssplicepercancerpos_matchgermline_melted <- p53mutssplicepercancerpos_matchgermline_calc %>% 
+  reshape2::melt() %>% 
+  dplyr::rename(Cancer = variable,
+                Proportion = value)
+
+# prepare contingency table to compare germline vs somatic
+# pull out muts of interest and pivot wider/transpose so that muts are cols 
+contingency_som_germ_splice <- p53mutsspliceperpos_pivot %>% 
+  subset(proteinChange %in% c("T125=",
+                                "M133T",
+                                "M133R")) %>% 
+  dplyr::select(c(proteinChange,
+                  Total)) %>% 
+  mutate(Patient = "Somatic") %>% 
+  mutate(proteinChange = ifelse(proteinChange == "T125=",
+                                "T125T",
+                                proteinChange)) %>% 
+  pivot_wider(names_from = proteinChange,
+              values_from = Total) %>% 
+  remove_rownames()
+
+contingency_som_germ_cancers_splice <- p53mutssplicepercancerpos_matchgermline_pivot %>% 
+  subset(Isoform == "yes" & proteinChange %in% c("T125=",
+                                                   "M133T",
+                                                   "M133R")) %>% 
+  dplyr::select(-c(Isoform,
+                   Total)) %>% 
+  mutate(proteinChange = ifelse(proteinChange == "T125=",
+                                "T125T",
+                                proteinChange)) %>% 
+  remove_rownames() %>% 
+  column_to_rownames("proteinChange") %>%
+  t() %>%
+  as.data.frame() %>% 
+  rownames_to_column("Cancer") %>% 
+  mutate(Cancer = paste0(Cancer,
+                         "_somatic"))
+
+# add new cols with subtractions of pts/cancers with muts from total
+# add new cols as placeholders
+contingency_som_germ_splice[c(paste0(colnames(contingency_som_germ_splice)[-1],
+                                     "_Not"))] <- NA 
+
+contingency_som_germ_cancers_splice[c(paste0(colnames(contingency_som_germ_cancers_splice)[-1],
+                                             "_Not"))] <- NA 
+
+# reorder cols such that pt/cancer is first and not muts immediately follow respective muts
+contingency_som_germ_splice <- contingency_som_germ_splice[,sort(names(contingency_som_germ_splice))] %>% 
+  relocate(Patient)
+
+contingency_som_germ_cancers_splice <- 
+  contingency_som_germ_cancers_splice[,sort(names(contingency_som_germ_cancers_splice))] %>% 
+  relocate(Cancer)
+
+# subtract final pt/cancer tally from each mut in its own vector, add to df and collapse rows to remove NAs, thus line up NAs where new subtracted values only go into other mut cols
+contingency_som_germ_splice <- rbind(contingency_som_germ_splice,
+                                     c(NA, (last(p53mutsspliceperpos_pivot$Total) - contingency_som_germ_splice[1,] %>% as.numeric()) %>% head(-1))) %>% 
+  summarise(across(everything(),
+                   ~ na.omit(.x))) %>% 
+  mutate(Total = last(p53mutsspliceperpos_pivot$Total))
+
+# because need to subtract total minus each previous column, make intermediate df with all total pt numbers per cancer and subtract total from previous column to col of interest
+blah <- left_join(contingency_som_germ_cancers_splice,
+                  p53mutssplicepercancerpos_matchgermline_pivot %>% # total num pts per cancer
+                    dplyr::select(-c(Isoform,
+                                     Total)) %>% 
+                    last() %>% 
+                    mutate(proteinChange = "Total") %>%
+                    remove_rownames() %>% 
+                    column_to_rownames("proteinChange") %>% 
+                    t() %>% 
+                    as.data.frame() %>% 
+                    rownames_to_column("Cancer") %>% 
+                    mutate(Cancer = paste0(Cancer,
+                                           "_somatic")),
+                  by = "Cancer")
+
+# define columns to be subtracted
+columns_to_subtract <- colnames(blah)[grepl("_Not",
+                                            colnames(blah))]
+
+# subtract cols
+blah[, columns_to_subtract] <- lapply(columns_to_subtract, 
+                                      function(col) {
+                                        index <- match(col, 
+                                                       names(blah)) # index of current col
+                                        blah[, "Total"] - blah[, index - 1] # total - prev col
+                                      })
+
+contingency_som_germ_cancers_splice <- blah
+
+# save objects to read into germline analysis
+saveRDS(p53mutssplicepercancerpos_matchgermline_melted,
+        file = "C:\\Users\\nwali\\Downloads\\p53mutssplicepercancerpos_matchgermline_melted.rds")
+
+saveRDS(p53mutsspliceperpos_pivot_calc,
+        file = "C:\\Users\\nwali\\Downloads\\p53mutsspliceperpos_pivot_calc.rds")
+
+saveRDS(contingency_som_germ_splice,
+        file = "C:\\Users\\nwali\\Downloads\\contingency_som_germ_splice.rds")
+
+saveRDS(contingency_som_germ_cancers_splice,
+        file = "C:\\Users\\nwali\\Downloads\\contingency_som_germ_cancers_splice.rds")
+
+# make pivot tables to evaluate frequencies of splice alterations across sex, cancers, age, SD/SA, etc.
+splicepivotdf <- p53muts_forsplice %>% 
+  subset(Isoform == "yes") 
+
+# p53mutsspliceintronsex <- PivotTable$new()
+# p53mutsspliceintronsex$addData(splicepivotdf)
+# p53mutsspliceintronsex$addRowDataGroups("ExonIntron")
+# p53mutsspliceintronsex$addColumnDataGroups("Sex")
+# p53mutsspliceintronsex$defineCalculation(calculationName = "Count of distinct individuals",
+#                                       summariseExpression = "n_distinct(patientId)")
+# p53mutsspliceintronsex$sortColumnDataGroups(levelNumber = 1,
+#                                          orderBy = "calculation",
+#                                          sortOrder = "desc")
+# p53mutsspliceintronsex$sortRowDataGroups(levelNumber = 1,
+#                                       orderBy = "calculation",
+#                                       sortOrder = "desc")
+# p53mutsspliceintronsex$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+p53mutssplicepossex <- PivotTable$new()
+p53mutssplicepossex$addData(splicepivotdf)
+p53mutssplicepossex$addRowDataGroups("proteinChange")
+p53mutssplicepossex$addColumnDataGroups("SEX")
+p53mutssplicepossex$defineCalculation(calculationName = "Count of distinct individuals",
+                                      summariseExpression = "n_distinct(patientId)")
+p53mutssplicepossex$sortColumnDataGroups(levelNumber = 1,
+                                         orderBy = "calculation",
+                                         sortOrder = "desc")
+p53mutssplicepossex$sortRowDataGroups(levelNumber = 1,
+                                      orderBy = "calculation",
+                                      sortOrder = "desc")
+p53mutssplicepossex$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+# p53mutsspliceintronage <- PivotTable$new()
+# p53mutsspliceintronage$addData(splicepivotdf)
+# p53mutsspliceintronage$addRowDataGroups("ExonIntron")
+# p53mutsspliceintronage$addColumnDataGroups("Age_stratum")
+# p53mutsspliceintronage$defineCalculation(calculationName = "Count of distinct individuals",
+#                                       summariseExpression = "n_distinct(patientId)")
+# p53mutsspliceintronage$sortColumnDataGroups(levelNumber = 1,
+#                                          orderBy = "calculation",
+#                                          sortOrder = "desc")
+# p53mutsspliceintronage$sortRowDataGroups(levelNumber = 1,
+#                                       orderBy = "calculation",
+#                                       sortOrder = "desc")
+# p53mutsspliceintronage$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+p53mutsspliceposage <- PivotTable$new()
+p53mutsspliceposage$addData(splicepivotdf)
+p53mutsspliceposage$addRowDataGroups("proteinChange")
+p53mutsspliceposage$addColumnDataGroups("Age_stratum")
+p53mutsspliceposage$defineCalculation(calculationName = "Count of distinct individuals",
+                                      summariseExpression = "n_distinct(patientId)")
+p53mutsspliceposage$sortColumnDataGroups(levelNumber = 1,
+                                         orderBy = "calculation",
+                                         sortOrder = "desc")
+p53mutsspliceposage$sortRowDataGroups(levelNumber = 1,
+                                      orderBy = "calculation",
+                                      sortOrder = "desc")
+p53mutsspliceposage$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+# p53mutsspliceintron <- PivotTable$new()
+# p53mutsspliceintron$addData(splicepivotdf)
+# p53mutsspliceintron$addRowDataGroups("ExonIntron")
+# p53mutsspliceintron$addColumnDataGroups("Cancer_Label")
+# p53mutsspliceintron$defineCalculation(calculationName = "Count of distinct individuals",
+#                                    summariseExpression = "n_distinct(patientId)")
+# p53mutsspliceintron$sortColumnDataGroups(levelNumber = 1,
+#                                       orderBy = "calculation",
+#                                       sortOrder = "desc")
+# p53mutsspliceintron$sortRowDataGroups(levelNumber = 1,
+#                                    orderBy = "calculation",
+#                                    sortOrder = "desc")
+# p53mutsspliceintron$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+p53mutssplicepos <- PivotTable$new()
+p53mutssplicepos$addData(splicepivotdf)
+p53mutssplicepos$addRowDataGroups("proteinChange")
+p53mutssplicepos$addColumnDataGroups("Cancer_Label")
+p53mutssplicepos$defineCalculation(calculationName = "Count of distinct individuals",
+                                   summariseExpression = "n_distinct(patientId)")
+p53mutssplicepos$sortColumnDataGroups(levelNumber = 1,
+                                      orderBy = "calculation",
+                                      sortOrder = "desc")
+p53mutssplicepos$sortRowDataGroups(levelNumber = 1,
+                                   orderBy = "calculation",
+                                   sortOrder = "desc")
+p53mutssplicepos$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+# p53mutsspliceintronsite <- PivotTable$new()
+# p53mutsspliceintronsite$addData(splicepivotdf)
+# p53mutsspliceintronsite$addRowDataGroups("ExonIntron")
+# p53mutsspliceintronsite$addColumnDataGroups("Splice_site")
+# p53mutsspliceintronsite$defineCalculation(calculationName = "Count of distinct individuals",
+#                                        summariseExpression = "n_distinct(patientId)")
+# p53mutsspliceintronsite$sortColumnDataGroups(levelNumber = 1,
+#                                           orderBy = "calculation",
+#                                           sortOrder = "desc")
+# p53mutsspliceintronsite$sortRowDataGroups(levelNumber = 1,
+#                                        orderBy = "calculation",
+#                                        sortOrder = "desc")
+# p53mutsspliceintronsite$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+# p53mutssplicepossite <- PivotTable$new()
+# p53mutssplicepossite$addData(splicepivotdf)
+# p53mutssplicepossite$addRowDataGroups("proteinChange")
+# p53mutssplicepossite$addColumnDataGroups("Splice_site")
+# p53mutssplicepossite$defineCalculation(calculationName = "Count of distinct individuals",
+#                                     summariseExpression = "n_distinct(patientId)")
+# p53mutssplicepossite$sortColumnDataGroups(levelNumber = 1,
+#                                        orderBy = "calculation",
+#                                        sortOrder = "desc")
+# p53mutssplicepossite$sortRowDataGroups(levelNumber = 1,
+#                                     orderBy = "calculation",
+#                                     sortOrder = "desc")
+# p53mutssplicepossite$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+# convert pivot tables to dataframes
+# p53mutsspliceintronsex_pivot <- p53mutsspliceintronsex$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+#   mutate(across(everything(),
+#                 ~ replace_na(.,
+#                              0))) %>% 
+#   arrange(abs(parse_number(ExonIntron))) %>% # arrange muts by increasing exon number
+#   mutate(ExonIntron = paste0(ExonIntron,
+#                                 " (",
+#                                 Total,
+#                                 " individuals)")) %>% 
+#   mutate(ExonIntron = ifelse(Total == 1,
+#                                 gsub("individuals",
+#                                      "individual",
+#                                      ExonIntron),
+#                                 ExonIntron)) %>% 
+#   remove_rownames()
+
+p53mutssplicepossex_pivot <- p53mutssplicepossex$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>% 
+  arrange(abs(parse_number(proteinChange))) %>% # arrange muts by increasing exon number
+  mutate(proteinChange = paste0(proteinChange,
+                                " (",
+                                Total,
+                                " individuals)")) %>% 
+  mutate(proteinChange = ifelse(Total == 1,
+                                gsub("individuals",
+                                     "individual",
+                                     proteinChange),
+                                proteinChange)) %>% 
+  remove_rownames()
+
+# p53mutsspliceintronage_pivot <- p53mutsspliceintronage$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+#   mutate(across(everything(),
+#                 ~ replace_na(.,
+#                              0))) %>% 
+#   arrange(abs(parse_number(ExonIntron))) %>% # arrange muts by increasing exon number
+#   mutate(ExonIntron = paste0(ExonIntron,
+#                                 " (",
+#                                 Total,
+#                                 " individuals)")) %>% 
+#   mutate(ExonIntron = ifelse(Total == 1,
+#                                 gsub("individuals",
+#                                      "individual",
+#                                      ExonIntron),
+#                                 ExonIntron)) %>% 
+#   remove_rownames()
+
+p53mutsspliceposage_pivot <- p53mutsspliceposage$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>% 
+  arrange(abs(parse_number(proteinChange))) %>% # arrange muts by increasing exon number
+  mutate(proteinChange = paste0(proteinChange,
+                                " (",
+                                Total,
+                                " individuals)")) %>% 
+  mutate(proteinChange = ifelse(Total == 1,
+                                gsub("individuals",
+                                     "individual",
+                                     proteinChange),
+                                proteinChange)) %>% 
+  remove_rownames()
+
+# p53mutsspliceintron_pivot <- p53mutsspliceintron$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+#   mutate(across(everything(),
+#                 ~ replace_na(.,
+#                              0))) %>% 
+#   arrange(abs(parse_number(ExonIntron))) %>% # arrange muts by increasing exon number
+#   mutate(ExonIntron = paste0(ExonIntron,
+#                                 " (",
+#                                 Total,
+#                                 " individuals)")) %>% 
+#   mutate(ExonIntron = ifelse(Total == 1,
+#                                 gsub("individuals",
+#                                      "individual",
+#                                      ExonIntron),
+#                                 ExonIntron)) %>% 
+#   remove_rownames()
+
+p53mutssplicepos_pivot <- p53mutssplicepos$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>% 
+  arrange(abs(parse_number(proteinChange))) %>% # arrange muts by increasing exon number
+  mutate(proteinChange = paste0(proteinChange,
+                                " (",
+                                Total,
+                                " individuals)")) %>% 
+  mutate(proteinChange = ifelse(Total == 1,
+                                gsub("individuals",
+                                     "individual",
+                                     proteinChange),
+                                proteinChange)) %>% 
+  remove_rownames()
+
+# p53mutsspliceintronsite_pivot <- p53mutsspliceintronsite$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+#   mutate(across(everything(),
+#                 ~ replace_na(.,
+#                              0))) %>% 
+#   arrange(abs(parse_number(ExonIntron))) %>% # arrange muts by increasing exon number
+#   mutate(ExonIntron = paste0(ExonIntron,
+#                                 " (",
+#                                 Total,
+#                                 " individuals)")) %>% 
+#   mutate(ExonIntron = ifelse(Total == 1,
+#                                 gsub("individuals",
+#                                      "individual",
+#                                      ExonIntron),
+#                                 ExonIntron)) %>% 
+#   remove_rownames()
+
+# p53mutssplicepossite_pivot <- p53mutssplicepossite$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+#   mutate(across(everything(),
+#                 ~ replace_na(.,
+#                              0))) %>% 
+#   arrange(abs(parse_number(proteinChange))) %>% # arrange muts by increasing exon number
+#   mutate(proteinChange = paste0(proteinChange,
+#                                      " (",
+#                                      Total,
+#                                      " individuals)")) %>% 
+#   mutate(proteinChange = ifelse(Total == 1,
+#                                      gsub("individuals",
+#                                           "individual",
+#                                           proteinChange),
+#                                      proteinChange)) %>% 
+#   remove_rownames()
+
+# divide across by total number and remove total row at bottom
+# p53mutsspliceintronsex_pivot_calc <- p53mutsspliceintronsex_pivot %>%
+#   mutate_at(vars(2:Total),
+#             .funs = ~./Total) %>% 
+#   filter(!str_detect(ExonIntron,
+#                      'Total')) %>% 
+#   dplyr::select(-Total)
+
+p53mutssplicepossex_pivot_calc <- p53mutssplicepossex_pivot %>%
+  mutate_at(vars(2:Total),
+            .funs = ~./Total) %>% 
+  filter(!str_detect(proteinChange,
+                     'Total')) %>% 
+  dplyr::select(-Total)
+
+# p53mutsspliceintronage_pivot_calc <- p53mutsspliceintronage_pivot %>%
+#   mutate_at(vars(2:Total),
+#             .funs = ~./Total) %>% 
+#   filter(!str_detect(ExonIntron,
+#                      'Total')) %>% 
+#   dplyr::select(-Total)
+
+p53mutsspliceposage_pivot_calc <- p53mutsspliceposage_pivot %>%
+  mutate_at(vars(2:Total),
+            .funs = ~./Total) %>% 
+  filter(!str_detect(proteinChange,
+                     'Total')) %>% 
+  dplyr::select(-Total)
+
+# p53mutsspliceintron_pivot_calc <- p53mutsspliceintron_pivot %>%
+#   mutate_at(vars(2:Total),
+#             .funs = ~./Total) %>% 
+#   filter(!str_detect(ExonIntron,
+#                      'Total')) %>% 
+#   dplyr::select(-Total)
+
+p53mutssplicepos_pivot_calc <- p53mutssplicepos_pivot %>%
+  mutate_at(vars(2:Total),
+            .funs = ~./Total) %>% 
+  filter(!str_detect(proteinChange,
+                     'Total')) %>% 
+  dplyr::select(-Total)
+
+# p53mutsspliceintronsite_pivot_calc <- p53mutsspliceintronsite_pivot %>%
+#   mutate_at(vars(2:Total),
+#             .funs = ~./Total) %>% 
+#   filter(!str_detect(ExonIntron,
+#                      'Total')) %>% 
+#   dplyr::select(-Total)
+
+# p53mutssplicepossite_pivot_calc <- p53mutssplicepossite_pivot %>%
+#   mutate_at(vars(2:Total),
+#             .funs = ~./Total) %>% 
+#   filter(!str_detect(proteinChange,
+#                      'Total')) %>% 
+#   dplyr::select(-Total)
+
+
+# melt calc dataframes to use for stacked barcharts
+# p53mutsspliceintronsex_pivot_melted <- p53mutsspliceintronsex_pivot_calc %>% 
+#   reshape2::melt() %>% 
+#   dplyr::rename(Sex = variable,
+#                 Proportion = value)
+
+p53mutssplicepossex_pivot_melted <- p53mutssplicepossex_pivot_calc %>% 
+  reshape2::melt() %>% 
+  dplyr::rename(Sex = variable,
+                Proportion = value)
+
+# p53mutsspliceintronage_pivot_melted <- p53mutsspliceintronage_pivot_calc %>% 
+#   reshape2::melt() %>% 
+#   dplyr::rename(Age = variable,
+#                 Proportion = value)
+
+p53mutsspliceposage_pivot_melted <- p53mutsspliceposage_pivot_calc %>% 
+  reshape2::melt() %>% 
+  dplyr::rename(Age = variable,
+                Proportion = value)
+
+# p53mutsspliceintron_pivot_melted <- p53mutsspliceintron_pivot_calc %>% 
+#   reshape2::melt() %>% 
+#   dplyr::rename(Cancer = variable,
+#                 Proportion = value)
+
+p53mutssplicepos_pivot_melted <- p53mutssplicepos_pivot_calc %>% 
+  reshape2::melt() %>% 
+  dplyr::rename(Cancer = variable,
+                Proportion = value)
+
+# p53mutsspliceintronsite_pivot_melted <- p53mutsspliceintronsite_pivot_calc %>% 
+#   reshape2::melt() %>% 
+#   dplyr::rename(Site = variable,
+#                 Proportion = value)
+
+# p53mutssplicepossite_pivot_melted <- p53mutssplicepossite_pivot_calc %>% 
+#   reshape2::melt() %>% 
+#   dplyr::rename(Site = variable,
+#                 Proportion = value)
+
+# fix naming of age strata
+p53mutsspliceposage_pivot_melted <- p53mutsspliceposage_pivot_melted %>% 
+  mutate(Age = gsub("X",
+                    "",
+                    Age)) %>% 
+  mutate(Age = gsub("\\.and\\.",
+                    " and ",
+                    Age)) %>% 
+  mutate(Age = gsub("\\.",
+                    "-",
+                    Age))
+
+# p53mutsspliceintronage_pivot_melted <- p53mutsspliceintronage_pivot_melted %>% 
+#   mutate(Age = gsub("X",
+#                        "",
+#                        Age)) %>% 
+#   mutate(Age = gsub("\\.and\\.",
+#                        " and ",
+#                        Age)) %>% 
+#   mutate(Age = gsub("\\.",
+#                        "-",
+#                        Age))
+
+# fix cancer naming and transform as factor for stacked barcharts
+# p53mutsspliceintron_pivot_melted <- p53mutsspliceintron_pivot_melted %>% 
+#   transform(Cancer = gsub("\\.",
+#                           " ",
+#                           Cancer))
+# 
+# p53mutsspliceintron_pivot_melted$Cancer <- factor(p53mutsspliceintron_pivot_melted$Cancer,
+#                                                levels = c(sort(unique(p53mutsspliceintron_pivot_melted$Cancer))[sort(unique(p53mutsspliceintron_pivot_melted$Cancer)) != "OTHER"], 
+#                                                           "OTHER"))
+
+p53mutssplicepos_pivot_melted <- p53mutssplicepos_pivot_melted %>% 
+  transform(Cancer = gsub(" ",
+                          " ",
+                          Cancer))
+
+p53mutssplicepos_pivot_melted$Cancer <- factor(p53mutssplicepos_pivot_melted$Cancer,
+                                               levels = c(sort(unique(p53mutssplicepos_pivot_melted$Cancer))[sort(unique(p53mutssplicepos_pivot_melted$Cancer)) != "OTHER"], 
+                                                          "OTHER"))
+
+# fix splice site naming and transform as factor for stacked barchart
+# p53mutssplicepossite_pivot_melted <- p53mutssplicepossite_pivot_melted %>% 
+#   transform(Site = gsub("consensus\\.",
+#                         "",
+#                         Site)) %>%
+#   transform(Site = dplyr::case_when(Site == "SD" ~ "Splice donor",
+#                                     Site == "SA" ~ "Splice acceptor",
+#                                     Site == "no" ~ "Neither",
+#                                     TRUE ~ "notyet"))
+# 
+# p53mutssplicepossite_pivot_melted$Site <- factor(p53mutssplicepossite_pivot_melted$Site,
+#                                               levels = sort(unique(p53mutssplicepossite_pivot_melted$Site),
+#                                                             decreasing = TRUE))
+
+
+# p53mutsspliceintronsite_pivot_melted <- p53mutsspliceintronsite_pivot_melted %>% 
+#   transform(Site = gsub("consensus\\.",
+#                         "",
+#                         Site)) %>%
+#   transform(Site = dplyr::case_when(Site == "SD" ~ "Splice donor",
+#                                     Site == "SA" ~ "Splice acceptor",
+#                                     Site == "no" ~ "Neither",
+#                                     TRUE ~ "notyet"))
+# 
+# p53mutsspliceintronsite_pivot_melted$Site <- factor(p53mutsspliceintronsite_pivot_melted$Site,
+#                                                  levels = sort(unique(p53mutsspliceintronsite_pivot_melted$Site),
+#                                                                decreasing = TRUE))
+
+
+# make muts and exons/introns as factors for stacked barchart
+# p53mutsspliceintronsex_pivot_melted$ExonIntron <- factor(p53mutsspliceintronsex_pivot_melted$ExonIntron,
+#                                                       levels = unique(p53mutsspliceintronsex_pivot_melted$ExonIntron))
+
+p53mutssplicepossex_pivot_melted$proteinChange <- factor(p53mutssplicepossex_pivot_melted$proteinChange,
+                                                         levels = unique(p53mutssplicepossex_pivot_melted$proteinChange))
+
+# p53mutsspliceintronage_pivot_melted$ExonIntron <- factor(p53mutsspliceintronage_pivot_melted$ExonIntron,
+#                                                       levels = unique(p53mutsspliceintronage_pivot_melted$ExonIntron))
+
+p53mutsspliceposage_pivot_melted$proteinChange <- factor(p53mutsspliceposage_pivot_melted$proteinChange,
+                                                         levels = unique(p53mutsspliceposage_pivot_melted$proteinChange))
+
+# p53mutsspliceintron_pivot_melted$ExonIntron <- factor(p53mutsspliceintron_pivot_melted$ExonIntron,
+#                                                    levels = unique(p53mutsspliceintron_pivot_melted$ExonIntron))
+
+p53mutssplicepos_pivot_melted$proteinChange <- factor(p53mutssplicepos_pivot_melted$proteinChange,
+                                                      levels = unique(p53mutssplicepos_pivot_melted$proteinChange))
+
+# p53mutsspliceintronsite_pivot_melted$ExonIntron <- factor(p53mutsspliceintronsite_pivot_melted$ExonIntron,
+#                                                        levels = unique(p53mutsspliceintronsite_pivot_melted$ExonIntron))
+
+# p53mutssplicepossite_pivot_melted$proteinChange <- factor(p53mutssplicepossite_pivot_melted$proteinChange,
+#                                                          levels = unique(p53mutssplicepossite_pivot_melted$proteinChange))
+
+
+# ensuring pts with both splice and other muts all count as yes for isoform alterations
+p53muts_forsplice <- p53muts_forsplice %>%
+  transform(Isoform = ifelse(patientId %in% intersect(p53muts_forsplice %>%
+                                                        subset(Isoform == "yes") %>%
+                                                        pull(patientId), 
+                                                      p53muts_forsplice %>%
+                                                        subset(Isoform == "no") %>%
+                                                        pull(patientId)),
+                             "yes",
+                             Isoform))
+
+p53mutssolecancer_forsplice <- p53mutssolecancer_forsplice %>%
+  transform(Isoform = ifelse(patientId %in% intersect(p53mutssolecancer_forsplice %>%
+                                                        subset(Isoform == "yes") %>%
+                                                        pull(patientId), 
+                                                      p53mutssolecancer_forsplice %>%
+                                                        subset(Isoform == "no") %>%
+                                                        pull(patientId)),
+                             "yes",
+                             Isoform))
+
+p53mutsmultcancer_forsplice <- p53mutsmultcancer_forsplice %>%
+  transform(Isoform = ifelse(patientId %in% intersect(p53mutsmultcancer_forsplice %>%
+                                                        subset(Isoform == "yes") %>%
+                                                        pull(patientId), 
+                                                      p53mutsmultcancer_forsplice %>%
+                                                        subset(Isoform == "no") %>%
+                                                        pull(patientId)),
+                             "yes",
+                             Isoform))
+
+# get overall splice proportions across all somatic cancers
+clindatacombined_forsplice <- clindatacombined %>%
+  mutate(Isoform = ifelse(patientId %in% (p53muts_forsplice %>%
+                                            subset(Isoform == "yes") %>%
+                                            pull(patientId) %>%
+                                            unique()),
+                          "yes",
+                          "no"))
+
+# need overall counts of splicing muts in each dataset and across all somatic cancers
+p53mutssplice <- PivotTable$new()
+p53mutssplice$addData(p53muts_forsplice)
+p53mutssplice$addRowDataGroups("Isoform")
+p53mutssplice$defineCalculation(calculationName = "Count of distinct individuals",
+                                summariseExpression = "n_distinct(patientId)")
+p53mutssplice$sortRowDataGroups(levelNumber = 1,
+                                orderBy = "calculation",
+                                sortOrder = "desc")
+p53mutssplice$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+p53mutssolesplice <- PivotTable$new()
+p53mutssolesplice$addData(p53mutssolecancer_forsplice)
+p53mutssolesplice$addRowDataGroups("Isoform")
+p53mutssolesplice$defineCalculation(calculationName = "Count of distinct individuals",
+                                    summariseExpression = "n_distinct(patientId)")
+p53mutssolesplice$sortRowDataGroups(levelNumber = 1,
+                                    orderBy = "calculation",
+                                    sortOrder = "desc")
+p53mutssolesplice$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+p53mutsmultsplice <- PivotTable$new()
+p53mutsmultsplice$addData(p53mutsmultcancer_forsplice)
+p53mutsmultsplice$addRowDataGroups("Isoform")
+p53mutsmultsplice$defineCalculation(calculationName = "Count of distinct individuals",
+                                    summariseExpression = "n_distinct(patientId)")
+p53mutsmultsplice$sortRowDataGroups(levelNumber = 1,
+                                    orderBy = "calculation",
+                                    sortOrder = "desc")
+p53mutsmultsplice$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+p53mutssplicepercancer <- PivotTable$new()
+p53mutssplicepercancer$addData(p53muts_forsplice)
+p53mutssplicepercancer$addRowDataGroups("Isoform")
+p53mutssplicepercancer$addColumnDataGroups("Cancer_Label")
+p53mutssplicepercancer$defineCalculation(calculationName = "Count of distinct individuals",
+                                         summariseExpression = "n_distinct(patientId)")
+p53mutssplicepercancer$sortRowDataGroups(levelNumber = 1,
+                                         orderBy = "calculation",
+                                         sortOrder = "desc")
+p53mutssplicepercancer$sortColumnDataGroups(levelNumber = 1,
+                                            orderBy = "calculation",
+                                            sortOrder = "desc")
+p53mutssplicepercancer$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+splicetissuesomatic <- PivotTable$new()
+splicetissuesomatic$addData(clindatacombined_forsplice)
+splicetissuesomatic$addRowDataGroups("CANCER_TYPE_DETAILED")
+splicetissuesomatic$addColumnDataGroups("Isoform")
+splicetissuesomatic$defineCalculation(calculationName = "Count of distinct individuals", 
+                                      summariseExpression = "n_distinct(patientId)")
+splicetissuesomatic$sortColumnDataGroups(levelNumber = 1, 
+                                         orderBy = "calculation", 
+                                         sortOrder = "desc")
+splicetissuesomatic$sortRowDataGroups(levelNumber = 1,
+                                      orderBy = "calculation", 
+                                      sortOrder = "desc")
+splicetissuesomatic$evaluatePivot()
+
+# convert pivot tables to dfs
+p53mutssplice_pivot <- p53mutssplice$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>% 
+  dplyr::rename(Total = `Count of distinct individuals`) %>%
+  remove_rownames()
+
+p53mutssolesplice_pivot <- p53mutssolesplice$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>% 
+  dplyr::rename(Total = `Count of distinct individuals`) %>%
+  remove_rownames()
+
+p53mutsmultsplice_pivot <- p53mutsmultsplice$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>% 
+  dplyr::rename(Total = `Count of distinct individuals`) %>%
+  remove_rownames()
+
+p53mutssplicepercancer_pivot <- p53mutssplicepercancer$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>% 
+  remove_rownames()
+
+splicetissuesomatic_pivot <- splicetissuesomatic$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>% 
+  remove_rownames()
+
+# calculate proportions of pts with isoforms by dividing down, remove total row and column, add pt numbers
+p53mutssplice_pivot_calc <- p53mutssplice_pivot %>%
+  transform(Calc = Total/as.numeric(p53mutssplice_pivot[nrow(p53mutssplice_pivot), "Total"])) %>% 
+  transform(Patient = paste0("All with cancer (",
+                             format(as.numeric(p53mutssplice_pivot[nrow(p53mutssplice_pivot), "Total"]), 
+                                    big.mark = ",", 
+                                    trim = TRUE),
+                             " individuals)")) %>%
+  subset(Isoform != "Total") %>%
+  dplyr::select(-Total) 
+
+p53mutssolesplice_pivot_calc <- p53mutssolesplice_pivot %>%
+  transform(Calc = Total/as.numeric(p53mutssolesplice_pivot[nrow(p53mutssolesplice_pivot), "Total"])) %>% 
+  transform(Patient = paste0("One cancer (",
+                             format(as.numeric(p53mutssolesplice_pivot[nrow(p53mutssolesplice_pivot), "Total"]), 
+                                    big.mark = ",", 
+                                    trim = TRUE),
+                             " individuals)")) %>%
+  subset(Isoform != "Total") %>%
+  dplyr::select(-Total) 
+
+p53mutsmultsplice_pivot_calc <- p53mutsmultsplice_pivot %>%
+  transform(Calc = Total/as.numeric(p53mutsmultsplice_pivot[nrow(p53mutsmultsplice_pivot), "Total"])) %>% 
+  transform(Patient = paste0("Multiple cancers (",
+                             format(as.numeric(p53mutsmultsplice_pivot[nrow(p53mutsmultsplice_pivot), "Total"]), 
+                                    big.mark = ",", 
+                                    trim = TRUE),
+                             " individuals)")) %>%
+  subset(Isoform != "Total") %>%
+  dplyr::select(-Total) 
+
+p53mutssplicepercancer_pivot_calc <- p53mutssplicepercancer_pivot %>% # add num pts to cancer colnames
+  rename_at(vars(2:(ncol(.) - 1)),
+            ~ paste0(.,
+                     " (",
+                     format(as.numeric(p53mutssplicepercancer_pivot[nrow(p53mutssplicepercancer_pivot), .]), 
+                            big.mark = ",", 
+                            trim = TRUE),
+                     " individuals)")) %>% # divide down each col by last value i.e. total pts
+  mutate(across(where(is.numeric),
+                ~ .x/last(.x))) %>% 
+  subset(Isoform != "Total") %>%
+  dplyr::select(-Total)
+
+p53mutssplicepercancer_pivot_melted <- p53mutssplicepercancer_pivot_calc %>% 
+  reshape2::melt() %>% 
+  dplyr::rename(Cancer = variable,
+                Proportion = value)
+
+# divide across for proportions of splice muts across all somatic cancers, and keep total too
+splicetissuesomatic_pivot_calc <- splicetissuesomatic_pivot %>%
+  subset(CANCER_TYPE_DETAILED %in% gsub(" \\(.*",
+                                        "",
+                                        pivotdf_muttissuesomatic100muts$CANCER_TYPE_DETAILED)) %>%
+  subset(Total >= 50) %>%
+  mutate(CANCER_TYPE_DETAILED = paste0(CANCER_TYPE_DETAILED,
+                                       " (",
+                                       format(Total, 
+                                              big.mark = ",", 
+                                              trim = TRUE),
+                                       " individuals)")) %>%
+  mutate_at(vars(2:Total), 
+            .funs = ~./Total) %>%
+  dplyr::select(-c(Total))
+
+splicetissuesomatic_pivot_melted <- splicetissuesomatic_pivot_calc %>% 
+  reshape2::melt() %>% 
+  dplyr::rename(Isoform = variable,
+                Cancer = CANCER_TYPE_DETAILED,
+                Proportion = value) %>%
+  mutate(temp = ifelse(str_detect(Cancer, "Total") & Isoform == "yes",
+                       "total",
+                       as.character(Isoform))) %>%
+  mutate(temp = ifelse(gsub(" \\(.*",
+                            "",
+                            Cancer) %in% gsub(" \\(.*",
+                                              "",
+                                              pivotdfnobottomtotal100muts$CANCER_TYPE_DETAILED) & Isoform == "yes",
+                       "subset",
+                       temp))
+
+# rbind because same columns to make df for stacked barchart
+pt_splice_df_ggplot <- do.call(rbind, 
+                               list(p53mutssolesplice_pivot_calc, 
+                                    p53mutsmultsplice_pivot_calc, 
+                                    p53mutssplice_pivot_calc))
+
+pt_spliceperpos_df_ggplot <- do.call(rbind,
+                                     list(p53mutssolespliceperpos_pivot_calc,
+                                          p53mutsmultspliceperpos_pivot_calc,
+                                          p53mutsspliceperpos_pivot_calc))
+
+# prepare contingency table of splicing p53mutssole, p53mutsmult, all for chi square tests
+pt_splice_df_contingency <- Reduce(full_join,
+                                   list(p53mutssolesplice_pivot %>%
+                                          dplyr::rename(`Sole` = Total),
+                                        p53mutsmultsplice_pivot %>%
+                                          dplyr::rename(`Multiple` = Total),
+                                        p53mutssplice_pivot %>%
+                                          dplyr::rename(`All` = Total))) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0)))
+
+# fisher's test for association between splicing alteration and p53mutssole or p53mutsmultiple pts
+stats::fisher.test(as.matrix(pt_splice_df_contingency[1:2,2:3]))
+
+# make stacked barchart of isoform yes no in pts
+stackedbarchart_pts_splice <- ggplot(pt_splice_df_ggplot %>%
+                                       filter(str_detect(Patient, 
+                                                         "All")), 
+                                     aes(x = Patient,
+                                         #factor(Patient,
+                                         # levels = sort(unique(pt_splice_df_ggplot$Patient),
+                                         #decreasing = TRUE)[order(c(2,3,1))]), 
+                                         y = Calc, 
+                                         fill = relevel(as.factor(Isoform),
+                                                        ref = "yes"))) + 
+  geom_bar(position = "fill", 
+           stat = "identity") + 
+  ggtitle("Proportion of Somatic Mutations \nAffecting TP53 Splicing in \nIndividuals with Cancer in cBioPortal") +
+  xlab("Patient type") +
+  ylab("Proportion of distinct individuals") +
+  labs(fill = "Splicing affected") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 6)) +
+  scale_x_discrete(expand = c(0,0)) +
+  scale_fill_manual(values = c("#0072B2",
+                               "lightgray")) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(5,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,5,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,5,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        plot.margin = margin(0,0,0,20, "mm"))
+stackedbarchart_pts_splice
+save_plot(file = "C:/Users/nwali/Downloads/stackedbarchart_pts_splice_barchart.svg",
+          stackedbarchart_pts_splice,
+          base_width = 4.25,
+          base_height = 7.5,
+          limitsize = FALSE)
+
+# because many somatic muts in mult pts, percents not adding up to 100% so shrink other muts to fit expected %
+to_fit_mult <- 1 - (sum(pt_spliceperpos_df_ggplot %>%
+                          subset(Isoform == "yes" & grepl("Multiple", 
+                                                          Patient)) %>%
+                          pull(Calc)))
+
+# other percentages in all and sole pts not exactly adding up to 100% either but very close
+to_fit_all <- 1 - (sum(pt_spliceperpos_df_ggplot %>%
+                         subset(Isoform == "yes" & grepl("All", 
+                                                         Patient)) %>%
+                         pull(Calc)))
+
+to_fit_sole <- 1 - (sum(pt_spliceperpos_df_ggplot %>%
+                          subset(Isoform == "yes" & grepl("One", 
+                                                          Patient)) %>%
+                          pull(Calc)))
+
+# plot zoomed in stacked barchart with adjusted %
+stackedbarchart_pts_spliceperpos <- ggplot(pt_spliceperpos_df_ggplot %>%
+                                             mutate(Calc_label = Calc) %>%
+                                             mutate(Calc_label = dplyr::case_when(Isoform == "no" & grepl("Multiple", 
+                                                                                                          Patient) ~ to_fit_mult/nrow(pt_spliceperpos_df_ggplot %>%
+                                                                                                                                        subset(Isoform == "no" & grepl("Multiple", 
+                                                                                                                                                                       Patient))),
+                                                                                  Isoform == "no" & grepl("All", 
+                                                                                                          Patient) ~ to_fit_all/nrow(pt_spliceperpos_df_ggplot %>%
+                                                                                                                                       subset(Isoform == "no" & grepl("All", 
+                                                                                                                                                                      Patient))),
+                                                                                  Isoform == "no" & grepl("One", 
+                                                                                                          Patient) ~ to_fit_sole/nrow(pt_spliceperpos_df_ggplot %>%
+                                                                                                                                        subset(Isoform == "no" & grepl("One", 
+                                                                                                                                                                       Patient))),
+                                                                                  TRUE ~ Calc_label)) %>%
+                                             filter(str_detect(Patient,
+                                                               "All")), 
+                                           aes(x = Patient,
+                                               #factor(Patient,
+                                               #levels = sort(unique(pt_spliceperpos_df_ggplot$Patient),
+                                               #  decreasing = TRUE)[order(c(2,3,1))]), 
+                                               y = Calc_label, 
+                                               fill = factor(Label,
+                                                             levels = c((pt_spliceperpos_df_ggplot %>%
+                                                                           filter(str_detect(Patient,
+                                                                                             "All")) %>%
+                                                                           arrange(-Calc) %>%
+                                                                           pull(Label) %>%
+                                                                           unique())[(pt_spliceperpos_df_ggplot %>% 
+                                                                                        filter(str_detect(Patient,
+                                                                                                          "All")) %>%
+                                                                                        arrange(-Calc) %>%
+                                                                                        pull(Label) %>%
+                                                                                        unique()) != "Other"], 
+                                                                        "Other")))) + 
+  geom_bar(position = "fill", 
+           stat = "identity") + 
+  ggtitle("Proportion of Somatic Mutations \nAffecting TP53 Splicing in \nIndividuals with Cancer in cBioPortal") +
+  xlab("Patient type") +
+  ylab("Proportion of distinct individuals") +
+  labs(fill = "Mutation") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 6)) +
+  scale_x_discrete(expand = c(0,0)) +
+  coord_cartesian(ylim = c((plyr::round_any(to_fit_all, 
+                                            0.05, 
+                                            f = floor)), 1.0000001), # set axis limits in coord_cartesian to zoom in on percentages
+                  expand = FALSE) +
+  scale_fill_manual(values = c(hue_pal()(length(c((pt_spliceperpos_df_ggplot %>%
+                                                     filter(str_detect(Patient,
+                                                                       "All")) %>%
+                                                     arrange(-Calc) %>%
+                                                     pull(Label) %>%
+                                                     unique())[(pt_spliceperpos_df_ggplot %>% 
+                                                                  filter(str_detect(Patient,
+                                                                                    "All")) %>%
+                                                                  arrange(-Calc) %>%
+                                                                  pull(Label) %>%
+                                                                  unique()) != "Other"], 
+                                                  "Other"))) %>% 
+                                 head(-1),
+                               "lightgray")) + # extract automatic gradient colors and replace final one i.e. other with lightgray
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(5,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,5,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,5,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        plot.margin = margin(0,0,0,20, "mm"))
+stackedbarchart_pts_spliceperpos
+save_plot(file = "C:/Users/nwali/Downloads/stackedbarchart_pts_spliceperpos_barchart.svg",
+          stackedbarchart_pts_spliceperpos,
+          base_width = 7.25,
+          base_height = 8,
+          limitsize = FALSE)
+
+# to simplify above plot, make facet barchart on muts of interest i.e. T125T, M133T, M133R
+barchart_pts_keysplicepos <- ggplot(pt_spliceperpos_df_ggplot %>% 
+                                      mutate(Label = gsub("T125=",
+                                                          "T125T",
+                                                          Label)) %>%
+                                      subset(Isoform == "yes" & Label %in% c("T125T", 
+                                                                             "M133T", 
+                                                                             "M133R")) %>%
+                                      filter(str_detect(Patient, 
+                                                        "All")), 
+                                    aes(x = Patient,
+                                        # factor(Patient,
+                                        #        levels = sort(unique(pt_spliceperpos_df_ggplot$Patient))[c(1,3,2)]), 
+                                        y = Calc, 
+                                        fill = Patient
+                                        # factor(Patient,
+                                        #    levels = sort(unique(pt_spliceperpos_df_ggplot$Patient))[c(1,3,2)])
+                                    )) + 
+  geom_bar(stat = "identity", 
+           position = position_dodge2()) + # to keep some space b/t barcharts in same mut
+  geom_text(aes(label = paste0(plyr::round_any(Calc * 100, 
+                                               0.01),
+                               "%")),
+            color = "black",
+            size = 3.5,
+            fontface = "bold",
+            alpha = 0.75, # level of transparency (lower is more transparent)
+            vjust = -0.5,
+            hjust = 0.5) +
+  xlab("Patient type") +
+  ylab("Proportion of distinct individuals") +
+  labs(fill = "Patient type") + 
+  ggtitle("Proportion of Somatic Mutations Affecting TP53 Splicing \nin Individuals with Cancer in cBioPortal") +
+  facet_wrap2(. ~ factor(Label,
+                         levels = c("T125T", 
+                                    "M133T", 
+                                    "M133R")),
+              axes = "y") + # show all inner y axes labels too
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 6), 
+                     limits = c(0, ((pt_spliceperpos_df_ggplot %>% 
+                                       mutate(Label = gsub("T125=",
+                                                           "T125T",
+                                                           Label)) %>%
+                                       subset(Isoform == "yes" & Label %in% c("T125T", 
+                                                                              "M133T", 
+                                                                              "M133R")) %>%
+                                       filter(str_detect(Patient, 
+                                                         "All")) %>% 
+                                       pull(Calc) %>% 
+                                       max() %>% 
+                                       plyr::round_any(0.02,
+                                                       f = ceiling)) * 1.00001))) + 
+  scale_x_discrete(
+    #limits = rev, 
+    expand = c(0,0)) + 
+  scale_fill_manual(values = c("#D55E00",
+                               "#0072B2",
+                               "#009E73"
+                               #,"#E69F00",
+                               #"#56B4E9",
+                               #"#CC79A7"
+  )) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(10,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,10,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,10,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        legend.justification = "top", # put legend in top right of plot
+        #legend.position = c(,), # c(0,0) bottom left, c(1,1) top-right within plot
+        strip.background = element_blank(),
+        strip.text = element_text(color = "black",
+                                  size = 14,
+                                  face = "bold",
+                                  margin = margin(0,0,10,0, "mm")),
+        panel.spacing.x = unit(3, "lines"),
+        plot.margin = margin(0,0,0,20, unit = "mm"))
+barchart_pts_keysplicepos
+save_plot(file = "C:/Users/nwali/Downloads/barchart_facet_pts_keysplicepos.svg",
+          barchart_pts_keysplicepos,
+          base_width = 9.5,
+          base_height = 7.4,
+          limitsize = FALSE)
+
+# draw stacked barchart
+stackedbarchart_pts_splice_cancers <- ggplot(p53mutssplicepercancer_pivot_melted %>% 
+                                               subset(!str_detect(Cancer, 
+                                                                  "OTHER")),
+                                             aes(x = factor(Cancer,
+                                                            levels = p53mutssplicepercancer_pivot_melted %>% 
+                                                              subset(!str_detect(Cancer, 
+                                                                                 "OTHER")) %>% 
+                                                              subset(Isoform == "yes") %>%
+                                                              arrange(-Proportion) %>% 
+                                                              pull(Cancer) %>% 
+                                                              unique() %>% 
+                                                              as.vector()),
+                                                 y = Proportion,
+                                                 fill = relevel(as.factor(Isoform),
+                                                                ref = "yes"))) + 
+  geom_bar(position = "fill", 
+           stat = "identity") + 
+  ggtitle("Proportion of Somatic Mutations Affecting TP53 Splicing in Individuals with Cancer in cBioPortal") + 
+  xlab("Cancer") +
+  ylab("Proportion of distinct individuals") +
+  labs(fill = "Splicing affected") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 6)) +
+  scale_x_discrete(expand = c(0,0)) +
+  scale_fill_manual(values = c("#0072B2",
+                               "lightgray")) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(5,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,5,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,10,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        plot.margin = margin(0,0,0,50, "mm"))
+stackedbarchart_pts_splice_cancers
+save_plot(file = "C:/Users/nwali/Downloads/stackedbarchart_pts_splice_cancers.svg",
+          stackedbarchart_pts_splice_cancers,
+          base_width = 17,
+          base_height = 9,
+          limitsize = FALSE)
+
+# add total to barcharts
+df_total_ggplot <- p53mutssplicepercancer_pivot %>% # add num pts to cancer colnames
+  rename_at(vars(2:(ncol(.) 
+                    #- 1
+                    )),
+            ~ paste0(.,
+                     " (",
+                     format(as.numeric(p53mutssplicepercancer_pivot[nrow(p53mutssplicepercancer_pivot), .]), 
+                            big.mark = ",", 
+                            trim = TRUE),
+                     " individuals)")) %>% # divide down each col by last value i.e. total pts
+  mutate(across(where(is.numeric),
+                ~ .x/last(.x))) %>% 
+  subset(Isoform != "Total") %>%
+  #dplyr::select(-Total) %>% 
+  reshape2::melt() %>% 
+  dplyr::rename(Cancer = variable,
+                Proportion = value) %>% 
+  mutate(label = ifelse(str_detect(Cancer, "Total") & Isoform == "yes",
+                        "yes; total",
+                        Isoform))
+
+# make stacked barchart with total
+stackedbarchart_pts_splice_cancers_total <- ggplot(df_total_ggplot %>% 
+                                                     subset(!str_detect(Cancer, 
+                                                                        "OTHER")),
+                                                   aes(x = factor(Cancer,
+                                                                  levels = df_total_ggplot %>% 
+                                                                    subset(!str_detect(Cancer, 
+                                                                                       "OTHER")) %>% 
+                                                                    subset(Isoform == "yes") %>%
+                                                                    arrange(-Proportion) %>% 
+                                                                    pull(Cancer) %>% 
+                                                                    unique() %>% 
+                                                                    as.vector()),
+                                                       y = Proportion,
+                                                       fill = factor(label,
+                                                                     levels = c("yes",
+                                                                                "yes; total",
+                                                                                "no")))) + 
+  geom_bar(position = "fill", 
+           stat = "identity") + 
+  ggtitle("Proportion of Somatic Mutations Affecting TP53 Splicing in Individuals with Cancer in cBioPortal") + 
+  xlab("Cancer") +
+  ylab("Proportion of distinct individuals") +
+  labs(fill = "Splicing affected") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 6)) +
+  scale_x_discrete(expand = c(0,0)) +
+  scale_fill_manual(values = c("#0072B2",
+                               "black",
+                               "lightgray")) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(5,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,5,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,10,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        plot.margin = margin(0,0,0,50, "mm"))
+stackedbarchart_pts_splice_cancers_total
+save_plot(file = "C:/Users/nwali/Downloads/stackedbarchart_pts_splice_cancers_total.svg",
+          stackedbarchart_pts_splice_cancers_total,
+          base_width = 17.5, 
+          base_height = 9,
+          limitsize = FALSE)
+
+# make horiz stacked barchart with total
+stackedbarchart_pts_splice_cancers_total_horiz <- ggplot(df_total_ggplot %>%
+                                                           subset(!str_detect(Cancer, 
+                                                                              "OTHER")),
+                                                         aes(x = factor(Cancer,
+                                                                        levels = df_total_ggplot %>% 
+                                                                          subset(!str_detect(Cancer,
+                                                                                             "OTHER")) %>% 
+                                                                          subset(Isoform == "yes") %>%
+                                                                          arrange(-Proportion) %>% 
+                                                                          pull(Cancer) %>% 
+                                                                          unique() %>% 
+                                                                          as.vector()),
+                                                             y = Proportion,
+                                                             fill = factor(label,
+                                                                           levels = c("yes",
+                                                                                      "yes; total",
+                                                                                      "no")))) + 
+  geom_bar(position = position_fill(reverse = TRUE),
+           stat = "identity") + # add percents of yes to barchart
+  geom_text(aes(label = paste0(plyr::round_any(Proportion * 100,
+                                               0.1
+                                               #,
+                                               #f = ceiling
+                                               ),
+                               "%")),
+            position = position_fill(reverse = TRUE),
+            color = "black",
+            size = 4.5,
+            fontface = "bold",
+            alpha = 0.5, # level of transparency (lower is more transparent)
+            vjust = 0.5,
+            hjust = -0.25) +
+  ggtitle("Proportion of Somatic Mutations Affecting TP53 Splicing in Individuals with Cancer in cBioPortal") + 
+  xlab("Cancer") +
+  ylab("Proportion of distinct individuals") +
+  labs(fill = "Splicing affected") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 5),
+                     position = "right") +
+  scale_x_discrete(expand = c(0,0),
+                   limits = rev) +
+  scale_fill_manual(values = c("#0072B2",
+                               "black",
+                               "lightgray")) +
+  theme_classic() + 
+  coord_flip(ylim = c(0, ((df_total_ggplot %>% 
+                             subset(!str_detect(Cancer, 
+                                                "OTHER")) %>% 
+                             subset(Isoform == "yes") %>% 
+                             pull(Proportion) %>% 
+                             max() %>% 
+                             plyr::round_any(0.1, 
+                                             f = ceiling)) * 1.000001))) + # calls coord_cartesian to set axis limits to zoom in on percentages
+  theme(axis.text.x = element_text(angle = 0, 
+                                   hjust = 0.5), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x.top = element_text(margin = unit(c(0,0,10,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,10,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,10,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        legend.justification = "top", # put legend at top right
+        axis.text.y = element_text(vjust = 0.5))
+stackedbarchart_pts_splice_cancers_total_horiz
+save_plot(file = "C:/Users/nwali/Downloads/stackedbarchart_pts_splice_cancers_total_horiz.svg",
+          stackedbarchart_pts_splice_cancers_total_horiz,
+          base_width = 15.25,
+          base_height = 14.25,
+          limitsize = FALSE)
+
+# make horiz stacked barchart
+stackedbarchart_pts_splice_cancers_horiz <- ggplot(p53mutssplicepercancer_pivot_melted %>%
+                                                     subset(!str_detect(Cancer, 
+                                                                        "OTHER")),
+                                                   aes(x = factor(Cancer,
+                                                                  levels = p53mutssplicepercancer_pivot_melted %>% 
+                                                                    subset(!str_detect(Cancer,
+                                                                                       "OTHER")) %>% 
+                                                                    subset(Isoform == "yes") %>%
+                                                                    arrange(-Proportion) %>% 
+                                                                    pull(Cancer) %>% 
+                                                                    unique() %>% 
+                                                                    as.vector()),
+                                                       y = Proportion,
+                                                       fill = relevel(as.factor(Isoform),
+                                                                      ref = "yes"))) +
+  geom_bar(position = position_fill(reverse = TRUE),
+           stat = "identity") + # add percents of yes to barchart
+  geom_text(aes(label = paste0(plyr::round_any(Proportion * 100,
+                                               0.1
+                                               #,
+                                               #f = ceiling
+                                               ),
+                               "%")),
+            position = position_fill(reverse = TRUE),
+            color = "black",
+            size = 4.5,
+            fontface = "bold",
+            alpha = 0.5, # level of transparency (lower is more transparent)
+            vjust = 0.5,
+            hjust = -0.25) +
+  ggtitle("Proportion of Somatic Mutations Affecting TP53 Splicing in Individuals with Cancer in cBioPortal") + 
+  xlab("Cancer") +
+  ylab("Proportion of distinct individuals") +
+  labs(fill = "Splicing affected") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 5),
+                     position = "right") +
+  scale_x_discrete(expand = c(0,0),
+                   limits = rev) +
+  scale_fill_manual(values = c("#0072B2",
+                               "lightgray")) +
+  theme_classic() + 
+  coord_flip(ylim = c(0, ((p53mutssplicepercancer_pivot_melted %>% 
+                             subset(!str_detect(Cancer, 
+                                                "OTHER")) %>% 
+                             subset(Isoform == "yes") %>% 
+                             pull(Proportion) %>% 
+                             max() %>% 
+                             plyr::round_any(0.05, 
+                                             f = ceiling)) * 1.000001))) + # calls coord_cartesian to set axis limits to zoom in on percentages
+  theme(axis.text.x = element_text(angle = 0, 
+                                   hjust = 0.5), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x.top = element_text(margin = unit(c(0,0,10,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,10,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,10,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        legend.justification = "top", # put legend at top right
+        axis.text.y = element_text(vjust = 0.5))
+stackedbarchart_pts_splice_cancers_horiz
+save_plot(file = "C:/Users/nwali/Downloads/stackedbarchart_pts_splice_cancers_horiz.svg",
+          stackedbarchart_pts_splice_cancers_horiz,
+          base_width = 15.25,
+          base_height = 13.5,
+          limitsize = FALSE)
+
+# b/c multiple somatic muts in pts, just in case percents != 100%, shrink other muts to fit expected %
+to_fit <- p53mutssplicepercancer_pivot_melted %>%
+  subset(Isoform == "no")
+
+# get how many cancers to account for
+length(to_fit$Cancer) # 31 here including other
+
+# plot zoomed in stacked barchart
+stackedbarchart_pts_splice_cancers_pos <- ggplot(p53mutssplicepercancerpos_pivot_melted %>% 
+                                                   mutate(Proportion_label = Proportion) %>% 
+                                                   mutate(Proportion_label = dplyr::case_when(Isoform == "no" & Cancer == as.character(to_fit$Cancer[1]) ~ to_fit$Proportion[1]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                       subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[1]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[2]) ~ to_fit$Proportion[2]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                       subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[2]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[3]) ~ to_fit$Proportion[3]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                       subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[3]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[4]) ~ to_fit$Proportion[4]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                       subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[4]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[5]) ~ to_fit$Proportion[5]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                       subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[5]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[6]) ~ to_fit$Proportion[6]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                       subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[6]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[7]) ~ to_fit$Proportion[7]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                       subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[7]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[8]) ~ to_fit$Proportion[8]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                       subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[8]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[9]) ~ to_fit$Proportion[9]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                       subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[9]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[10]) ~ to_fit$Proportion[10]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                         subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[10]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[11]) ~ to_fit$Proportion[11]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                         subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[11]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[12]) ~ to_fit$Proportion[12]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                         subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[12]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[13]) ~ to_fit$Proportion[13]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                         subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[13]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[14]) ~ to_fit$Proportion[14]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                         subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[14]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[15]) ~ to_fit$Proportion[15]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                         subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[15]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[16]) ~ to_fit$Proportion[16]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                         subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[16]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[17]) ~ to_fit$Proportion[17]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                         subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[17]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[18]) ~ to_fit$Proportion[18]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                         subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[18]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[19]) ~ to_fit$Proportion[19]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                         subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[19]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[20]) ~ to_fit$Proportion[20]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                         subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[20]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[21]) ~ to_fit$Proportion[21]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                         subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[21]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[22]) ~ to_fit$Proportion[22]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                         subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[22]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[23]) ~ to_fit$Proportion[23]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                         subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[23]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[24]) ~ to_fit$Proportion[24]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                         subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[24]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[25]) ~ to_fit$Proportion[25]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                         subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[25]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[26]) ~ to_fit$Proportion[26]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                         subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[26]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[27]) ~ to_fit$Proportion[27]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                         subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[27]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[28]) ~ to_fit$Proportion[28]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                         subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[28]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[29]) ~ to_fit$Proportion[29]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                         subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[29]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[30]) ~ to_fit$Proportion[30]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                         subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[30]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[31]) ~ to_fit$Proportion[31]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                         subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[31]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[32]) ~ to_fit$Proportion[32]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                         subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[32]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[33]) ~ to_fit$Proportion[33]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                         subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[33]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[34]) ~ to_fit$Proportion[34]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                         subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[34]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[35]) ~ to_fit$Proportion[35]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                         subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[35]))),
+                                                                                              Isoform == "no" & Cancer == as.character(to_fit$Cancer[36]) ~ to_fit$Proportion[36]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                         subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[36]))),
+                                                                                              TRUE ~ Proportion_label)) %>% 
+                                                   subset(!str_detect(Cancer, 
+                                                                      "OTHER")), 
+                                                 aes(x = factor(Cancer,
+                                                                levels = p53mutssplicepercancer_pivot_melted %>% 
+                                                                  subset(!str_detect(Cancer, 
+                                                                                     "OTHER")) %>% 
+                                                                  subset(Isoform == "yes") %>%
+                                                                  arrange(-Proportion) %>% 
+                                                                  pull(Cancer) %>% 
+                                                                  unique() %>% 
+                                                                  as.vector()), 
+                                                     y = Proportion_label, 
+                                                     fill = factor(Label,
+                                                                   levels = c((p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                 arrange(-Proportion) %>%
+                                                                                 pull(Label) %>%
+                                                                                 unique())[(p53mutssplicepercancerpos_pivot_melted %>% 
+                                                                                              arrange(-Proportion) %>%
+                                                                                              pull(Label) %>%
+                                                                                              unique()) != "Other"], 
+                                                                              "Other")))) + 
+  geom_bar(position = "fill", 
+           stat = "identity") + 
+  ggtitle("Proportion of Somatic Mutations Affecting TP53 Splicing in Individuals with Cancer in cBioPortal") + 
+  xlab("Cancer") +
+  ylab("Proportion of distinct individuals") +
+  labs(fill = "Mutation") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 7)) +
+  scale_x_discrete(expand = c(0,0)) +
+  coord_cartesian(ylim = c((plyr::round_any(min(to_fit$Proportion), 
+                                            0.05, 
+                                            f = floor)), 1.0000001), # set axis limits in coord_cartesian to zoom in on percentages
+                  expand = FALSE) + 
+  scale_fill_manual(values = c(hue_pal()(length(c((p53mutssplicepercancerpos_pivot_melted %>%
+                                                     arrange(-Proportion) %>%
+                                                     pull(Label) %>%
+                                                     unique())[(p53mutssplicepercancerpos_pivot_melted %>% 
+                                                                  arrange(-Proportion) %>%
+                                                                  pull(Label) %>%
+                                                                  unique()) != "Other"], 
+                                                  "Other"))) %>% 
+                                 head(-1),
+                               "lightgray")) + # extract automatic gradient colors and replace final one i.e. other with lightgray
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(5,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,5,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,5,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        plot.margin = margin(0,0,0,50, "mm"))
+stackedbarchart_pts_splice_cancers_pos
+save_plot(file = "C:/Users/nwali/Downloads/stackedbarchart_pts_splice_cancers_pos_barchart.svg",
+          stackedbarchart_pts_splice_cancers_pos,
+          base_width = 23,
+          base_height = 10.75,
+          limitsize = FALSE)
+
+# because multiple somatic muts in pts, just in case percents != 100%, shrink other muts to fit expected %
+to_fit <- p53mutssplicepercancer_pivot_melted %>%
+  subset(Isoform == "no")
+
+# get how many cancers to account for
+length(to_fit$Cancer) # 31 here including other
+
+# plot zoomed in stacked barchart
+stackedbarchart_pts_splice_cancers_pos_horiz <- ggplot(p53mutssplicepercancerpos_pivot_melted %>% 
+                                                         mutate(Proportion_label = Proportion) %>% 
+                                                         mutate(Proportion_label = dplyr::case_when(Isoform == "no" & Cancer == as.character(to_fit$Cancer[1]) ~ to_fit$Proportion[1]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                             subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[1]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[2]) ~ to_fit$Proportion[2]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                             subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[2]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[3]) ~ to_fit$Proportion[3]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                             subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[3]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[4]) ~ to_fit$Proportion[4]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                             subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[4]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[5]) ~ to_fit$Proportion[5]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                             subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[5]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[6]) ~ to_fit$Proportion[6]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                             subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[6]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[7]) ~ to_fit$Proportion[7]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                             subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[7]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[8]) ~ to_fit$Proportion[8]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                             subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[8]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[9]) ~ to_fit$Proportion[9]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                             subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[9]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[10]) ~ to_fit$Proportion[10]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                               subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[10]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[11]) ~ to_fit$Proportion[11]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                               subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[11]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[12]) ~ to_fit$Proportion[12]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                               subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[12]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[13]) ~ to_fit$Proportion[13]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                               subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[13]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[14]) ~ to_fit$Proportion[14]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                               subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[14]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[15]) ~ to_fit$Proportion[15]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                               subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[15]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[16]) ~ to_fit$Proportion[16]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                               subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[16]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[17]) ~ to_fit$Proportion[17]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                               subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[17]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[18]) ~ to_fit$Proportion[18]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                               subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[18]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[19]) ~ to_fit$Proportion[19]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                               subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[19]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[20]) ~ to_fit$Proportion[20]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                               subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[20]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[21]) ~ to_fit$Proportion[21]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                               subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[21]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[22]) ~ to_fit$Proportion[22]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                               subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[22]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[23]) ~ to_fit$Proportion[23]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                               subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[23]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[24]) ~ to_fit$Proportion[24]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                               subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[24]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[25]) ~ to_fit$Proportion[25]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                               subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[25]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[26]) ~ to_fit$Proportion[26]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                               subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[26]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[27]) ~ to_fit$Proportion[27]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                               subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[27]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[28]) ~ to_fit$Proportion[28]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                               subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[28]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[29]) ~ to_fit$Proportion[29]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                               subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[29]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[30]) ~ to_fit$Proportion[30]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                               subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[30]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[31]) ~ to_fit$Proportion[31]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                               subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[31]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[32]) ~ to_fit$Proportion[32]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                               subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[32]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[33]) ~ to_fit$Proportion[33]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                               subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[33]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[34]) ~ to_fit$Proportion[34]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                               subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[34]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[35]) ~ to_fit$Proportion[35]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                               subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[35]))),
+                                                                                                    Isoform == "no" & Cancer == as.character(to_fit$Cancer[36]) ~ to_fit$Proportion[36]/nrow(p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                                                                                                                               subset(Isoform == "no" & Cancer == as.character(to_fit$Cancer[36]))),
+                                                                                                    TRUE ~ Proportion_label)) %>% 
+                                                         subset(!str_detect(Cancer,
+                                                                            "OTHER")), 
+                                                       aes(x = factor(Cancer,
+                                                                      levels = p53mutssplicepercancer_pivot_melted %>% 
+                                                                        subset(!str_detect(Cancer,
+                                                                                           "OTHER")) %>% 
+                                                                        subset(Isoform == "yes") %>%
+                                                                        arrange(-Proportion) %>% 
+                                                                        pull(Cancer) %>% 
+                                                                        unique() %>% 
+                                                                        as.vector()), 
+                                                           y = Proportion_label, 
+                                                           fill = factor(Label,
+                                                                         levels = c((p53mutssplicepercancerpos_pivot_melted %>%
+                                                                                       arrange(-Proportion) %>%
+                                                                                       pull(Label) %>%
+                                                                                       unique())[(p53mutssplicepercancerpos_pivot_melted %>% 
+                                                                                                    arrange(-Proportion) %>%
+                                                                                                    pull(Label) %>%
+                                                                                                    unique()) != "Other"], 
+                                                                                    "Other")))) + 
+  geom_bar(position = position_fill(reverse = TRUE), 
+           stat = "identity") +  
+  ggtitle("Proportion of Somatic Mutations Affecting TP53 Splicing in Individuals with Cancer in cBioPortal") + 
+  xlab("Cancer") +
+  ylab("Proportion of distinct individuals") +
+  labs(fill = "Mutation") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 7),
+                     position = "right") +
+  scale_x_discrete(expand = c(0,0),
+                   limits = rev) +
+  scale_fill_manual(values = c(hue_pal()(length(c((p53mutssplicepercancerpos_pivot_melted %>%
+                                                     arrange(-Proportion) %>%
+                                                     pull(Label) %>%
+                                                     unique())[(p53mutssplicepercancerpos_pivot_melted %>% 
+                                                                  arrange(-Proportion) %>%
+                                                                  pull(Label) %>%
+                                                                  unique()) != "Other"], 
+                                                  "Other"))) %>% 
+                                 head(-1),
+                               "lightgray")) + # extract automatic gradient colors and replace final one i.e. other with lightgray
+  theme_classic() + 
+  coord_flip(ylim = c(0, ((p53mutssplicepercancer_pivot_melted %>%
+                             subset(!str_detect(Cancer,
+                                                "OTHER")) %>% 
+                             subset(Isoform == "yes") %>%
+                             pull(Proportion) %>% 
+                             max() %>% 
+                             plyr::round_any(0.05,
+                                             f = ceiling)) * 1.00001))) + # calls coord_cartesian to set axis limits to zoom in on percentages
+  guides(fill = guide_legend(ncol = 2)) + 
+  theme(axis.text.x = element_text(angle = 0, 
+                                   hjust = 0.5), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x.top = element_text(margin = unit(c(0,0,10,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,10,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,10,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        axis.text.y = element_text(vjust = 0.5))
+stackedbarchart_pts_splice_cancers_pos_horiz
+save_plot(file = "C:/Users/nwali/Downloads/stackedbarchart_pts_splice_cancers_pos_horiz_barchart.png", # .svg is too big to insert into powerpoint so need to save as png
+          stackedbarchart_pts_splice_cancers_pos_horiz,
+          base_width = 17,
+          base_height = 13.5,
+          dpi = 600,
+          limitsize = FALSE) # specifying dpi because saving as png since svg cannot insert into ppt
+save_plot(file = "C:/Users/nwali/Downloads/stackedbarchart_pts_splice_cancers_pos_horiz_barchart.svg", 
+          stackedbarchart_pts_splice_cancers_pos_horiz,
+          base_width = 17,
+          base_height = 13.5,
+          limitsize = FALSE) 
+
+# to simplify above plot, make facet barchart on muts of interest i.e. T125T, M133T, M133R
+barchart_pts_keysplicepos_cancers <- ggplot(p53mutssplicepercancerpos_pivot_melted %>% 
+                                              subset(!str_detect(Cancer, 
+                                                                 "OTHER")) %>% 
+                                              mutate(Label = gsub("T125=",
+                                                                  "T125T",
+                                                                  Label)) %>%
+                                              subset(Isoform == "yes" & Label %in% c("T125T", 
+                                                                                     "M133T", 
+                                                                                     "M133R")), 
+                                            aes(x = factor(Cancer,
+                                                           levels = sort(unique(as.vector(p53mutssplicepercancerpos_pivot_melted$Cancer)))[!str_detect(sort(unique(as.vector(p53mutssplicepercancerpos_pivot_melted$Cancer))), 
+                                                                                                                                                       "OTHER")]),
+                                                # factor(Cancer,
+                                                #          levels = c(sort(unique(as.vector(p53mutssplicepercancerpos_pivot_melted$Cancer)))[!str_detect(sort(unique(as.vector(p53mutssplicepercancerpos_pivot_melted$Cancer))), 
+                                                #                                                                                                        "OTHER")], sort(unique(as.vector(p53mutssplicepercancerpos_pivot_melted$Cancer)))[str_detect(sort(unique(as.vector(p53mutssplicepercancerpos_pivot_melted$Cancer))), 
+                                                #                                                                                                                                                                                                     "OTHER")])), 
+                                                y = Proportion, 
+                                                fill = factor(Cancer,
+                                                              levels = sort(unique(as.vector(p53mutssplicepercancerpos_pivot_melted$Cancer)))[!str_detect(sort(unique(as.vector(p53mutssplicepercancerpos_pivot_melted$Cancer))), 
+                                                                                                                                                          "OTHER")]),
+                                                # factor(Cancer,
+                                                #             levels = c(sort(unique(as.vector(p53mutssplicepercancerpos_pivot_melted$Cancer)))[!str_detect(sort(unique(as.vector(p53mutssplicepercancerpos_pivot_melted$Cancer))),
+                                                #                                                                                                           "OTHER")], sort(unique(as.vector(p53mutssplicepercancerpos_pivot_melted$Cancer)))[str_detect(sort(unique(as.vector(p53mutssplicepercancerpos_pivot_melted$Cancer))),
+                                                #                                                                                                                                                                                                        "OTHER")]))
+                                            )) + 
+  geom_bar(stat = "identity", 
+           position = position_dodge2()) + # to keep some space b/t barcharts in same mut
+  geom_text(aes(label = paste0(plyr::round_any(Proportion * 100, 
+                                               0.1),
+                               "%")),
+            color = "black",
+            size = 3.5,
+            fontface = "bold",
+            alpha = 0.75, # level of transparency (lower is more transparent)
+            vjust = -0.5,
+            hjust = 0.5) +
+  xlab("Cancer") +
+  ylab("Proportion of distinct individuals") +
+  labs(fill = "Cancer") + 
+  ggtitle("Proportion of Somatic Mutations Affecting TP53 Splicing in Individuals with Cancer in cBioPortal") +
+  facet_wrap2(. ~ factor(Label,
+                         levels = c("T125T", 
+                                    "M133T", 
+                                    "M133R")),
+              ncol = 1,
+              axes = "all", # show internal axes but without x labels
+              remove_labels = "x" # show internal axes but without x labels
+  ) + 
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 5), 
+                     limits = c(0, ((p53mutssplicepercancerpos_pivot_melted %>% 
+                                       subset(!str_detect(Cancer, 
+                                                          "OTHER")) %>% 
+                                       mutate(Label = gsub("T125=",
+                                                           "T125T",
+                                                           Label)) %>%
+                                       subset(Isoform == "yes" & Label %in% c("T125T", 
+                                                                              "M133T", 
+                                                                              "M133R")) %>%
+                                       pull(Proportion) %>% 
+                                       max() %>% 
+                                       plyr::round_any(0.08, 
+                                                       f = ceiling)) * 1.00001))) + 
+  scale_x_discrete(
+    #limits = rev, 
+    expand = c(0,0)) + 
+  scale_fill_manual(values = c(#"#c670e5",
+    "limegreen",
+    "#84007e",
+    "#4342b3",
+    "#ff8ea5",
+    "#7e9900",
+    "#50006c",
+    "#e03e97",
+    "#930002",
+    "#ba0069",
+    "#006f17",
+    "lavender",
+    "#420f48",
+    "#eea52d",
+    "#6294ff",
+    "#cade66",
+    "#02e9c7",
+    "#806300",
+    #"#c4379f",
+    #"#5a1500",
+    "#004584",
+    "#ff865d",
+    #"#ada9ff",
+    "#007e3e",
+    "#eea3ff",
+    "#630021",
+    "#002670",
+    #"#ffa4d8",
+    "#a44c00",
+    "#d388be",
+    "#ebd386",
+    "red",
+    "#ff7f7d",
+    "#62742e",
+    "gray80"
+    #,"black"
+  )) +
+  guides(fill = guide_legend(ncol = 1)) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(10,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,10,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,10,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        legend.box.spacing = margin(30), # increase space between legend and plot
+        legend.justification = "top", # put legend in top right of plot
+        legend.margin = margin(0,5,0,0, unit = "mm"),
+        #legend.position = c(,), # c(0,0) bottom left, c(1,1) top-right within plot
+        strip.background = element_blank(),
+        strip.text = element_text(color = "black",
+                                  size = 14,
+                                  face = "bold",
+                                  margin = margin(10,0,10,0, "mm")),
+        #panel.spacing.x = unit(3, "lines"),
+        panel.spacing.y = unit(-20, "lines"),
+        plot.margin = margin(0,0,0,32, unit = "mm"))
+barchart_pts_keysplicepos_cancers
+save_plot(file = "C:/Users/nwali/Downloads/barchart_facet_pts_keysplicepos_cancers.svg",
+          barchart_pts_keysplicepos_cancers,
+          base_width = 20,
+          base_height = 18,
+          limitsize = FALSE)
+
+# make stacked barchart of 1:1 cancer matching germline
+barchart_keysplicepos_matchgermline_cancers <- ggplot(p53mutssplicepercancerpos_matchgermline_melted %>% 
+         subset(!str_detect(Cancer, 
+                            "OTHER")) %>% 
+         mutate(Label = gsub("T125=",
+                             "T125T",
+                             Label)) %>%
+         subset(Isoform == "yes" & Label %in% c("T125T", 
+                                                "M133T", 
+                                                "M133R")), 
+       aes(x = factor(Cancer,
+                      levels = sort(unique(as.vector(p53mutssplicepercancerpos_matchgermline_melted$Cancer)))[!str_detect(sort(unique(as.vector(p53mutssplicepercancerpos_matchgermline_melted$Cancer))), 
+                                                                                                                  "OTHER")]),
+           # factor(Cancer,
+           #          levels = c(sort(unique(as.vector(p53mutssplicepercancerpos_matchgermline_melted$Cancer)))[!str_detect(sort(unique(as.vector(p53mutssplicepercancerpos_matchgermline_melted$Cancer))), 
+           #                                                                                                        "OTHER")], sort(unique(as.vector(p53mutssplicepercancerpos_matchgermline_melted$Cancer)))[str_detect(sort(unique(as.vector(p53mutssplicepercancerpos_matchgermline_melted$Cancer))), 
+           #                                                                                                                                                                                                     "OTHER")])), 
+           y = Proportion, 
+           fill = factor(Cancer,
+                         levels = sort(unique(as.vector(p53mutssplicepercancerpos_matchgermline_melted$Cancer)))[!str_detect(sort(unique(as.vector(p53mutssplicepercancerpos_matchgermline_melted$Cancer))), 
+                                                                                                                     "OTHER")]),
+           # factor(Cancer,
+           #             levels = c(sort(unique(as.vector(p53mutssplicepercancerpos_matchgermline_melted$Cancer)))[!str_detect(sort(unique(as.vector(p53mutssplicepercancerpos_matchgermline_melted$Cancer))),
+           #                                                                                                           "OTHER")], sort(unique(as.vector(p53mutssplicepercancerpos_matchgermline_melted$Cancer)))[str_detect(sort(unique(as.vector(p53mutssplicepercancerpos_matchgermline_melted$Cancer))),
+           #                                                                                                                                                                                                        "OTHER")]))
+       )) + 
+  geom_bar(stat = "identity", 
+           position = position_dodge2()) + # to keep some space b/t barcharts in same mut
+  xlab("Cancer") +
+  ylab("Proportion of distinct individuals") +
+  labs(fill = "Cancer") + 
+  ggtitle("Proportion of Somatic Mutations Affecting TP53 Splicing in Individuals with Cancer in cBioPortal") +
+  facet_wrap2(. ~ factor(Label,
+                         levels = c("T125T", 
+                                    "M133T", 
+                                    "M133R")),
+              ncol = 3,
+              axes = "all", # show internal axes but without x labels
+              remove_labels = "x" # show internal axes but without x labels
+  ) + 
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 5), 
+                     limits = c(0, ((p53mutssplicepercancerpos_matchgermline_melted %>% 
+                                       subset(!str_detect(Cancer, 
+                                                          "OTHER")) %>% 
+                                       mutate(Label = gsub("T125=",
+                                                           "T125T",
+                                                           Label)) %>%
+                                       subset(Isoform == "yes" & Label %in% c("T125T", 
+                                                                              "M133T", 
+                                                                              "M133R")) %>%
+                                       pull(Proportion) %>% 
+                                       max() %>% 
+                                       plyr::round_any(0.08, 
+                                                       f = ceiling)) * 1.00001))) + 
+  scale_x_discrete(
+    #limits = rev, 
+    expand = c(0,0)) + 
+  scale_fill_manual(values = c("#CC79A7",
+                               "#E69F00",
+                               "#009E73",
+                               "#56B4E9",
+                               "#999999"
+                               #,
+                               #"#000000"
+                               )) +
+  guides(fill = guide_legend(ncol = 1)) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(10,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,10,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,10,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        legend.box.spacing = margin(30), # increase space between legend and plot
+        legend.justification = "top", # put legend in top right of plot
+        legend.margin = margin(0,5,0,0, unit = "mm"),
+        #legend.position = c(,), # c(0,0) bottom left, c(1,1) top-right within plot
+        strip.background = element_blank(),
+        strip.text = element_text(color = "black",
+                                  size = 14,
+                                  face = "bold",
+                                  margin = margin(10,0,10,0, "mm")),
+        panel.spacing.x = unit(5, "lines"),
+        #panel.spacing.y = unit(-20, "lines"),
+        plot.margin = margin(0,0,0,32, unit = "mm"))
+barchart_keysplicepos_matchgermline_cancers
+save_plot(file = "C:/Users/nwali/Downloads/barchart_keysplicepos_matchgermline_cancers.svg",
+          barchart_keysplicepos_matchgermline_cancers,
+          base_width = 16,
+          base_height = 8,
+          limitsize = FALSE)
+
+# draw stacked barchart of splicing alterations
+p53mutssplicepossex_barchart <- ggplot(p53mutssplicepossex_pivot_melted,
+                                       aes(x = proteinChange,
+                                           y = Proportion,
+                                           fill = Sex)) +
+  geom_bar(position = "fill", 
+           stat = "identity") + 
+  ggtitle("Mutation Distribution of Individuals with Somatic Mutations Affecting Splicing in cBioPortal") +
+  xlab("Mutation") +
+  ylab("Proportion of distinct individuals") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 6)) +
+  scale_x_discrete(expand = c(0,0)) +
+  scale_fill_manual(values = c("#56B4E9",
+                               "#CC79A7",
+                               "lightgray")
+                    # c((hue_pal()(length(unique(p53mutssplicepossex_pivot_melted$Sex)))[c(3,1,2)]) %>% 
+                    #            head(-1), 
+                    #          "lightgray")
+  ) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(5,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,5,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,5,0, "mm")),
+        # plot.title.position = "plot",
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        legend.margin = margin(0,5,0,0, "mm"),
+        plot.margin = margin(0,0,0,15, "mm"))
+p53mutssplicepossex_barchart
+save_plot(file = "C:/Users/nwali/Downloads/p53mutssplicepossex_barchart.svg",
+          p53mutssplicepossex_barchart,
+          base_width = 22,
+          base_height = 7,
+          limitsize = FALSE)
+
+# draw stacked barchart of splicing alterations
+p53mutsspliceposage_barchart <- ggplot(p53mutsspliceposage_pivot_melted %>% 
+                                         mutate(Age = gsub("NA",
+                                                           "No age listed",
+                                                           Age)),
+                                       aes(x = proteinChange,
+                                           y = Proportion,
+                                           fill = Age)) +
+  geom_bar(position = "fill", 
+           stat = "identity") + 
+  ggtitle("Mutation Distribution of Individuals with Somatic Mutations Affecting Splicing in cBioPortal") +
+  xlab("Mutation") +
+  ylab("Proportion of distinct individuals") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 6)) +
+  scale_x_discrete(expand = c(0,0)) +
+  scale_fill_manual(values = c("#F0E442",
+                               "#E69F00",
+                               "#CC79A7",
+                               "#56B4E9",
+                               "#D55E00",
+                               "#009E73",
+                               "#0072B2",
+                               "#000000",
+                               "#999999")
+                    # c((hue_pal()(length(unique(sort(p53mutsspliceposage_pivot_melted$Age))))) %>% 
+                    #            head(-1), 
+                    #          "lightgray")
+  ) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(5,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,5,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,5,0, "mm")),
+        # plot.title.position = "plot",
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        legend.margin = margin(0,5,0,0, "mm"),
+        plot.margin = margin(0,0,0,15, "mm"))
+p53mutsspliceposage_barchart
+save_plot(file = "C:/Users/nwali/Downloads/p53mutsspliceposage_barchart.svg",
+          p53mutsspliceposage_barchart,
+          base_width = 22,
+          base_height = 7,
+          limitsize = FALSE)
+
+# draw stacked barchart of splicing alterations
+p53mutssplicepos_barchart <- ggplot(p53mutssplicepos_pivot_melted,
+                                    aes(x = proteinChange,
+                                        y = Proportion,
+                                        fill = Cancer)) +
+  geom_bar(position = "fill", 
+           stat = "identity") + 
+  ggtitle("Mutation Distribution of Individuals with Somatic Mutations Affecting Splicing in cBioPortal") +
+  xlab("Mutation") +
+  ylab("Proportion of distinct individuals") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 6)) +
+  scale_x_discrete(expand = c(0,0)) +
+  # scale_fill_manual(values = c(hue_pal()(length(c(as.vector(sort(unique(p53mutssplicepos_pivot_melted$Cancer)))[(as.vector(sort(unique(p53mutssplicepos_pivot_melted$Cancer))) != "OTHER")], 
+  #                                                 "OTHER"))) %>% 
+  #                                head(-1),
+  #                              "lightgray")) + # extract automatic gradient colors and replace final one i.e. other with lightgray
+  scale_fill_manual(values = c(#"#c670e5",
+    "limegreen",
+    "#84007e",
+    "#4342b3",
+    "#ff8ea5",
+    "#7e9900",
+    "#50006c",
+    "#e03e97",
+    "#930002",
+    "#ba0069",
+    "#006f17",
+    "lavender",
+    "#420f48",
+    "#eea52d",
+    "#6294ff",
+    "#cade66",
+    "#02e9c7",
+    "#806300",
+    #"#c4379f",
+    #"#5a1500",
+    "#004584",
+    "#ff865d",
+    #"#ada9ff",
+    "#007e3e",
+    "#eea3ff",
+    "#630021",
+    "#002670",
+    #"#ffa4d8",
+    "#a44c00",
+    "#d388be",
+    "#ebd386",
+    "red",
+    "#ff7f7d",
+    "#62742e",
+    "gray80",
+    "black")) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(5,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,5,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,5,0, "mm")),
+        # plot.title.position = "plot",
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        legend.margin = margin(0,5,0,0, "mm"),
+        plot.margin = margin(0,0,0,15, "mm"))
+p53mutssplicepos_barchart
+save_plot(file = "C:/Users/nwali/Downloads/p53mutssplicepos_barchart.svg",
+          p53mutssplicepos_barchart,
+          base_width = 34,
+          base_height = 7,
+          limitsize = FALSE)
+
+# stacked barchart of splice muts across all somatic cancers
+stackedbarchart_splicetissuesomatic <- ggplot(splicetissuesomatic_pivot_melted,
+                                              aes(x = factor(Cancer,
+                                                             levels = (splicetissuesomatic_pivot_melted %>%
+                                                                         subset(Isoform == "yes") %>%
+                                                                         arrange(-Proportion) %>%
+                                                                         pull(Cancer) %>% 
+                                                                         unique())),
+                                                  y = Proportion,
+                                                  fill = factor(temp,
+                                                                levels = c("yes",
+                                                                           "subset",
+                                                                           "total",
+                                                                           "no")))) +
+  geom_bar(position = "fill",
+           stat = "identity") + 
+  ggtitle("Presence of Somatic Mutations Affecting TP53 Splicing in Individuals with Cancer in cBioPortal") + 
+  ylab("Proportion of distinct individuals") +
+  xlab("Cancer") +
+  labs(fill = "Splicing affected") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0, 0), 
+                     breaks = scales::pretty_breaks(n = 6)) + 
+  scale_x_discrete(expand = c(0, 0)) + 
+  scale_fill_manual(
+    #breaks = c("yes",
+    #           "no"),
+    labels = c("yes", 
+               "yes; subset", 
+               "yes; total", 
+               "no"),
+    values = c("yes" = "skyblue",#"#56B4E9"
+               "subset" = "#0072B2",
+               "total" = "black",#"#D55E00"
+               "no" = "gray90")) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   vjust = 1,
+                                   hjust = 1),
+        axis.text = element_text(color = "black",
+                                 size = 12,
+                                 vjust = 0.5), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(5,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,5,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,5,0, "mm")),
+        legend.title = element_text(face = "bold",
+                                    size = 14, 
+                                    color = "black"),
+        legend.text = element_text(size = 12, 
+                                   color = "black"),
+        plot.margin = margin(2,2,2,60, 
+                             unit = "mm")) 
+stackedbarchart_splicetissuesomatic
+save_plot(file = "C:/Users/nwali/Downloads/stackedbarchart_splicetissuesomatic.svg",
+          stackedbarchart_splicetissuesomatic,
+          base_width = 32,
+          base_height = 12.5,
+          limitsize = FALSE)
+
+# make horiz barchart
+stackedbarchart_splicetissuesomatic_horiz <- ggplot(splicetissuesomatic_pivot_melted,
+                                                    aes(x = factor(Cancer,
+                                                                   levels = (splicetissuesomatic_pivot_melted %>%
+                                                                               subset(Isoform == "yes") %>%
+                                                                               arrange(-Proportion) %>%
+                                                                               pull(Cancer) %>% 
+                                                                               unique())),
+                                                        y = Proportion,
+                                                        fill = factor(temp,
+                                                                      levels = c("yes",
+                                                                                 "subset",
+                                                                                 "total",
+                                                                                 "no")))) +
+  geom_bar(position = position_fill(reverse = TRUE),
+           stat = "identity") + # add percents of yes to barchart
+  geom_text(aes(label = paste0(plyr::round_any(Proportion * 100,
+                                               0.1
+                                               #,
+                                               #f = ceiling
+                                               ),
+                               "%")),
+            position = position_fill(reverse = TRUE),
+            color = "black",
+            size = 4.5,
+            fontface = "bold",
+            alpha = 0.5, # level of transparency (lower is more transparent)
+            vjust = 0.5,
+            hjust = -0.25) +
+  ggtitle("Presence of Somatic Mutations Affecting TP53 Splicing in Individuals with Cancer in cBioPortal") + 
+  ylab("Proportion of distinct individuals") +
+  xlab("Cancer") +
+  labs(fill = "Splicing affected") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0, 0), 
+                     breaks = scales::pretty_breaks(n = 6),
+                     position = "right") + 
+  scale_x_discrete(expand = c(0, 0),
+                   limits = rev) + 
+  scale_fill_manual(
+    #breaks = c("yes",
+    #           "no"),
+    labels = c("yes", 
+               "yes; subset", 
+               "yes; total", 
+               "no"),
+    values = c("yes" = "skyblue",#"#56B4E9"
+               "subset" = "#0072B2",
+               "total" = "black",#"#D55E00"
+               "no" = "gray90")) +
+  theme_classic() + 
+  coord_flip(ylim = c(0, ((splicetissuesomatic_pivot_melted %>% 
+                             subset(Isoform == "yes") %>% 
+                             pull(Proportion) %>% 
+                             max() %>% 
+                             plyr::round_any(0.125, 
+                                             f = ceiling)) * 1.00001))) + # calls coord_cartesian to set axis limits to zoom in on percentages
+  theme(axis.text.x = element_text(angle = 0, 
+                                   hjust = 0.5), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x.top = element_text(margin = unit(c(0,0,10,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,10,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,10,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.box.spacing = margin(30), # increase space between legend and plot
+        legend.justification = "top", # put legend in top right of plot
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        axis.text.y = element_text(vjust = 0.5))
+stackedbarchart_splicetissuesomatic_horiz
+save_plot(file = "C:/Users/nwali/Downloads/stackedbarchart_splicetissuesomatic_horiz.svg",
+          stackedbarchart_splicetissuesomatic_horiz,
+          base_width = 18.5, 
+          base_height = 26,
+          limitsize = FALSE)
+
+
+
+
+
+#### ATO rescue ####
+
+# indicate whether patients have ATO-rescuable positions
+p53muts_forATO <- p53muts %>% 
+  transform(Cancer_Label = ifelse(CANCER_TYPE_DETAILED %in% gsub(" \\(.*", 
+                                                                 "",
+                                                                 pivotdfnobottomtotal100muts$CANCER_TYPE_DETAILED),
+                                  CANCER_TYPE_DETAILED, 
+                                  "OTHER")) %>% 
+  mutate(Codon = abs((parse_number(as.character(proteinChange), 
+                                   na = character())))) %>% 
+  mutate(ATO = ifelse(proteinChange %in% mut_rescued,
+                      "yes",
+                      "no"))
+
+p53mutssolecancer_forATO <- p53mutssolecancer %>% 
+  mutate(Codon = abs((parse_number(as.character(proteinChange), 
+                                   na = character())))) %>% 
+  mutate(ATO = ifelse(proteinChange %in% mut_rescued,
+                      "yes",
+                      "no"))
+
+p53mutsmultcancer_forATO <- p53mutsmultcancer %>% 
+  mutate(Codon = abs((parse_number(as.character(proteinChange), 
+                                   na = character())))) %>% 
+  mutate(ATO = ifelse(proteinChange %in% mut_rescued,
+                      "yes",
+                      "no"))
+
+# separate df of less-frequent mut cancers for 1:1 matching cancers proportions with germline
+ATOdf_match_germline <- p53muts_forATO %>% 
+  filter(str_detect(CANCER_TYPE,
+                    "Brain|Glio|Ependy|Embryo|glio|astrocy|Neuroep|Sellar|Breast|Soft Tissue Sarcoma") | CANCER_TYPE_DETAILED %in% c("Adrenocortical Carcinoma",
+                                                                                                                                     "Osteosarcoma")) %>%
+  mutate(match_label = ifelse(CANCER_TYPE_DETAILED %in% c("Adrenocortical Carcinoma",
+                                                          "Osteosarcoma"),
+                              CANCER_TYPE_DETAILED,
+                              CANCER_TYPE)) %>%
+  mutate(match_label = dplyr::case_when(str_detect(match_label, "Breast") ~ "Breast, any",
+                                        str_detect(match_label, "Brain|Glio|Ependy|Embryo|glio|astrocy|Neuroep|Sellar") ~ "Brain, any",
+                                        TRUE ~ match_label))
+
+# make pivot tables for specific ATO-rescuable and other positions proportions across pts
+p53mutsATOperpos <- PivotTable$new()
+p53mutsATOperpos$addData(p53muts_forATO)
+p53mutsATOperpos$addRowDataGroups("ATO") 
+p53mutsATOperpos$addRowDataGroups("proteinChange", addTotal = FALSE) # don't keep overall totals
+p53mutsATOperpos$defineCalculation(calculationName = "Count of distinct individuals",
+                                   summariseExpression = "n_distinct(patientId)")
+p53mutsATOperpos$sortRowDataGroups(levelNumber = 2,
+                                   orderBy = "calculation",
+                                   sortOrder = "desc")
+p53mutsATOperpos$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+p53mutssoleATOperpos <- PivotTable$new()
+p53mutssoleATOperpos$addData(p53mutssolecancer_forATO)
+p53mutssoleATOperpos$addRowDataGroups("ATO") 
+p53mutssoleATOperpos$addRowDataGroups("proteinChange", addTotal = FALSE) # don't keep overall totals
+p53mutssoleATOperpos$defineCalculation(calculationName = "Count of distinct individuals",
+                                       summariseExpression = "n_distinct(patientId)")
+p53mutssoleATOperpos$sortRowDataGroups(levelNumber = 2,
+                                       orderBy = "calculation",
+                                       sortOrder = "desc")
+p53mutssoleATOperpos$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+p53mutsmultATOperpos <- PivotTable$new()
+p53mutsmultATOperpos$addData(p53mutsmultcancer_forATO)
+p53mutsmultATOperpos$addRowDataGroups("ATO") 
+p53mutsmultATOperpos$addRowDataGroups("proteinChange", addTotal = FALSE) # don't keep overall totals
+p53mutsmultATOperpos$defineCalculation(calculationName = "Count of distinct individuals",
+                                       summariseExpression = "n_distinct(patientId)")
+p53mutsmultATOperpos$sortRowDataGroups(levelNumber = 2,
+                                       orderBy = "calculation",
+                                       sortOrder = "desc")
+p53mutsmultATOperpos$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+p53mutsATOpercancerpos <- PivotTable$new()
+p53mutsATOpercancerpos$addData(p53muts_forATO)
+p53mutsATOpercancerpos$addRowDataGroups("ATO") 
+p53mutsATOpercancerpos$addRowDataGroups("proteinChange", addTotal = FALSE) # don't keep overall totals
+p53mutsATOpercancerpos$addColumnDataGroups("Cancer_Label")
+p53mutsATOpercancerpos$defineCalculation(calculationName = "Count of distinct individuals",
+                                         summariseExpression = "n_distinct(patientId)")
+p53mutsATOpercancerpos$sortRowDataGroups(levelNumber = 2,
+                                         orderBy = "calculation",
+                                         sortOrder = "desc")
+p53mutsATOpercancerpos$sortColumnDataGroups(levelNumber = 1,
+                                            orderBy = "calculation",
+                                            sortOrder = "desc")
+p53mutsATOpercancerpos$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+p53mutsATOpercancerpos_matchgermline <- PivotTable$new()
+p53mutsATOpercancerpos_matchgermline$addData(ATOdf_match_germline)
+p53mutsATOpercancerpos_matchgermline$addRowDataGroups("ATO") 
+p53mutsATOpercancerpos_matchgermline$addRowDataGroups("proteinChange", addTotal = FALSE) # don't keep overall totals
+p53mutsATOpercancerpos_matchgermline$addColumnDataGroups("match_label")
+p53mutsATOpercancerpos_matchgermline$defineCalculation(calculationName = "Count of distinct individuals",
+                                         summariseExpression = "n_distinct(patientId)")
+p53mutsATOpercancerpos_matchgermline$sortRowDataGroups(levelNumber = 2,
+                                         orderBy = "calculation",
+                                         sortOrder = "desc")
+p53mutsATOpercancerpos_matchgermline$sortColumnDataGroups(levelNumber = 1,
+                                            orderBy = "calculation",
+                                            sortOrder = "desc")
+p53mutsATOpercancerpos_matchgermline$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+# convert pivot tables to dfs
+p53mutsATOperpos_pivot <- p53mutsATOperpos$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>% 
+  dplyr::rename(Total = `Count of distinct individuals`) %>%
+  remove_rownames()
+
+
+p53mutssoleATOperpos_pivot <- p53mutssoleATOperpos$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>% 
+  dplyr::rename(Total = `Count of distinct individuals`) %>%
+  remove_rownames()
+
+
+p53mutsmultATOperpos_pivot <- p53mutsmultATOperpos$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>% 
+  dplyr::rename(Total = `Count of distinct individuals`) %>%
+  remove_rownames()
+
+p53mutsATOpercancerpos_pivot <- p53mutsATOpercancerpos$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>% 
+  remove_rownames()
+
+p53mutsATOpercancerpos_matchgermline_pivot <- p53mutsATOpercancerpos_matchgermline$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>% 
+  remove_rownames()
+
+# calculate proportions of pts with ATO-rescuable muts by dividing down, remove total row and column, add pt numbers
+p53mutsATOperpos_pivot_calc <- p53mutsATOperpos_pivot %>%
+  transform(Calc = Total/as.numeric(p53mutsATOperpos_pivot[nrow(p53mutsATOperpos_pivot), "Total"])) %>% 
+  transform(Patient = paste0("All with cancer (",
+                             format(as.numeric(p53mutsATOperpos_pivot[nrow(p53mutsATOperpos_pivot), "Total"]), 
+                                    big.mark = ",", 
+                                    trim = TRUE),
+                             " individuals)")) %>%
+  transform(Label = ifelse(ATO == "yes",
+                           proteinChange,
+                           "Other")) %>%
+  subset(ATO != "Total") %>%
+  dplyr::select(-Total)
+
+p53mutssoleATOperpos_pivot_calc <- p53mutssoleATOperpos_pivot %>%
+  transform(Calc = Total/as.numeric(p53mutssoleATOperpos_pivot[nrow(p53mutssoleATOperpos_pivot), "Total"])) %>% 
+  transform(Patient = paste0("One cancer (",
+                             format(as.numeric(p53mutssoleATOperpos_pivot[nrow(p53mutssoleATOperpos_pivot), "Total"]), 
+                                    big.mark = ",", 
+                                    trim = TRUE),
+                             " individuals)")) %>%
+  transform(Label = ifelse(ATO == "yes",
+                           proteinChange,
+                           "Other")) %>%
+  subset(ATO != "Total") %>%
+  dplyr::select(-Total)
+
+p53mutsmultATOperpos_pivot_calc <- p53mutsmultATOperpos_pivot %>%
+  transform(Calc = Total/as.numeric(p53mutsmultATOperpos_pivot[nrow(p53mutsmultATOperpos_pivot), "Total"])) %>% 
+  transform(Patient = paste0("Multiple cancers (",
+                             format(as.numeric(p53mutsmultATOperpos_pivot[nrow(p53mutsmultATOperpos_pivot), "Total"]), 
+                                    big.mark = ",", 
+                                    trim = TRUE),
+                             " individuals)")) %>%
+  transform(Label = ifelse(ATO == "yes",
+                           proteinChange,
+                           "Other")) %>%
+  subset(ATO != "Total") %>%
+  dplyr::select(-Total)
+
+p53mutsATOpercancerpos_pivot_calc <- p53mutsATOpercancerpos_pivot %>% # add num pts to cancer colnames
+  rename_at(vars(3:(ncol(.) - 1)),
+            ~ paste0(.,
+                     " (",
+                     format(as.numeric(p53mutsATOpercancerpos_pivot[nrow(p53mutsATOpercancerpos_pivot), .]), 
+                            big.mark = ",", 
+                            trim = TRUE),
+                     " individuals)")) %>% # divide down each col by last value i.e. total pts
+  mutate(across(where(is.numeric),
+                ~ .x/last(.x))) %>% 
+  mutate(Label = ifelse(ATO == "yes",
+                        proteinChange,
+                        "Other")) %>%
+  subset(ATO != "Total") %>%
+  dplyr::select(-Total)
+
+p53mutsATOpercancerpos_pivot_melted <- p53mutsATOpercancerpos_pivot_calc %>% 
+  reshape2::melt() %>% 
+  dplyr::rename(Cancer = variable,
+                Proportion = value)
+
+p53mutsATOpercancerpos_matchgermline_calc <- p53mutsATOpercancerpos_matchgermline_pivot %>% # add num pts to cancer colnames
+  rename_at(vars(3:(ncol(.) - 1)),
+            ~ paste0(.,
+                     " (",
+                     format(as.numeric(p53mutsATOpercancerpos_matchgermline_pivot[nrow(p53mutsATOpercancerpos_matchgermline_pivot), .]), 
+                            big.mark = ",", 
+                            trim = TRUE),
+                     " individuals)")) %>% # divide down each col by last value i.e. total pts
+  mutate(across(where(is.numeric),
+                ~ .x/last(.x))) %>% 
+  mutate(Label = ifelse(ATO == "yes",
+                        proteinChange,
+                        "Other")) %>%
+  subset(ATO != "Total") %>%
+  dplyr::select(-Total)
+
+p53mutsATOpercancerpos_matchgermline_melted <- p53mutsATOpercancerpos_matchgermline_calc %>% 
+  reshape2::melt() %>% 
+  dplyr::rename(Cancer = variable,
+                Proportion = value)
+
+# save objects to read into germline analysis
+saveRDS(p53mutsATOpercancerpos_matchgermline_melted,
+        file = "C:\\Users\\nwali\\Downloads\\p53mutsATOpercancerpos_matchgermline_melted.rds")
+
+saveRDS(p53mutsATOperpos_pivot_calc,
+        file = "C:\\Users\\nwali\\Downloads\\p53mutsATOperpos_pivot_calc.rds")
+
+# make pivot tables to evaluate frequencies of ATO-rescuable alterations across sex, cancers, age, SD/SA, etc.
+ATOpivotdf <- p53muts_forATO %>% 
+  # transform(Cancer_Label = ifelse(CANCER_TYPE_DETAILED %in% gsub(" \\(.*", 
+  #                                                                "",
+  #                                                                pivotdfnobottomtotal100muts$CANCER_TYPE_DETAILED),
+  #                                 CANCER_TYPE_DETAILED, 
+  #                                 "OTHER")) %>% 
+  subset(ATO == "yes") 
+
+# p53mutsATOintronsex <- PivotTable$new()
+# p53mutsATOintronsex$addData(ATOpivotdf)
+# p53mutsATOintronsex$addRowDataGroups("ExonIntron")
+# p53mutsATOintronsex$addColumnDataGroups("Sex")
+# p53mutsATOintronsex$defineCalculation(calculationName = "Count of distinct individuals",
+#                                       summariseExpression = "n_distinct(patientId)")
+# p53mutsATOintronsex$sortColumnDataGroups(levelNumber = 1,
+#                                          orderBy = "calculation",
+#                                          sortOrder = "desc")
+# p53mutsATOintronsex$sortRowDataGroups(levelNumber = 1,
+#                                       orderBy = "calculation",
+#                                       sortOrder = "desc")
+# p53mutsATOintronsex$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+p53mutsATOpossex <- PivotTable$new()
+p53mutsATOpossex$addData(ATOpivotdf)
+p53mutsATOpossex$addRowDataGroups("proteinChange")
+p53mutsATOpossex$addColumnDataGroups("SEX")
+p53mutsATOpossex$defineCalculation(calculationName = "Count of distinct individuals",
+                                   summariseExpression = "n_distinct(patientId)")
+p53mutsATOpossex$sortColumnDataGroups(levelNumber = 1,
+                                      orderBy = "calculation",
+                                      sortOrder = "desc")
+p53mutsATOpossex$sortRowDataGroups(levelNumber = 1,
+                                   orderBy = "calculation",
+                                   sortOrder = "desc")
+p53mutsATOpossex$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+# p53mutsATOintronage <- PivotTable$new()
+# p53mutsATOintronage$addData(ATOpivotdf)
+# p53mutsATOintronage$addRowDataGroups("ExonIntron")
+# p53mutsATOintronage$addColumnDataGroups("Age_stratum")
+# p53mutsATOintronage$defineCalculation(calculationName = "Count of distinct individuals",
+#                                       summariseExpression = "n_distinct(patientId)")
+# p53mutsATOintronage$sortColumnDataGroups(levelNumber = 1,
+#                                          orderBy = "calculation",
+#                                          sortOrder = "desc")
+# p53mutsATOintronage$sortRowDataGroups(levelNumber = 1,
+#                                       orderBy = "calculation",
+#                                       sortOrder = "desc")
+# p53mutsATOintronage$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+p53mutsATOposage <- PivotTable$new()
+p53mutsATOposage$addData(ATOpivotdf)
+p53mutsATOposage$addRowDataGroups("proteinChange")
+p53mutsATOposage$addColumnDataGroups("Age_stratum")
+p53mutsATOposage$defineCalculation(calculationName = "Count of distinct individuals",
+                                   summariseExpression = "n_distinct(patientId)")
+p53mutsATOposage$sortColumnDataGroups(levelNumber = 1,
+                                      orderBy = "calculation",
+                                      sortOrder = "desc")
+p53mutsATOposage$sortRowDataGroups(levelNumber = 1,
+                                   orderBy = "calculation",
+                                   sortOrder = "desc")
+p53mutsATOposage$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+# p53mutsATOintron <- PivotTable$new()
+# p53mutsATOintron$addData(ATOpivotdf)
+# p53mutsATOintron$addRowDataGroups("ExonIntron")
+# p53mutsATOintron$addColumnDataGroups("Cancer_Label")
+# p53mutsATOintron$defineCalculation(calculationName = "Count of distinct individuals",
+#                                    summariseExpression = "n_distinct(patientId)")
+# p53mutsATOintron$sortColumnDataGroups(levelNumber = 1,
+#                                       orderBy = "calculation",
+#                                       sortOrder = "desc")
+# p53mutsATOintron$sortRowDataGroups(levelNumber = 1,
+#                                    orderBy = "calculation",
+#                                    sortOrder = "desc")
+# p53mutsATOintron$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+p53mutsATOpos <- PivotTable$new()
+p53mutsATOpos$addData(ATOpivotdf)
+p53mutsATOpos$addRowDataGroups("proteinChange")
+p53mutsATOpos$addColumnDataGroups("Cancer_Label")
+p53mutsATOpos$defineCalculation(calculationName = "Count of distinct individuals",
+                                summariseExpression = "n_distinct(patientId)")
+p53mutsATOpos$sortColumnDataGroups(levelNumber = 1,
+                                   orderBy = "calculation",
+                                   sortOrder = "desc")
+p53mutsATOpos$sortRowDataGroups(levelNumber = 1,
+                                orderBy = "calculation",
+                                sortOrder = "desc")
+p53mutsATOpos$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+# p53mutsATOintronsite <- PivotTable$new()
+# p53mutsATOintronsite$addData(ATOpivotdf)
+# p53mutsATOintronsite$addRowDataGroups("ExonIntron")
+# p53mutsATOintronsite$addColumnDataGroups("ATO_site")
+# p53mutsATOintronsite$defineCalculation(calculationName = "Count of distinct individuals",
+#                                        summariseExpression = "n_distinct(patientId)")
+# p53mutsATOintronsite$sortColumnDataGroups(levelNumber = 1,
+#                                           orderBy = "calculation",
+#                                           sortOrder = "desc")
+# p53mutsATOintronsite$sortRowDataGroups(levelNumber = 1,
+#                                        orderBy = "calculation",
+#                                        sortOrder = "desc")
+# p53mutsATOintronsite$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+# p53mutsATOpossite <- PivotTable$new()
+# p53mutsATOpossite$addData(ATOpivotdf)
+# p53mutsATOpossite$addRowDataGroups("proteinChange")
+# p53mutsATOpossite$addColumnDataGroups("ATO_site")
+# p53mutsATOpossite$defineCalculation(calculationName = "Count of distinct individuals",
+#                                     summariseExpression = "n_distinct(patientId)")
+# p53mutsATOpossite$sortColumnDataGroups(levelNumber = 1,
+#                                        orderBy = "calculation",
+#                                        sortOrder = "desc")
+# p53mutsATOpossite$sortRowDataGroups(levelNumber = 1,
+#                                     orderBy = "calculation",
+#                                     sortOrder = "desc")
+# p53mutsATOpossite$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+# convert pivot tables to dataframes
+# p53mutsATOintronsex_pivot <- p53mutsATOintronsex$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+#   mutate(across(everything(),
+#                 ~ replace_na(.,
+#                              0))) %>% 
+#   arrange(abs(parse_number(ExonIntron))) %>% # arrange muts by increasing exon number
+#   mutate(ExonIntron = paste0(ExonIntron,
+#                                 " (",
+#                                 Total,
+#                                 " individuals)")) %>% 
+#   mutate(ExonIntron = ifelse(Total == 1,
+#                                 gsub("individuals",
+#                                      "individual",
+#                                      ExonIntron),
+#                                 ExonIntron)) %>% 
+#   remove_rownames()
+
+p53mutsATOpossex_pivot <- p53mutsATOpossex$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>% 
+  arrange(abs(parse_number(proteinChange))) %>% # arrange muts by increasing exon number
+  mutate(proteinChange = paste0(proteinChange,
+                                " (",
+                                Total,
+                                " individuals)")) %>% 
+  mutate(proteinChange = ifelse(Total == 1,
+                                gsub("individuals",
+                                     "individual",
+                                     proteinChange),
+                                proteinChange)) %>% 
+  remove_rownames()
+
+# p53mutsATOintronage_pivot <- p53mutsATOintronage$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+#   mutate(across(everything(),
+#                 ~ replace_na(.,
+#                              0))) %>% 
+#   arrange(abs(parse_number(ExonIntron))) %>% # arrange muts by increasing exon number
+#   mutate(ExonIntron = paste0(ExonIntron,
+#                                 " (",
+#                                 Total,
+#                                 " individuals)")) %>% 
+#   mutate(ExonIntron = ifelse(Total == 1,
+#                                 gsub("individuals",
+#                                      "individual",
+#                                      ExonIntron),
+#                                 ExonIntron)) %>% 
+#   remove_rownames()
+
+p53mutsATOposage_pivot <- p53mutsATOposage$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>% 
+  arrange(abs(parse_number(proteinChange))) %>% # arrange muts by increasing exon number
+  mutate(proteinChange = paste0(proteinChange,
+                                " (",
+                                Total,
+                                " individuals)")) %>% 
+  mutate(proteinChange = ifelse(Total == 1,
+                                gsub("individuals",
+                                     "individual",
+                                     proteinChange),
+                                proteinChange)) %>% 
+  remove_rownames()
+
+# p53mutsATOintron_pivot <- p53mutsATOintron$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+#   mutate(across(everything(),
+#                 ~ replace_na(.,
+#                              0))) %>% 
+#   arrange(abs(parse_number(ExonIntron))) %>% # arrange muts by increasing exon number
+#   mutate(ExonIntron = paste0(ExonIntron,
+#                                 " (",
+#                                 Total,
+#                                 " individuals)")) %>% 
+#   mutate(ExonIntron = ifelse(Total == 1,
+#                                 gsub("individuals",
+#                                      "individual",
+#                                      ExonIntron),
+#                                 ExonIntron)) %>% 
+#   remove_rownames()
+
+p53mutsATOpos_pivot <- p53mutsATOpos$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>% 
+  arrange(abs(parse_number(proteinChange))) %>% # arrange muts by increasing exon number
+  mutate(proteinChange = paste0(proteinChange,
+                                " (",
+                                Total,
+                                " individuals)")) %>% 
+  mutate(proteinChange = ifelse(Total == 1,
+                                gsub("individuals",
+                                     "individual",
+                                     proteinChange),
+                                proteinChange)) %>% 
+  remove_rownames()
+
+# p53mutsATOintronsite_pivot <- p53mutsATOintronsite$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+#   mutate(across(everything(),
+#                 ~ replace_na(.,
+#                              0))) %>% 
+#   arrange(abs(parse_number(ExonIntron))) %>% # arrange muts by increasing exon number
+#   mutate(ExonIntron = paste0(ExonIntron,
+#                                 " (",
+#                                 Total,
+#                                 " individuals)")) %>% 
+#   mutate(ExonIntron = ifelse(Total == 1,
+#                                 gsub("individuals",
+#                                      "individual",
+#                                      ExonIntron),
+#                                 ExonIntron)) %>% 
+#   remove_rownames()
+
+# p53mutsATOpossite_pivot <- p53mutsATOpossite$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+#   mutate(across(everything(),
+#                 ~ replace_na(.,
+#                              0))) %>% 
+#   arrange(abs(parse_number(proteinChange))) %>% # arrange muts by increasing exon number
+#   mutate(proteinChange = paste0(proteinChange,
+#                                      " (",
+#                                      Total,
+#                                      " individuals)")) %>% 
+#   mutate(proteinChange = ifelse(Total == 1,
+#                                      gsub("individuals",
+#                                           "individual",
+#                                           proteinChange),
+#                                      proteinChange)) %>% 
+#   remove_rownames()
+
+# divide across by total number and remove total row at bottom
+# p53mutsATOintronsex_pivot_calc <- p53mutsATOintronsex_pivot %>%
+#   mutate_at(vars(2:Total),
+#             .funs = ~./Total) %>% 
+#   filter(!str_detect(ExonIntron,
+#                      'Total')) %>% 
+#   dplyr::select(-Total)
+
+p53mutsATOpossex_pivot_calc <- p53mutsATOpossex_pivot %>%
+  mutate_at(vars(2:Total),
+            .funs = ~./Total) %>% 
+  filter(!str_detect(proteinChange,
+                     'Total')) %>% 
+  dplyr::select(-Total)
+
+# p53mutsATOintronage_pivot_calc <- p53mutsATOintronage_pivot %>%
+#   mutate_at(vars(2:Total),
+#             .funs = ~./Total) %>% 
+#   filter(!str_detect(ExonIntron,
+#                      'Total')) %>% 
+#   dplyr::select(-Total)
+
+p53mutsATOposage_pivot_calc <- p53mutsATOposage_pivot %>%
+  mutate_at(vars(2:Total),
+            .funs = ~./Total) %>% 
+  filter(!str_detect(proteinChange,
+                     'Total')) %>% 
+  dplyr::select(-Total)
+
+# p53mutsATOintron_pivot_calc <- p53mutsATOintron_pivot %>%
+#   mutate_at(vars(2:Total),
+#             .funs = ~./Total) %>% 
+#   filter(!str_detect(ExonIntron,
+#                      'Total')) %>% 
+#   dplyr::select(-Total)
+
+p53mutsATOpos_pivot_calc <- p53mutsATOpos_pivot %>%
+  mutate_at(vars(2:Total),
+            .funs = ~./Total) %>% 
+  filter(!str_detect(proteinChange,
+                     'Total')) %>% 
+  dplyr::select(-Total)
+
+# p53mutsATOintronsite_pivot_calc <- p53mutsATOintronsite_pivot %>%
+#   mutate_at(vars(2:Total),
+#             .funs = ~./Total) %>% 
+#   filter(!str_detect(ExonIntron,
+#                      'Total')) %>% 
+#   dplyr::select(-Total)
+
+# p53mutsATOpossite_pivot_calc <- p53mutsATOpossite_pivot %>%
+#   mutate_at(vars(2:Total),
+#             .funs = ~./Total) %>% 
+#   filter(!str_detect(proteinChange,
+#                      'Total')) %>% 
+#   dplyr::select(-Total)
+
+
+# melt calc dataframes to use for stacked barcharts
+# p53mutsATOintronsex_pivot_melted <- p53mutsATOintronsex_pivot_calc %>% 
+#   reshape2::melt() %>% 
+#   dplyr::rename(Sex = variable,
+#                 Proportion = value)
+
+p53mutsATOpossex_pivot_melted <- p53mutsATOpossex_pivot_calc %>% 
+  reshape2::melt() %>% 
+  dplyr::rename(Sex = variable,
+                Proportion = value)
+
+# p53mutsATOintronage_pivot_melted <- p53mutsATOintronage_pivot_calc %>% 
+#   reshape2::melt() %>% 
+#   dplyr::rename(Age = variable,
+#                 Proportion = value)
+
+p53mutsATOposage_pivot_melted <- p53mutsATOposage_pivot_calc %>% 
+  reshape2::melt() %>% 
+  dplyr::rename(Age = variable,
+                Proportion = value)
+
+# p53mutsATOintron_pivot_melted <- p53mutsATOintron_pivot_calc %>% 
+#   reshape2::melt() %>% 
+#   dplyr::rename(Cancer = variable,
+#                 Proportion = value)
+
+p53mutsATOpos_pivot_melted <- p53mutsATOpos_pivot_calc %>% 
+  reshape2::melt() %>% 
+  dplyr::rename(Cancer = variable,
+                Proportion = value)
+
+# p53mutsATOintronsite_pivot_melted <- p53mutsATOintronsite_pivot_calc %>% 
+#   reshape2::melt() %>% 
+#   dplyr::rename(Site = variable,
+#                 Proportion = value)
+
+# p53mutsATOpossite_pivot_melted <- p53mutsATOpossite_pivot_calc %>% 
+#   reshape2::melt() %>% 
+#   dplyr::rename(Site = variable,
+#                 Proportion = value)
+
+# fix naming of age strata
+p53mutsATOposage_pivot_melted <- p53mutsATOposage_pivot_melted %>% 
+  mutate(Age = gsub("X",
+                    "",
+                    Age)) %>% 
+  mutate(Age = gsub("\\.and\\.",
+                    " and ",
+                    Age)) %>% 
+  mutate(Age = gsub("\\.",
+                    "-",
+                    Age))
+
+# p53mutsATOintronage_pivot_melted <- p53mutsATOintronage_pivot_melted %>% 
+#   mutate(Age = gsub("X",
+#                        "",
+#                        Age)) %>% 
+#   mutate(Age = gsub("\\.and\\.",
+#                        " and ",
+#                        Age)) %>% 
+#   mutate(Age = gsub("\\.",
+#                        "-",
+#                        Age))
+
+# fix cancer naming and transform as factor for stacked barcharts
+# p53mutsATOintron_pivot_melted <- p53mutsATOintron_pivot_melted %>% 
+#   transform(Cancer = gsub("\\.",
+#                           " ",
+#                           Cancer))
+# 
+# p53mutsATOintron_pivot_melted$Cancer <- factor(p53mutsATOintron_pivot_melted$Cancer,
+#                                                levels = c(sort(unique(p53mutsATOintron_pivot_melted$Cancer))[sort(unique(p53mutsATOintron_pivot_melted$Cancer)) != "OTHER"], 
+#                                                           "OTHER"))
+
+p53mutsATOpos_pivot_melted <- p53mutsATOpos_pivot_melted %>% 
+  transform(Cancer = gsub(" ",
+                          " ",
+                          Cancer))
+
+p53mutsATOpos_pivot_melted$Cancer <- factor(p53mutsATOpos_pivot_melted$Cancer,
+                                            levels = c(sort(unique(p53mutsATOpos_pivot_melted$Cancer))[sort(unique(p53mutsATOpos_pivot_melted$Cancer)) != "OTHER"], 
+                                                       "OTHER"))
+
+# fix splice site naming and transform as factor for stacked barchart
+# p53mutsATOpossite_pivot_melted <- p53mutsATOpossite_pivot_melted %>% 
+#   transform(Site = gsub("consensus\\.",
+#                         "",
+#                         Site)) %>%
+#   transform(Site = dplyr::case_when(Site == "SD" ~ "Splice donor",
+#                                     Site == "SA" ~ "Splice acceptor",
+#                                     Site == "no" ~ "Neither",
+#                                     TRUE ~ "notyet"))
+# 
+# p53mutsATOpossite_pivot_melted$Site <- factor(p53mutsATOpossite_pivot_melted$Site,
+#                                               levels = sort(unique(p53mutsATOpossite_pivot_melted$Site),
+#                                                             decreasing = TRUE))
+
+
+# p53mutsATOintronsite_pivot_melted <- p53mutsATOintronsite_pivot_melted %>% 
+#   transform(Site = gsub("consensus\\.",
+#                         "",
+#                         Site)) %>%
+#   transform(Site = dplyr::case_when(Site == "SD" ~ "Splice donor",
+#                                     Site == "SA" ~ "Splice acceptor",
+#                                     Site == "no" ~ "Neither",
+#                                     TRUE ~ "notyet"))
+# 
+# p53mutsATOintronsite_pivot_melted$Site <- factor(p53mutsATOintronsite_pivot_melted$Site,
+#                                                  levels = sort(unique(p53mutsATOintronsite_pivot_melted$Site),
+#                                                                decreasing = TRUE))
+
+
+# make muts and exons/introns as factors for stacked barchart
+# p53mutsATOintronsex_pivot_melted$ExonIntron <- factor(p53mutsATOintronsex_pivot_melted$ExonIntron,
+#                                                       levels = unique(p53mutsATOintronsex_pivot_melted$ExonIntron))
+
+p53mutsATOpossex_pivot_melted$proteinChange <- factor(p53mutsATOpossex_pivot_melted$proteinChange,
+                                                      levels = unique(p53mutsATOpossex_pivot_melted$proteinChange))
+
+# p53mutsATOintronage_pivot_melted$ExonIntron <- factor(p53mutsATOintronage_pivot_melted$ExonIntron,
+#                                                       levels = unique(p53mutsATOintronage_pivot_melted$ExonIntron))
+
+p53mutsATOposage_pivot_melted$proteinChange <- factor(p53mutsATOposage_pivot_melted$proteinChange,
+                                                      levels = unique(p53mutsATOposage_pivot_melted$proteinChange))
+
+# p53mutsATOintron_pivot_melted$ExonIntron <- factor(p53mutsATOintron_pivot_melted$ExonIntron,
+#                                                    levels = unique(p53mutsATOintron_pivot_melted$ExonIntron))
+
+p53mutsATOpos_pivot_melted$proteinChange <- factor(p53mutsATOpos_pivot_melted$proteinChange,
+                                                   levels = unique(p53mutsATOpos_pivot_melted$proteinChange))
+
+# p53mutsATOintronsite_pivot_melted$ExonIntron <- factor(p53mutsATOintronsite_pivot_melted$ExonIntron,
+#                                                        levels = unique(p53mutsATOintronsite_pivot_melted$ExonIntron))
+
+# p53mutsATOpossite_pivot_melted$proteinChange <- factor(p53mutsATOpossite_pivot_melted$proteinChange,
+#                                                          levels = unique(p53mutsATOpossite_pivot_melted$proteinChange))
+
+# ensuring pts with both ATO-rescuable and other muts all count as yes for ATO-rescuable alterations
+p53muts_forATO <- p53muts_forATO %>%
+  transform(ATO = ifelse(patientId %in% intersect(p53muts_forATO %>%
+                                                    subset(ATO == "yes") %>%
+                                                    pull(patientId), 
+                                                  p53muts_forATO %>%
+                                                    subset(ATO == "no") %>%
+                                                    pull(patientId)),
+                         "yes",
+                         ATO))
+
+p53mutssolecancer_forATO <- p53mutssolecancer_forATO %>%
+  transform(ATO = ifelse(patientId %in% intersect(p53mutssolecancer_forATO %>%
+                                                    subset(ATO == "yes") %>%
+                                                    pull(patientId), 
+                                                  p53mutssolecancer_forATO %>%
+                                                    subset(ATO == "no") %>%
+                                                    pull(patientId)),
+                         "yes",
+                         ATO))
+
+p53mutsmultcancer_forATO <- p53mutsmultcancer_forATO %>%
+  transform(ATO = ifelse(patientId %in% intersect(p53mutsmultcancer_forATO %>%
+                                                    subset(ATO == "yes") %>%
+                                                    pull(patientId), 
+                                                  p53mutsmultcancer_forATO %>%
+                                                    subset(ATO == "no") %>%
+                                                    pull(patientId)),
+                         "yes",
+                         ATO))
+
+# need overall ATO proportions across all somatic cancers
+clindatacombined_forATO <- clindatacombined %>%
+  mutate(ATO = ifelse(patientId %in% (p53muts_forATO %>%
+                                        subset(ATO == "yes") %>%
+                                        pull(patientId) %>%
+                                        unique()),
+                      "yes",
+                      "no"))
+
+# need overall counts of ATO-rescuable muts in each dataset and across all somatic cancers
+p53mutsATO <- PivotTable$new()
+p53mutsATO$addData(p53muts_forATO)
+p53mutsATO$addRowDataGroups("ATO")
+p53mutsATO$defineCalculation(calculationName = "Count of distinct individuals",
+                             summariseExpression = "n_distinct(patientId)")
+p53mutsATO$sortRowDataGroups(levelNumber = 1,
+                             orderBy = "calculation",
+                             sortOrder = "desc")
+p53mutsATO$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+p53mutssoleATO <- PivotTable$new()
+p53mutssoleATO$addData(p53mutssolecancer_forATO)
+p53mutssoleATO$addRowDataGroups("ATO")
+p53mutssoleATO$defineCalculation(calculationName = "Count of distinct individuals",
+                                 summariseExpression = "n_distinct(patientId)")
+p53mutssoleATO$sortRowDataGroups(levelNumber = 1,
+                                 orderBy = "calculation",
+                                 sortOrder = "desc")
+p53mutssoleATO$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+p53mutsmultATO <- PivotTable$new()
+p53mutsmultATO$addData(p53mutsmultcancer_forATO)
+p53mutsmultATO$addRowDataGroups("ATO")
+p53mutsmultATO$defineCalculation(calculationName = "Count of distinct individuals",
+                                 summariseExpression = "n_distinct(patientId)")
+p53mutsmultATO$sortRowDataGroups(levelNumber = 1,
+                                 orderBy = "calculation",
+                                 sortOrder = "desc")
+p53mutsmultATO$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+p53mutsATOpercancer <- PivotTable$new()
+p53mutsATOpercancer$addData(p53muts_forATO)
+p53mutsATOpercancer$addRowDataGroups("ATO")
+p53mutsATOpercancer$addColumnDataGroups("Cancer_Label")
+p53mutsATOpercancer$defineCalculation(calculationName = "Count of distinct individuals",
+                                      summariseExpression = "n_distinct(patientId)")
+p53mutsATOpercancer$sortRowDataGroups(levelNumber = 1,
+                                      orderBy = "calculation",
+                                      sortOrder = "desc")
+p53mutsATOpercancer$sortColumnDataGroups(levelNumber = 1,
+                                         orderBy = "calculation",
+                                         sortOrder = "desc")
+p53mutsATOpercancer$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+
+ATOtissuesomatic <- PivotTable$new()
+ATOtissuesomatic$addData(clindatacombined_forATO)
+ATOtissuesomatic$addRowDataGroups("CANCER_TYPE_DETAILED")
+ATOtissuesomatic$addColumnDataGroups("ATO")
+ATOtissuesomatic$defineCalculation(calculationName = "Count of distinct individuals", 
+                                      summariseExpression = "n_distinct(patientId)")
+ATOtissuesomatic$sortColumnDataGroups(levelNumber = 1, 
+                                         orderBy = "calculation", 
+                                         sortOrder = "desc")
+ATOtissuesomatic$sortRowDataGroups(levelNumber = 1,
+                                      orderBy = "calculation", 
+                                      sortOrder = "desc")
+ATOtissuesomatic$evaluatePivot()
+
+# convert pivot tables to dfs
+p53mutsATO_pivot <- p53mutsATO$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>% 
+  dplyr::rename(Total = `Count of distinct individuals`) %>%
+  remove_rownames()
+
+p53mutssoleATO_pivot <- p53mutssoleATO$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>% 
+  dplyr::rename(Total = `Count of distinct individuals`) %>%
+  remove_rownames()
+
+p53mutsmultATO_pivot <- p53mutsmultATO$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>% 
+  dplyr::rename(Total = `Count of distinct individuals`) %>%
+  remove_rownames()
+
+p53mutsATOpercancer_pivot <- p53mutsATOpercancer$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>% 
+  remove_rownames()
+
+ATOtissuesomatic_pivot <- ATOtissuesomatic$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>% 
+  remove_rownames()
+
+# calculate proportions of pts with ATO-rescuable muts by dividing down, remove total row and column, add pt numbers
+p53mutsATO_pivot_calc <- p53mutsATO_pivot %>%
+  transform(Calc = Total/as.numeric(p53mutsATO_pivot[nrow(p53mutsATO_pivot), "Total"])) %>% 
+  transform(Patient = paste0("All with cancer (",
+                             format(as.numeric(p53mutsATO_pivot[nrow(p53mutsATO_pivot), "Total"]), 
+                                    big.mark = ",", 
+                                    trim = TRUE),
+                             " individuals)")) %>%
+  subset(ATO != "Total") %>%
+  dplyr::select(-Total) 
+
+p53mutssoleATO_pivot_calc <- p53mutssoleATO_pivot %>%
+  transform(Calc = Total/as.numeric(p53mutssoleATO_pivot[nrow(p53mutssoleATO_pivot), "Total"])) %>% 
+  transform(Patient = paste0("One cancer (",
+                             format(as.numeric(p53mutssoleATO_pivot[nrow(p53mutssoleATO_pivot), "Total"]), 
+                                    big.mark = ",", 
+                                    trim = TRUE),
+                             " individuals)")) %>%
+  subset(ATO != "Total") %>%
+  dplyr::select(-Total) 
+
+p53mutsmultATO_pivot_calc <- p53mutsmultATO_pivot %>%
+  transform(Calc = Total/as.numeric(p53mutsmultATO_pivot[nrow(p53mutsmultATO_pivot), "Total"])) %>% 
+  transform(Patient = paste0("Multiple cancers (",
+                             format(as.numeric(p53mutsmultATO_pivot[nrow(p53mutsmultATO_pivot), "Total"]), 
+                                    big.mark = ",", 
+                                    trim = TRUE),
+                             " individuals)")) %>%
+  subset(ATO != "Total") %>%
+  dplyr::select(-Total) 
+
+p53mutsATOpercancer_pivot_calc <- p53mutsATOpercancer_pivot %>% # add num pts to cancer colnames
+  rename_at(vars(2:(ncol(.) - 1)),
+            ~ paste0(.,
+                     " (",
+                     format(as.numeric(p53mutsATOpercancer_pivot[nrow(p53mutsATOpercancer_pivot), .]), 
+                            big.mark = ",", 
+                            trim = TRUE),
+                     " individuals)")) %>% # divide down each col by last value i.e. total pts
+  mutate(across(where(is.numeric),
+                ~ .x/last(.x))) %>% 
+  subset(ATO != "Total") %>%
+  dplyr::select(-Total) 
+
+p53mutsATOpercancer_pivot_melted <- p53mutsATOpercancer_pivot_calc %>% 
+  reshape2::melt() %>% 
+  dplyr::rename(Cancer = variable,
+                Proportion = value)
+
+# divide across for proportions of ATO-rescuable muts across all somatic cancers, and keep total too
+ATOtissuesomatic_pivot_calc <- ATOtissuesomatic_pivot %>%
+  subset(CANCER_TYPE_DETAILED %in% gsub(" \\(.*",
+                                        "",
+                                        pivotdf_muttissuesomatic100muts$CANCER_TYPE_DETAILED)) %>%
+  subset(Total >= 50) %>%
+  mutate(CANCER_TYPE_DETAILED = paste0(CANCER_TYPE_DETAILED,
+                                       " (",
+                                       format(Total, 
+                                              big.mark = ",", 
+                                              trim = TRUE),
+                                       " individuals)")) %>%
+  mutate_at(vars(2:Total), 
+            .funs = ~./Total) %>%
+  dplyr::select(-c(Total))
+
+ATOtissuesomatic_pivot_melted <- ATOtissuesomatic_pivot_calc %>% 
+  reshape2::melt() %>% 
+  dplyr::rename(ATO = variable,
+                Cancer = CANCER_TYPE_DETAILED,
+                Proportion = value) %>%
+  mutate(temp = ifelse(str_detect(Cancer, "Total") & ATO == "yes",
+                       "total",
+                       as.character(ATO))) %>%
+  mutate(temp = ifelse(gsub(" \\(.*",
+                            "",
+                            Cancer) %in% gsub(" \\(.*",
+                                              "",
+                                              pivotdfnobottomtotal100muts$CANCER_TYPE_DETAILED) & ATO == "yes",
+                       "subset",
+                       temp))
+
+# rbind because same columns to make df for stacked barchart
+pt_ATO_df_ggplot <- do.call(rbind, 
+                            list(p53mutssoleATO_pivot_calc, 
+                                 p53mutsmultATO_pivot_calc, 
+                                 p53mutsATO_pivot_calc))
+
+pt_ATOperpos_df_ggplot <- do.call(rbind,
+                                  list(p53mutssoleATOperpos_pivot_calc,
+                                       p53mutsmultATOperpos_pivot_calc,
+                                       p53mutsATOperpos_pivot_calc))
+
+# prepare contingency table of ATO-rescuable p53mutssole, p53mutsmult, all for chi square tests
+pt_ATO_df_contingency <- Reduce(full_join,
+                                list(p53mutssoleATO_pivot %>%
+                                       dplyr::rename(`Sole` = Total),
+                                     p53mutsmultATO_pivot %>%
+                                       dplyr::rename(`Multiple` = Total),
+                                     p53mutsATO_pivot %>%
+                                       dplyr::rename(`All` = Total)))
+
+# chi square test for association b/t ATO-rescuable alteration and p53mutssole or p53mutsmult pts
+stats::chisq.test(as.matrix(pt_ATO_df_contingency[1:2,2:3]))
+
+# identify top ATO-recuable muts in all pts
+top_ATO_in_somatic_cbioportal_vector <- pt_ATOperpos_df_ggplot %>%
+  filter(str_detect(Patient, 
+                    "All with cancer") & ATO == "yes") %>% 
+  arrange(-Calc) %>%
+  head(6) %>% # doing to 6 b/c analogous germline vector has 7 muts from all, sole, mult (now 6 sole)
+  pull(Label)
+
+# identify top somatic muts in all pts
+top_muts_somatic_cbioportal_vector <- p53muts %>% 
+  # drop_na(c(SEX, 
+  #           Age_stratum)) %>% 
+  group_by(proteinChange) %>% 
+  summarise(n = n_distinct(patientId)) %>% 
+  arrange(-n) %>% 
+  filter(!(grepl("\\?", 
+                 proteinChange))) %>% # removes splices, indels, anything without specific residue
+  head(10) %>% # do to 10 b/c analogous germline vector has 12 muts from all, sole, mult (now 10 sole)
+  dplyr::rename(Mutant_Residue = proteinChange,
+                Num_Pts = n) %>% 
+  pull(Mutant_Residue) %>% 
+  trimws() 
+
+# save these vectors to read into germline script for plots 
+saveRDS(top_ATO_in_somatic_cbioportal_vector,
+        file = "C:/Users/nwali/Downloads/top_ATO_in_somatic_cbioportal_vector.rds")
+
+saveRDS(top_muts_somatic_cbioportal_vector,
+        file = "C:/Users/nwali/Downloads/top_muts_somatic_cbioportal_vector.rds")
+
+# read in analogous vectors from germline dataset
+top_ATO_in_germline_vector <- readRDS(file = "C:/Users/nwali/Downloads/top_ATO_in_germline_vector.rds")
+top_muts_germline_vector <- readRDS(file = "C:/Users/nwali/Downloads/top_muts_germline_vector.rds")
+
+# combine somatic cbioportal with germline muts so that all top muts in both are plotted at once
+top_ATO_germ_som_cbio_combined <- unique(c(top_ATO_in_germline_vector,
+                                           top_ATO_in_somatic_cbioportal_vector))
+
+top_muts_germ_som_cbio_combined <- unique(c(top_muts_germline_vector,
+                                            top_muts_somatic_cbioportal_vector))
+
+# color code muts exclusively in germ or som, and keep common muts as black 
+
+# setdiff syntax matters, here saying check which elements of first vector i.e germline muts not in second vector i.e the overlap of germline and somatic, would need to reverse terms for other way or do union(setdiff(1,2), setdiff(2,1)) to get what is not common in in either vector
+# setdiff(x, y) returns the elements of x that are not in y but asymmetric difference, so setdiff(y, x) gives what elements of y are not in x and could be different answer
+
+# which germline muts not in germ and som overlap i.e. exclusive to germline
+top_ATO_combined_germ_exclusive <- setdiff(top_ATO_in_germline_vector,
+                                           intersect(top_ATO_in_germline_vector,
+                                                     top_ATO_in_somatic_cbioportal_vector))
+
+top_muts_combined_germ_exclusive <- setdiff(top_muts_germline_vector,
+                                            intersect(top_muts_germline_vector,
+                                                      top_muts_somatic_cbioportal_vector))
+
+# which somatic muts not in germ and som overlap i.e. exclusive to somatic
+top_ATO_combined_som_cbio_exclusive <- setdiff(top_ATO_in_somatic_cbioportal_vector,
+                                               intersect(top_ATO_in_germline_vector,
+                                                         top_ATO_in_somatic_cbioportal_vector))
+
+top_muts_combined_som_cbio_exclusive <- setdiff(top_muts_somatic_cbioportal_vector,
+                                                intersect(top_muts_germline_vector,
+                                                          top_muts_somatic_cbioportal_vector))
+
+# set color of strip i.e. facet text and create named vectors of colors for plots
+strip_text_color_topATO <- dplyr::case_when(top_ATO_germ_som_cbio_combined %in%  top_ATO_combined_germ_exclusive ~ "#56B4E9",
+                                            top_ATO_germ_som_cbio_combined %in% top_ATO_combined_som_cbio_exclusive ~ "#CC79A7",
+                                            top_ATO_germ_som_cbio_combined %in% intersect(top_ATO_in_germline_vector,
+                                                                                          top_ATO_in_somatic_cbioportal_vector) ~ "black",
+                                            TRUE ~ "notyet")
+
+strip_text_color_topmuts <- dplyr::case_when(top_muts_germ_som_cbio_combined %in% top_muts_combined_germ_exclusive ~ "#56B4E9",
+                                             top_muts_germ_som_cbio_combined %in% top_muts_combined_som_cbio_exclusive ~ "#CC79A7",
+                                             top_muts_germ_som_cbio_combined %in% intersect(top_muts_germline_vector,
+                                                                                            top_muts_somatic_cbioportal_vector) ~ "black",
+                                             TRUE ~ "notyet")
+
+strip_text_color_topATO_scale <- setNames(strip_text_color_topATO,
+                                          top_ATO_germ_som_cbio_combined)
+
+strip_text_color_topmuts_scale <- setNames(strip_text_color_topmuts,
+                                           top_muts_germ_som_cbio_combined)
+
+# create conditional strips objects that can be added to facet plots and order by codon number
+conditional_strips_ATO <- strip_themed(text_x = elem_list_text(colour = strip_text_color_topATO_scale[order(abs(parse_number(names(strip_text_color_topATO_scale))))], 
+                                                               face = 'bold'))
+
+conditional_strips_muts <- strip_themed(text_x = elem_list_text(colour = strip_text_color_topmuts_scale[order(abs(parse_number(names(strip_text_color_topmuts_scale))))],
+                                                                face = 'bold'))
+
+# confirm that facet colors ordering is the same as facet levels
+table(top_ATO_germ_som_cbio_combined[order(abs(parse_number(top_ATO_germ_som_cbio_combined)))] == names(strip_text_color_topATO_scale[order(abs(parse_number(names(strip_text_color_topATO_scale))))])) # should be all 10 (now 9) TRUE
+
+# confirm that facet colors ordering is the same as facet levels
+table(top_muts_germ_som_cbio_combined[order(abs(parse_number(top_muts_germ_som_cbio_combined)))] == names(strip_text_color_topmuts_scale[order(abs(parse_number(names(strip_text_color_topmuts_scale))))])) # should be all 15 (now 13) TRUE
+
+# prepare contingency table to compare germline vs somatic
+# pull out muts of interest and pivot wider/transpose so that muts are cols 
+contingency_som_germ_ATO <- p53mutsATOperpos_pivot %>% 
+  subset(proteinChange %in% top_ATO_germ_som_cbio_combined) %>% 
+  dplyr::select(c(proteinChange,
+                  Total)) %>% 
+  mutate(Patient = "Somatic") %>% 
+  pivot_wider(names_from = proteinChange,
+              values_from = Total) %>% 
+  remove_rownames()
+
+contingency_som_germ_cancers_ATO <- p53mutsATOpercancerpos_matchgermline_pivot %>% 
+  subset(ATO == "yes" & proteinChange %in% top_ATO_germ_som_cbio_combined) %>% 
+  dplyr::select(-c(ATO,
+                   Total)) %>% 
+  remove_rownames() %>% 
+  column_to_rownames("proteinChange") %>%
+  t() %>%
+  as.data.frame() %>% 
+  rownames_to_column("Cancer") %>% 
+  mutate(Cancer = paste0(Cancer,
+                         "_somatic"))
+
+# not needed here as all muts are present in somatic
+# # b/c 1 mut not in germline but in somatic, need to make placeholder filled with 0
+# # use setdiff to get mut not in common and add as new col of 0
+# contingency_som_germ_ATO[[setdiff(top_ATO_germ_som_cbio_combined,
+#                                   colnames(contingency_som_germ_ATO))]] <- 0
+# 
+# contingency_som_germ_cancers_ATO[[setdiff(top_ATO_germ_som_cbio_combined,
+#                                           colnames(contingency_som_germ_cancers_ATO))]] <- 0
+
+# reorder colnames per top ATO vector which will be how somatic is made, helping rbind later on
+contingency_som_germ_ATO <- contingency_som_germ_ATO %>% 
+  relocate(all_of(top_ATO_germ_som_cbio_combined),
+           .after = 1)
+
+contingency_som_germ_cancers_ATO <- contingency_som_germ_cancers_ATO %>% 
+  relocate(all_of(top_ATO_germ_som_cbio_combined),
+           .after = 1)
+
+# add new cols with subtractions of pts/cancers with muts from total
+# add new cols as placeholders
+contingency_som_germ_ATO[c(paste0(colnames(contingency_som_germ_ATO)[-1],
+                                  "_Not"))] <- NA 
+
+contingency_som_germ_cancers_ATO[c(paste0(colnames(contingency_som_germ_cancers_ATO)[-1],
+                                          "_Not"))] <- NA 
+
+# reorder cols such that pt/cancer is first and not muts immediately follow respective muts
+contingency_som_germ_ATO <- contingency_som_germ_ATO[,sort(names(contingency_som_germ_ATO))] %>% 
+  relocate(Patient)
+
+contingency_som_germ_cancers_ATO <- 
+  contingency_som_germ_cancers_ATO[,sort(names(contingency_som_germ_cancers_ATO))] %>% 
+  relocate(Cancer)
+
+# subtract final pt/cancer tally from each mut in its own vector, add to df and collapse rows to remove NAs, thus line up NAs where new subtracted values only go into other mut cols
+contingency_som_germ_ATO <- rbind(contingency_som_germ_ATO,
+                                  c(NA, (last(p53mutsATOperpos_pivot$Total) - contingency_som_germ_ATO[1,] %>% as.numeric()) %>% head(-1))) %>% 
+  summarise(across(everything(),
+                   ~ na.omit(.x))) %>% 
+  mutate(Total = last(p53mutsATOperpos_pivot$Total))
+
+# because need to subtract total minus each previous column, make intermediate df with all total pt numbers per cancer and subtract total from previous column to col of interest
+blah <- left_join(contingency_som_germ_cancers_ATO,
+                  p53mutsATOpercancerpos_matchgermline_pivot %>% # total num pts per cancer
+                    dplyr::select(-c(ATO,
+                                     Total)) %>% 
+                    last() %>% 
+                    mutate(proteinChange = "Total") %>%
+                    remove_rownames() %>% 
+                    column_to_rownames("proteinChange") %>% 
+                    t() %>% 
+                    as.data.frame() %>% 
+                    rownames_to_column("Cancer") %>% 
+                    mutate(Cancer = paste0(Cancer,
+                                           "_somatic")),
+                  by = "Cancer")
+
+# define columns to be subtracted
+columns_to_subtract <- colnames(blah)[grepl("_Not",
+                                            colnames(blah))]
+
+# subtract cols
+blah[, columns_to_subtract] <- lapply(columns_to_subtract, 
+                                      function(col) {
+                                        index <- match(col, 
+                                                       names(blah)) # index of current col
+                                        blah[, "Total"] - blah[, index - 1] # total - prev col
+                                      })
+
+contingency_som_germ_cancers_ATO <- blah
+
+# save objects for germline analyses
+saveRDS(contingency_som_germ_ATO,
+        file = "C:\\Users\\nwali\\Downloads\\contingency_som_germ_ATO.rds")
+
+saveRDS(contingency_som_germ_cancers_ATO,
+        file = "C:\\Users\\nwali\\Downloads\\contingency_som_germ_cancers_ATO.rds")
+
+# make stacked barchart of ATO-rescuable alterations yes no in pts
+stackedbarchart_pts_ATO <- ggplot(pt_ATO_df_ggplot %>%
+                                    filter(str_detect(Patient,
+                                                      "All")), 
+                                  aes(x = Patient,
+                                      #factor(Patient,
+                                      #levels = sort(unique(pt_ATO_df_ggplot$Patient),
+                                      #decreasing = TRUE)[order(c(2,3,1))]), 
+                                      y = Calc, 
+                                      fill = relevel(as.factor(ATO),
+                                                     ref = "yes"))) + 
+  geom_bar(position = "fill", 
+           stat = "identity") + 
+  ggtitle("Proportion of ATO-Rescuable \nSomatic Mutations in TP53 in \nIndividuals with Cancer in cBioPortal") +
+  xlab("Patient type") +
+  ylab("Proportion of distinct individuals") +
+  labs(fill = "ATO-rescuable") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 6)) +
+  scale_x_discrete(expand = c(0,0)) +
+  scale_fill_manual(values = c("#0072B2",
+                               "lightgray")) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(5,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,5,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,5,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        plot.margin = margin(0,0,0,20, "mm"))
+stackedbarchart_pts_ATO
+save_plot(file = "C:/Users/nwali/Downloads/stackedbarchart_pts_ATO_barchart.svg",
+          stackedbarchart_pts_ATO,
+          base_width = 4.25,
+          base_height = 7.5,
+          limitsize = FALSE)
+
+# because many somatic muts in mult pts, percents not adding up to 100% so shrink other muts to fit expected %
+to_fit_mult <- 1 - (sum(pt_ATOperpos_df_ggplot %>%
+                          subset(ATO == "yes" & grepl("Multiple", 
+                                                      Patient)) %>%
+                          pull(Calc)))
+
+# other percentages in all and sole pts not exactly adding up to 100% either but very close
+to_fit_all <- 1 - (sum(pt_ATOperpos_df_ggplot %>%
+                         subset(ATO == "yes" & grepl("All", 
+                                                     Patient)) %>%
+                         pull(Calc)))
+
+to_fit_sole <- 1 - (sum(pt_ATOperpos_df_ggplot %>%
+                          subset(ATO == "yes" & grepl("One", 
+                                                      Patient)) %>%
+                          pull(Calc)))
+
+# plot zoomed in stacked barchart with adjusted %
+stackedbarchart_pts_ATOperpos <- ggplot(pt_ATOperpos_df_ggplot %>%
+                                          mutate(Calc_label = Calc) %>%
+                                          mutate(Calc_label = dplyr::case_when(ATO == "no" & grepl("Multiple", 
+                                                                                                   Patient) ~ to_fit_mult/nrow(pt_ATOperpos_df_ggplot %>%
+                                                                                                                                 subset(ATO == "no" & grepl("Multiple", 
+                                                                                                                                                            Patient))),
+                                                                               ATO == "no" & grepl("All", 
+                                                                                                   Patient) ~ to_fit_all/nrow(pt_ATOperpos_df_ggplot %>%
+                                                                                                                                subset(ATO == "no" & grepl("All", 
+                                                                                                                                                           Patient))),
+                                                                               ATO == "no" & grepl("One", 
+                                                                                                   Patient) ~ to_fit_sole/nrow(pt_ATOperpos_df_ggplot %>%
+                                                                                                                                 subset(ATO == "no" & grepl("One", 
+                                                                                                                                                            Patient))),
+                                                                               TRUE ~ Calc_label)) %>%
+                                          filter(str_detect(Patient,
+                                                            "All")), 
+                                        aes(x = Patient,
+                                            #factor(Patient,
+                                            # levels = sort(unique(pt_ATOperpos_df_ggplot$Patient),
+                                            # decreasing = TRUE)[order(c(2,3,1))]), 
+                                            y = Calc_label, 
+                                            fill = factor(Label,
+                                                          levels = c((pt_ATOperpos_df_ggplot %>%
+                                                                        filter(str_detect(Patient,
+                                                                                          "All")) %>%
+                                                                        arrange(-Calc) %>%
+                                                                        pull(Label) %>%
+                                                                        unique())[(pt_ATOperpos_df_ggplot %>%
+                                                                                     filter(str_detect(Patient,
+                                                                                                       "All")) %>% 
+                                                                                     arrange(-Calc) %>%
+                                                                                     pull(Label) %>%
+                                                                                     unique()) != "Other"], 
+                                                                     "Other")))) + 
+  geom_bar(position = "fill", 
+           stat = "identity") + 
+  ggtitle("Proportion of ATO-Rescuable \nSomatic Mutations in TP53 in \nIndividuals with Cancer in cBioPortal") +
+  xlab("Patient type") +
+  ylab("Proportion of distinct individuals") +
+  labs(fill = "Mutation") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 6)) +
+  scale_x_discrete(expand = c(0,0)) +
+  coord_cartesian(ylim = c((plyr::round_any(to_fit_all, 
+                                            0.02, 
+                                            f = floor)), 1.0000001), # set axis limits in coord_cartesian to zoom in on percentages
+                  expand = FALSE) +
+  scale_fill_manual(values = c(hue_pal()(length(c((pt_ATOperpos_df_ggplot %>%
+                                                     filter(str_detect(Patient,
+                                                                       "All")) %>%
+                                                     arrange(-Calc) %>%
+                                                     pull(Label) %>%
+                                                     unique())[(pt_ATOperpos_df_ggplot %>%
+                                                                  filter(str_detect(Patient,
+                                                                                    "All")) %>% 
+                                                                  arrange(-Calc) %>%
+                                                                  pull(Label) %>%
+                                                                  unique()) != "Other"], 
+                                                  "Other"))) %>% 
+                                 head(-1),
+                               "lightgray")) + # extract automatic gradient colors and replace final one i.e. other with lightgray
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(5,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,5,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,5,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        plot.margin = margin(0,0,0,20, "mm"))
+stackedbarchart_pts_ATOperpos
+save_plot(file = "C:/Users/nwali/Downloads/stackedbarchart_pts_ATOperpos_barchart.svg",
+          stackedbarchart_pts_ATOperpos,
+          base_width = 6.75,
+          base_height = 8.75,
+          limitsize = FALSE)
+
+# make facet barchart on top ATO-rescuable germ/som across all pts
+barchart_pts_keyATOpos_combined <- ggplot(pt_ATOperpos_df_ggplot %>% 
+                                            filter(str_detect(Patient, 
+                                                              "All with cancer")) %>%
+                                            subset(ATO == "yes" & Label %in% top_ATO_germ_som_cbio_combined),
+                                          aes(x = Patient,
+                                              #factor(Patient,
+                                              #levels = sort(unique(pt_ATOperpos_df_ggplot$Patient))[c(1,3,2)]),
+                                              y = Calc,
+                                              fill = Patient
+                                              #factor(Patient,
+                                              #levels = sort(unique(pt_ATOperpos_df_ggplot$Patient))[c(1,3,2)])
+                                          )) + 
+  geom_bar(stat = "identity", 
+           position = position_dodge2()) + # to keep some space b/t barcharts in same mut
+  geom_text(aes(label = paste0(plyr::round_any(Calc * 100, 
+                                               0.1),
+                               "%")),
+            color = "black",
+            size = 3.5,
+            fontface = "bold",
+            alpha = 0.75, # level of transparency (lower is more transparent)
+            vjust = -0.5,
+            hjust = 0.5) +
+  xlab("Patient type") +
+  ylab("Proportion of distinct individuals") +
+  labs(fill = "Patient type") + 
+  ggtitle("Proportion of ATO-Rescuable Mutations in TP53 in Individuals with Cancer") + # different facet_wrap function which allows conditional strip i.e. facet formatting
+  facet_wrap2(. ~ factor(Label,
+                         levels = top_ATO_germ_som_cbio_combined[order(abs(parse_number(top_ATO_germ_som_cbio_combined)))]), # order by codon number so that colors match
+              ncol = 5,
+              strip = conditional_strips_ATO,
+              trim_blank = FALSE, # leave blank plots where muts not in dataset
+              axes = "all", # show internal axes but without x labels
+              remove_labels = "x", # show internal axes but without x labels
+              drop = FALSE) + # ensure muts not in dataset still shown as blanks
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 5), 
+                     limits = c(0, ((pt_ATOperpos_df_ggplot %>% 
+                                       filter(str_detect(Patient, 
+                                                         "All with cancer")) %>%
+                                       subset(ATO == "yes" & Label %in% top_ATO_germ_som_cbio_combined) %>% 
+                                       pull(Calc) %>% 
+                                       max() %>% 
+                                       plyr::round_any(0.01, 
+                                                       f = ceiling)) * 1.000001))) +
+  scale_x_discrete(
+    #limits = rev, 
+    expand = c(0,0),
+    drop = FALSE) + # ensure muts not in dataset are still shown as blanks
+  scale_fill_manual(values = c("#D55E00",
+                               "#0072B2",
+                               "#009E73"
+                               # ,"#E69F00",
+                               
+  )) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(10,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,10,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,10,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        legend.box.spacing = margin(30), # increase space between legend and plot
+        legend.justification = "top", # put legend in top right of plot
+        #legend.position = c(,), # c(0,0) bottom left, c(1,1) top-right within plot
+        strip.background = element_blank(),
+        strip.text = element_text(color = "black",
+                                  size = 14,
+                                  face = "bold",
+                                  margin = margin(10,0,10,0, "mm")),
+        panel.spacing.x = unit(5, "lines"),
+        panel.spacing.y = unit(-8, "lines"),
+        plot.margin = margin(0,5,0,20, unit = "mm"))
+barchart_pts_keyATOpos_combined
+save_plot(file = "C:/Users/nwali/Downloads/barchart_facet_pts_keyATOpos_combined.svg",
+          barchart_pts_keyATOpos_combined,
+          base_width = 13.75,
+          base_height = 10.5,
+          limitsize = FALSE)
+
+# make facet barchart on top muts germ/som across all, sole, mult
+barchart_pts_topmutsifATO_combined <- ggplot(pt_ATOperpos_df_ggplot %>% 
+                                               filter(str_detect(Patient, 
+                                                                 "All with cancer")) %>%
+                                               subset(ATO == "yes" & Label %in% top_muts_germ_som_cbio_combined),
+                                             aes(x = Patient,
+                                                 #factor(Patient,
+                                                 #levels = sort(unique(pt_ATOperpos_df_ggplot$Patient))[c(1,3,2)]),
+                                                 y = Calc,
+                                                 fill = Patient
+                                                 #factor(Patient,
+                                                 #levels = sort(unique(pt_ATOperpos_df_ggplot$Patient))[c(1,3,2)])
+                                             )) + 
+  geom_bar(stat = "identity", 
+           position = position_dodge2()) + # to keep some space b/t barcharts in same mut
+  geom_text(aes(label = paste0(plyr::round_any(Calc * 100, 
+                                               0.1),
+                               "%")),
+            color = "black",
+            size = 3.5,
+            fontface = "bold",
+            alpha = 0.75, # level of transparency (lower is more transparent)
+            vjust = -0.5,
+            hjust = 0.5) +
+  xlab("Patient type") +
+  ylab("Proportion of distinct individuals") +
+  labs(fill = "Patient type") + 
+  ggtitle("Proportion of Hotspot Mutations in TP53 in Individuals with Cancer that are Effectively Rescued by ATO") + # different facet_wrap function which allows conditional strip i.e. facet formatting
+  facet_wrap2(. ~ factor(Label,
+                         levels = top_muts_germ_som_cbio_combined[order(abs(parse_number(top_muts_germ_som_cbio_combined)))]), # order by codon number so that colors match
+              ncol = 5,
+              strip = conditional_strips_muts,
+              trim_blank = FALSE, # leave blank plots where muts not in dataset
+              axes = "all", # show internal y axes but without labels
+              remove_labels = "x", # show internal y axes but without labels
+              drop = FALSE) + # ensure muts not in dataset still shown as blanks
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 6), 
+                     limits = c(0, ((pt_ATOperpos_df_ggplot %>% 
+                                       filter(str_detect(Patient, 
+                                                         "All with cancer")) %>%
+                                       subset(ATO == "yes" & Label %in% top_muts_germ_som_cbio_combined) %>% 
+                                       pull(Calc) %>%
+                                       max() %>% 
+                                       plyr::round_any(0.01, 
+                                                       f = ceiling)) * 1.000001))) +
+  scale_x_discrete(
+    #limits = rev, 
+    expand = c(0,0),
+    drop = FALSE) + # ensure muts not in dataset are still shown as blanks
+  scale_fill_manual(values = c("#D55E00",
+                               "#0072B2",
+                               "#009E73"
+                               # ,"#E69F00",
+                               
+  )) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(10,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,10,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,10,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        legend.justification = "top", # put legend in top right of plot
+        #legend.position = c(,), # c(0,0) bottom left, c(1,1) top-right within plot
+        strip.background = element_blank(),
+        strip.text = element_text(color = "black",
+                                  size = 14,
+                                  face = "bold",
+                                  margin = margin(10,0,10,0, "mm")),
+        panel.spacing.x = unit(5, "lines"),
+        panel.spacing.y = unit(-8, "lines"),
+        plot.margin = margin(0,0,0,20, unit = "mm"))
+barchart_pts_topmutsifATO_combined
+save_plot(file = "C:/Users/nwali/Downloads/barchart_facet_pts_keymutsifATO_combined.svg",
+          barchart_pts_topmutsifATO_combined,
+          base_width = 13.75,
+          base_height = 15,
+          limitsize = FALSE)
+
+# make stacked barchart
+stackedbarchart_pts_ATO_cancers <- ggplot(p53mutsATOpercancer_pivot_melted %>% 
+                                            subset(!str_detect(Cancer,
+                                                               "OTHER")),
+                                          aes(x = factor(Cancer,
+                                                         levels = p53mutsATOpercancer_pivot_melted %>% 
+                                                           subset(!str_detect(Cancer,
+                                                                              "OTHER")) %>% 
+                                                           subset(ATO == "yes") %>%
+                                                           arrange(-Proportion) %>% 
+                                                           pull(Cancer) %>% 
+                                                           unique() %>% 
+                                                           as.vector()),
+                                              y = Proportion,
+                                              fill = relevel(as.factor(ATO),
+                                                             ref = "yes"))) + 
+  geom_bar(position = "fill", 
+           stat = "identity") + 
+  ggtitle("Proportion of ATO-Rescuable Somatic Mutations in TP53 in Individuals with Cancer in cBioPortal") + 
+  xlab("Cancer") +
+  ylab("Proportion of distinct individuals") +
+  labs(fill = "ATO-rescuable") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 6)) +
+  scale_x_discrete(expand = c(0,0)) +
+  scale_fill_manual(values = c("#0072B2",
+                               "lightgray")) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(5,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,5,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,5,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        plot.margin = margin(0,0,0,50, "mm"))
+stackedbarchart_pts_ATO_cancers
+save_plot(file = "C:/Users/nwali/Downloads/stackedbarchart_pts_ATO_cancers_barchart.svg",
+          stackedbarchart_pts_ATO_cancers,
+          base_width = 17,
+          base_height = 9,
+          limitsize = FALSE)
+
+# make same barchart but also with total included
+df_with_total_ggplot <- p53mutsATOpercancer_pivot %>% # add num pts to cancer colnames
+  rename_at(vars(2:(ncol(.)
+                    #- 1
+                    )),
+            ~ paste0(.,
+                     " (",
+                     format(as.numeric(p53mutsATOpercancer_pivot[nrow(p53mutsATOpercancer_pivot), .]), 
+                            big.mark = ",", 
+                            trim = TRUE),
+                     " individuals)")) %>% # divide down each col by last value i.e. total pts
+  mutate(across(where(is.numeric),
+                ~ .x/last(.x))) %>% 
+  subset(ATO != "Total") %>%
+  #dplyr::select(-Total) %>% 
+  reshape2::melt() %>% 
+  dplyr::rename(Cancer = variable,
+                Proportion = value) %>%
+  mutate(label = ifelse(str_detect(Cancer, "Total") & ATO == "yes",
+                        "yes; total",
+                        ATO))
+
+# make stacked barchart with total
+stackedbarchart_pts_ATO_cancers_total <- ggplot(df_with_total_ggplot %>% 
+                                                  subset(!str_detect(Cancer,
+                                                                     "OTHER")),
+                                                aes(x = factor(Cancer,
+                                                               levels = df_with_total_ggplot %>% 
+                                                                 subset(!str_detect(Cancer,
+                                                                                    "OTHER")) %>% 
+                                                                 subset(ATO == "yes") %>%
+                                                                 arrange(-Proportion) %>% 
+                                                                 pull(Cancer) %>% 
+                                                                 unique() %>% 
+                                                                 as.vector()),
+                                                    y = Proportion,
+                                                    fill = factor(label,
+                                                                  levels = c("yes", 
+                                                                             "yes; total",
+                                                                             "no")))) + 
+  geom_bar(position = "fill", 
+           stat = "identity") + 
+  ggtitle("Proportion of ATO-Rescuable Somatic Mutations in TP53 in Individuals with Cancer in cBioPortal") + 
+  xlab("Cancer") +
+  ylab("Proportion of distinct individuals") +
+  labs(fill = "ATO-rescuable") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 6)) +
+  scale_x_discrete(expand = c(0,0)) +
+  scale_fill_manual(values = c("#0072B2",
+                               "black",
+                               "lightgray")) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(5,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,5,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,5,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        plot.margin = margin(0,0,0,50, "mm"))
+stackedbarchart_pts_ATO_cancers_total
+save_plot(file = "C:/Users/nwali/Downloads/stackedbarchart_pts_ATO_cancers_total.svg",
+          stackedbarchart_pts_ATO_cancers_total,
+          base_width = 17.5,
+          base_height = 9,
+          limitsize = FALSE)
+
+# make horiz stacked barchart with total
+stackedbarchart_pts_ATO_cancers_total_horiz <- ggplot(df_with_total_ggplot %>% 
+                                                        subset(!str_detect(Cancer, 
+                                                                           "OTHER")),
+                                                      aes(x = factor(Cancer,
+                                                                     levels = df_with_total_ggplot %>% 
+                                                                       subset(!str_detect(Cancer,
+                                                                                          "OTHER")) %>% 
+                                                                       subset(ATO == "yes") %>%
+                                                                       arrange(-Proportion) %>% 
+                                                                       pull(Cancer) %>% 
+                                                                       unique() %>% 
+                                                                       as.vector()),
+                                                          y = Proportion,
+                                                          fill = factor(label,
+                                                                        levels = c("yes", 
+                                                                                   "yes; total",
+                                                                                   "no")))) + 
+  geom_bar(position = position_fill(reverse = TRUE),
+           stat = "identity") + # add percents of yes to barchart
+  geom_text(aes(label = paste0(plyr::round_any(Proportion * 100,
+                                               0.1
+                                               #,
+                                               #f = ceiling
+                                               ),
+                               "%")),
+            position = position_fill(reverse = TRUE),
+            color = "black",
+            size = 4.5,
+            fontface = "bold",
+            alpha = 0.5, # level of transparency (lower is more transparent)
+            vjust = 0.5,
+            hjust = -0.25) +
+  ggtitle("Proportion of ATO-Rescuable Somatic Mutations \nin TP53 in Individuals with Cancer in cBioPortal") + 
+  xlab("Cancer") +
+  ylab("Proportion of distinct individuals") +
+  labs(fill = "ATO-rescuable") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 6),
+                     position = "right") +
+  scale_x_discrete(expand = c(0,0),
+                   limits = rev) +
+  scale_fill_manual(values = c("#0072B2",
+                               "black",
+                               "lightgray")) +
+  theme_classic() + 
+  coord_flip(ylim = c(0, ((df_with_total_ggplot %>% 
+                             subset(!str_detect(Cancer, 
+                                                "OTHER")) %>% 
+                             subset(ATO == "yes") %>% 
+                             pull(Proportion) %>% 
+                             max() %>% 
+                             plyr::round_any(0.1167, 
+                                             f = ceiling)) * 1.00001))) + # calls coord_cartesian to set axis limits to zoom in on percentages
+  theme(axis.text.x = element_text(angle = 0, 
+                                   hjust = 0.5), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x.top = element_text(margin = unit(c(0,0,10,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,10,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,10,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.justification = "top", # put legend in top right of plot
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        axis.text.y = element_text(vjust = 0.5))
+stackedbarchart_pts_ATO_cancers_total_horiz
+save_plot(file = "C:/Users/nwali/Downloads/stackedbarchart_pts_ATO_cancers_total_horiz.svg",
+          stackedbarchart_pts_ATO_cancers_total_horiz,
+          base_width = 15.5,
+          base_height = 14.25,
+          limitsize = FALSE)
+
+# make horiz stacked barchart
+stackedbarchart_pts_ATO_cancers_horiz <- ggplot(p53mutsATOpercancer_pivot_melted %>% 
+                                                  subset(!str_detect(Cancer, 
+                                                                     pattern = "OTHER")),
+                                                aes(x = factor(Cancer,
+                                                               levels = p53mutsATOpercancer_pivot_melted %>% 
+                                                                 subset(!str_detect(Cancer,
+                                                                                    pattern = "OTHER")) %>% 
+                                                                 subset(ATO == "yes") %>%
+                                                                 arrange(-Proportion) %>% 
+                                                                 pull(Cancer) %>% 
+                                                                 unique() %>% 
+                                                                 as.vector()),
+                                                    y = Proportion,
+                                                    fill = relevel(as.factor(ATO),
+                                                                   ref = "yes"))) +
+  geom_bar(position = position_fill(reverse = TRUE),
+           stat = "identity") + # add percents of yes to barchart
+  geom_text(aes(label = paste0(plyr::round_any(Proportion * 100,
+                                               0.1
+                                               #,
+                                               #f = ceiling
+                                               ),
+                               "%")),
+            position = position_fill(reverse = TRUE),
+            color = "black",
+            size = 4.5,
+            fontface = "bold",
+            alpha = 0.5, # level of transparency (lower is more transparent)
+            vjust = 0.5,
+            hjust = -0.25) +
+  ggtitle("Proportion of ATO-Rescuable Somatic Mutations \nin TP53 in Individuals with Cancer in cBioPortal") + 
+  xlab("Cancer") +
+  ylab("Proportion of distinct individuals") +
+  labs(fill = "ATO-rescuable") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 6),
+                     position = "right") +
+  scale_x_discrete(expand = c(0,0),
+                   limits = rev) +
+  scale_fill_manual(values = c("#0072B2",
+                               "lightgray")) +
+  theme_classic() + 
+  coord_flip(ylim = c(0, ((p53mutsATOpercancer_pivot_melted %>% 
+                             subset(!str_detect(Cancer, 
+                                                pattern = "OTHER")) %>% 
+                             subset(ATO == "yes") %>% 
+                             pull(Proportion) %>% 
+                             max() %>% 
+                             plyr::round_any(0.1167, 
+                                             f = ceiling)) * 1.00001))) + # calls coord_cartesian to set axis limits to zoom in on percentages
+  theme(axis.text.x = element_text(angle = 0, 
+                                   hjust = 0.5), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x.top = element_text(margin = unit(c(0,0,10,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,10,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,10,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.justification = "top", # put legend in top right of plot
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        axis.text.y = element_text(vjust = 0.5))
+stackedbarchart_pts_ATO_cancers_horiz
+save_plot(file = "C:/Users/nwali/Downloads/stackedbarchart_pts_ATO_cancers_horiz_barchart.svg",
+          stackedbarchart_pts_ATO_cancers_horiz,
+          base_width = 15.5,
+          base_height = 13.5,
+          limitsize = FALSE)
+
+
+# b/c multiple somatic muts in pts, just in case percents != 100%, shrink other muts to fit expected %
+to_fit <- p53mutsATOpercancer_pivot_melted %>%
+  subset(ATO == "no")
+
+# get how many cancers to account for
+length(to_fit$Cancer) # 31 here including other
+
+# plot zoomed in stacked barchart
+stackedbarchart_pts_ATO_cancers_pos <- ggplot(p53mutsATOpercancerpos_pivot_melted %>% 
+                                                mutate(Proportion_label = Proportion) %>% 
+                                                mutate(Proportion_label = dplyr::case_when(ATO == "no" & Cancer == as.character(to_fit$Cancer[1]) ~ to_fit$Proportion[1]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[1]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[2]) ~ to_fit$Proportion[2]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[2]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[3]) ~ to_fit$Proportion[3]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[3]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[4]) ~ to_fit$Proportion[4]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[4]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[5]) ~ to_fit$Proportion[5]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[5]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[6]) ~ to_fit$Proportion[6]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[6]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[7]) ~ to_fit$Proportion[7]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[7]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[8]) ~ to_fit$Proportion[8]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[8]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[9]) ~ to_fit$Proportion[9]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[9]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[10]) ~ to_fit$Proportion[10]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                  subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[10]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[11]) ~ to_fit$Proportion[11]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                  subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[11]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[12]) ~ to_fit$Proportion[12]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                  subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[12]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[13]) ~ to_fit$Proportion[13]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                  subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[13]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[14]) ~ to_fit$Proportion[14]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                  subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[14]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[15]) ~ to_fit$Proportion[15]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                  subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[15]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[16]) ~ to_fit$Proportion[16]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                  subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[16]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[17]) ~ to_fit$Proportion[17]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                  subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[17]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[18]) ~ to_fit$Proportion[18]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                  subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[18]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[19]) ~ to_fit$Proportion[19]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                  subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[19]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[20]) ~ to_fit$Proportion[20]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                  subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[20]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[21]) ~ to_fit$Proportion[21]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                  subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[21]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[22]) ~ to_fit$Proportion[22]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                  subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[22]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[23]) ~ to_fit$Proportion[23]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                  subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[23]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[24]) ~ to_fit$Proportion[24]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                  subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[24]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[25]) ~ to_fit$Proportion[25]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                  subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[25]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[26]) ~ to_fit$Proportion[26]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                  subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[26]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[27]) ~ to_fit$Proportion[27]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                  subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[27]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[28]) ~ to_fit$Proportion[28]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                  subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[28]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[29]) ~ to_fit$Proportion[29]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                  subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[29]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[30]) ~ to_fit$Proportion[30]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                  subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[30]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[31]) ~ to_fit$Proportion[31]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                  subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[31]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[32]) ~ to_fit$Proportion[32]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                  subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[32]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[33]) ~ to_fit$Proportion[33]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                  subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[33]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[34]) ~ to_fit$Proportion[34]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                  subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[34]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[35]) ~ to_fit$Proportion[35]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                  subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[35]))),
+                                                                                           ATO == "no" & Cancer == as.character(to_fit$Cancer[36]) ~ to_fit$Proportion[36]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                  subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[36]))),
+                                                                                           TRUE ~ Proportion_label)) %>% 
+                                                subset(!str_detect(Cancer,
+                                                                   "OTHER")), 
+                                              aes(x = factor(Cancer,
+                                                             levels = p53mutsATOpercancer_pivot_melted %>% 
+                                                               subset(!str_detect(Cancer,
+                                                                                  "OTHER")) %>% 
+                                                               subset(ATO == "yes") %>%
+                                                               arrange(-Proportion) %>% 
+                                                               pull(Cancer) %>% 
+                                                               unique() %>% 
+                                                               as.vector()), 
+                                                  y = Proportion_label, 
+                                                  fill = factor(Label,
+                                                                levels = c((p53mutsATOpercancerpos_pivot_melted %>%
+                                                                              arrange(-Proportion) %>%
+                                                                              pull(Label) %>%
+                                                                              unique())[(p53mutsATOpercancerpos_pivot_melted %>% 
+                                                                                           arrange(-Proportion) %>%
+                                                                                           pull(Label) %>%
+                                                                                           unique()) != "Other"], 
+                                                                           "Other")))) + 
+  geom_bar(position = "fill", 
+           stat = "identity") + 
+  ggtitle("Proportion of ATO-Rescuable Somatic Mutations in TP53 in Individuals with Cancer in cBioPortal") + 
+  xlab("Cancer") +
+  ylab("Proportion of distinct individuals") +
+  labs(fill = "Mutation") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 7)) +
+  scale_x_discrete(expand = c(0,0)) +
+  coord_cartesian(ylim = c((plyr::round_any(min(to_fit$Proportion), 
+                                            0.05, 
+                                            f = floor)), 1.0000001), # set axis limits in coord_cartesian to zoom in on percentages
+                  expand = FALSE) + 
+  scale_fill_manual(values = c(hue_pal()(length(c((p53mutsATOpercancerpos_pivot_melted %>%
+                                                     arrange(-Proportion) %>%
+                                                     pull(Label) %>%
+                                                     unique())[(p53mutsATOpercancerpos_pivot_melted %>% 
+                                                                  arrange(-Proportion) %>%
+                                                                  pull(Label) %>%
+                                                                  unique()) != "Other"], 
+                                                  "Other"))) %>% 
+                                 head(-1),
+                               "lightgray")) + # extract automatic gradient colors and replace final one i.e. other with lightgray
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(5,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,5,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,5,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        plot.margin = margin(0,0,0,50, "mm"))
+stackedbarchart_pts_ATO_cancers_pos
+save_plot(file = "C:/Users/nwali/Downloads/stackedbarchart_pts_ATO_cancers_pos_barchart.svg",
+          stackedbarchart_pts_ATO_cancers_pos,
+          base_width = 23,
+          base_height = 10,
+          limitsize = FALSE)
+
+
+# because multiple somatic muts in pts, just in case percents != 100%, shrink other muts to fit expected %
+to_fit <- p53mutsATOpercancer_pivot_melted %>%
+  subset(ATO == "no")
+
+# get how many cancers to account for
+length(to_fit$Cancer) # 31 here including other
+
+# plot zoomed in stacked barchart
+stackedbarchart_pts_ATO_cancers_pos_horiz <- ggplot(p53mutsATOpercancerpos_pivot_melted %>% 
+                                                      mutate(Proportion_label = Proportion) %>% 
+                                                      mutate(Proportion_label = dplyr::case_when(ATO == "no" & Cancer == as.character(to_fit$Cancer[1]) ~ to_fit$Proportion[1]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                      subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[1]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[2]) ~ to_fit$Proportion[2]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                      subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[2]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[3]) ~ to_fit$Proportion[3]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                      subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[3]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[4]) ~ to_fit$Proportion[4]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                      subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[4]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[5]) ~ to_fit$Proportion[5]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                      subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[5]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[6]) ~ to_fit$Proportion[6]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                      subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[6]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[7]) ~ to_fit$Proportion[7]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                      subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[7]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[8]) ~ to_fit$Proportion[8]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                      subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[8]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[9]) ~ to_fit$Proportion[9]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                      subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[9]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[10]) ~ to_fit$Proportion[10]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                        subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[10]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[11]) ~ to_fit$Proportion[11]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                        subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[11]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[12]) ~ to_fit$Proportion[12]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                        subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[12]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[13]) ~ to_fit$Proportion[13]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                        subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[13]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[14]) ~ to_fit$Proportion[14]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                        subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[14]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[15]) ~ to_fit$Proportion[15]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                        subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[15]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[16]) ~ to_fit$Proportion[16]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                        subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[16]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[17]) ~ to_fit$Proportion[17]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                        subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[17]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[18]) ~ to_fit$Proportion[18]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                        subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[18]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[19]) ~ to_fit$Proportion[19]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                        subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[19]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[20]) ~ to_fit$Proportion[20]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                        subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[20]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[21]) ~ to_fit$Proportion[21]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                        subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[21]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[22]) ~ to_fit$Proportion[22]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                        subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[22]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[23]) ~ to_fit$Proportion[23]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                        subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[23]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[24]) ~ to_fit$Proportion[24]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                        subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[24]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[25]) ~ to_fit$Proportion[25]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                        subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[25]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[26]) ~ to_fit$Proportion[26]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                        subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[26]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[27]) ~ to_fit$Proportion[27]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                        subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[27]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[28]) ~ to_fit$Proportion[28]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                        subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[28]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[29]) ~ to_fit$Proportion[29]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                        subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[29]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[30]) ~ to_fit$Proportion[30]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                        subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[30]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[31]) ~ to_fit$Proportion[31]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                        subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[31]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[32]) ~ to_fit$Proportion[32]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                        subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[32]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[33]) ~ to_fit$Proportion[33]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                        subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[33]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[34]) ~ to_fit$Proportion[34]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                        subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[34]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[35]) ~ to_fit$Proportion[35]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                        subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[35]))),
+                                                                                                 ATO == "no" & Cancer == as.character(to_fit$Cancer[36]) ~ to_fit$Proportion[36]/nrow(p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                                                                                                                        subset(ATO == "no" & Cancer == as.character(to_fit$Cancer[36]))),
+                                                                                                 TRUE ~ Proportion_label)) %>% 
+                                                      subset(!str_detect(Cancer,
+                                                                         "OTHER")), 
+                                                    aes(x = factor(Cancer,
+                                                                   levels = p53mutsATOpercancer_pivot_melted %>% 
+                                                                     subset(!str_detect(Cancer,
+                                                                                        "OTHER")) %>% 
+                                                                     subset(ATO == "yes") %>%
+                                                                     arrange(-Proportion) %>% 
+                                                                     pull(Cancer) %>% 
+                                                                     unique() %>% 
+                                                                     as.vector()), 
+                                                        y = Proportion_label, 
+                                                        fill = factor(Label,
+                                                                      levels = c((p53mutsATOpercancerpos_pivot_melted %>%
+                                                                                    arrange(-Proportion) %>%
+                                                                                    pull(Label) %>%
+                                                                                    unique())[(p53mutsATOpercancerpos_pivot_melted %>% 
+                                                                                                 arrange(-Proportion) %>%
+                                                                                                 pull(Label) %>%
+                                                                                                 unique()) != "Other"], 
+                                                                                 "Other")))) + 
+  geom_bar(position = position_fill(reverse = TRUE), 
+           stat = "identity") + 
+  ggtitle("Proportion of ATO-Rescuable Somatic Mutations \nin TP53 in Individuals with Cancer in cBioPortal") + 
+  xlab("Cancer") +
+  ylab("Proportion of distinct individuals") +
+  labs(fill = "Mutation") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 7),
+                     position = "right") +
+  scale_x_discrete(expand = c(0,0),
+                   limits = rev) +
+  scale_fill_manual(values = c(hue_pal()(length(c((p53mutsATOpercancerpos_pivot_melted %>%
+                                                     arrange(-Proportion) %>%
+                                                     pull(Label) %>%
+                                                     unique())[(p53mutsATOpercancerpos_pivot_melted %>% 
+                                                                  arrange(-Proportion) %>%
+                                                                  pull(Label) %>%
+                                                                  unique()) != "Other"], 
+                                                  "Other"))) %>% 
+                                 head(-1),
+                               "lightgray")) + # extract automatic gradient colors and replace final one i.e. other with lightgray
+  theme_classic() + 
+  coord_flip(ylim = c(0, ((p53mutsATOpercancer_pivot_melted %>%
+                             subset(ATO == "yes") %>%
+                             pull(Proportion) %>% 
+                             max() %>% 
+                             plyr::round_any(0.05,
+                                             f = ceiling)) * 1.00001))) + # calls coord_cartesian to set axis limits to zoom in on percentages
+  guides(fill = guide_legend(ncol = 2)) + 
+  theme(axis.text.x = element_text(angle = 0, 
+                                   hjust = 0.5), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x.top = element_text(margin = unit(c(0,0,10,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,10,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,10,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        axis.text.y = element_text(vjust = 0.5))
+stackedbarchart_pts_ATO_cancers_pos_horiz
+save_plot(file = "C:/Users/nwali/Downloads/stackedbarchart_pts_ATO_cancers_pos_horiz_barchart.png", # .svg is too big to insert into powerpoint so need to save as png
+          stackedbarchart_pts_ATO_cancers_pos_horiz,
+          base_width = 15,
+          base_height = 13.5,
+          dpi = 600,
+          limitsize = FALSE) # specifying dpi because saving as png since svg cannot insert into ppt
+save_plot(file = "C:/Users/nwali/Downloads/stackedbarchart_pts_ATO_cancers_pos_horiz_barchart.svg", 
+          stackedbarchart_pts_ATO_cancers_pos_horiz,
+          base_width = 15,
+          base_height = 13.5,
+          limitsize = FALSE) 
+
+# make facet barchart on top ATO-rescuable germ/som across cancers
+barchart_facet_keyATOpos_cancers <- ggplot(p53mutsATOpercancerpos_pivot_melted %>% 
+                                             subset(!str_detect(Cancer, 
+                                                                "OTHER")) %>% 
+                                             subset(ATO == "yes" & Label %in% top_ATO_germ_som_cbio_combined),
+                                           aes(x = factor(Cancer,
+                                                          levels = sort(unique(as.vector(p53mutsATOpercancerpos_pivot_melted$Cancer)))[!str_detect(sort(unique(as.vector(p53mutsATOpercancerpos_pivot_melted$Cancer))), 
+                                                                                                                                                   "OTHER")]),
+                                               # factor(Cancer,
+                                               #          levels = c(sort(unique(as.vector(p53mutsATOpercancerpos_pivot_melted$Cancer)))[!str_detect(sort(unique(as.vector(p53mutsATOpercancerpos_pivot_melted$Cancer))), 
+                                               #                                                                                                     "OTHER")], sort(unique(as.vector(p53mutsATOpercancerpos_pivot_melted$Cancer)))[str_detect(sort(unique(as.vector(p53mutsATOpercancerpos_pivot_melted$Cancer))), 
+                                               #                                                                                                                                                                                               "OTHER")])),
+                                               y = Proportion,
+                                               fill = factor(Cancer,
+                                                             levels = sort(unique(as.vector(p53mutsATOpercancerpos_pivot_melted$Cancer)))[!str_detect(sort(unique(as.vector(p53mutsATOpercancerpos_pivot_melted$Cancer))), 
+                                                                                                                                                      "OTHER")])
+                                               # factor(Cancer,
+                                               #             levels = c(sort(unique(as.vector(p53mutsATOpercancerpos_pivot_melted$Cancer)))[!str_detect(sort(unique(as.vector(p53mutsATOpercancerpos_pivot_melted$Cancer))), 
+                                               #                                                                                                        "OTHER")], sort(unique(as.vector(p53mutsATOpercancerpos_pivot_melted$Cancer)))[str_detect(sort(unique(as.vector(p53mutsATOpercancerpos_pivot_melted$Cancer))), 
+                                               #                                                                                                                                                                                                  "OTHER")]))
+                                           )) + 
+  geom_bar(stat = "identity", 
+           position = position_dodge2()) + # to keep some space b/t barcharts in same mut
+  geom_text(aes(label = paste0(plyr::round_any(Proportion * 100, 
+                                               0.1),
+                               "%")),
+            color = "black",
+            size = 3.5,
+            fontface = "bold",
+            alpha = 0.75, # level of transparency (lower is more transparent)
+            vjust = -0.5,
+            hjust = 0.5) +
+  xlab("Cancer") +
+  ylab("Proportion of distinct individuals") +
+  labs(fill = "Cancer") + 
+  ggtitle("Proportion of ATO-Rescuable Mutations in TP53 in Individuals with Cancer") + # different facet_wrap function which allows conditional strip i.e. facet formatting
+  facet_wrap2(. ~ factor(Label,
+                         levels = top_ATO_germ_som_cbio_combined[order(abs(parse_number(top_ATO_germ_som_cbio_combined)))]), # order by codon number so that colors match
+              ncol = 2,
+              strip = conditional_strips_ATO,
+              trim_blank = FALSE, # leave blank plots where muts not in dataset
+              axes = "all", # show internal axes but without x labels
+              remove_labels = "x", # show internal axes but without x labels
+              drop = FALSE) + # ensure muts not in dataset still shown as blanks
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 5), 
+                     limits = c(0, ((p53mutsATOpercancerpos_pivot_melted %>% 
+                                       subset(!str_detect(Cancer, 
+                                                          "OTHER")) %>% 
+                                       subset(ATO == "yes" & Label %in% top_ATO_germ_som_cbio_combined) %>% 
+                                       pull(Proportion) %>% 
+                                       max() %>%
+                                       plyr::round_any(0.12, 
+                                                       f = ceiling)) * 1.000001))) +
+  scale_x_discrete(
+    #limits = rev, 
+    expand = c(0,0),
+    drop = FALSE) + # ensure muts not in dataset are still shown as blanks
+  scale_fill_manual(values = c(#"#c670e5",
+    "limegreen",
+    "#84007e",
+    "#4342b3",
+    "#ff8ea5",
+    "#7e9900",
+    "#50006c",
+    "#e03e97",
+    "#930002",
+    "#ba0069",
+    "#006f17",
+    "lavender",
+    "#420f48",
+    "#eea52d",
+    "#6294ff",
+    "#cade66",
+    "#02e9c7",
+    "#806300",
+    #"#c4379f",
+    #"#5a1500",
+    "#004584",
+    "#ff865d",
+    #"#ada9ff",
+    "#007e3e",
+    "#eea3ff",
+    "#630021",
+    "#002670",
+    #"#ffa4d8",
+    "#a44c00",
+    "#d388be",
+    "#ebd386",
+    "red",
+    "#ff7f7d",
+    "#62742e",
+    "gray80"
+    #,"black"
+  )) +
+  guides(fill = guide_legend(ncol = 1)) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(10,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,10,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,10,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        legend.box.spacing = margin(30), # increase space between legend and plot
+        legend.margin = margin(0,5,0,0, unit = "mm"),
+        legend.justification = "top", # put legend in top right of plot
+        #legend.position = c(,), # c(0,0) bottom left, c(1,1) top-right within plot
+        strip.background = element_blank(),
+        strip.text = element_text(color = "black",
+                                  size = 14,
+                                  face = "bold",
+                                  margin = margin(10,0,10,0, "mm")),
+        panel.spacing.x = unit(5, "lines"),
+        panel.spacing.y = unit(-20, "lines"),
+        plot.margin = margin(0,5,0,35, unit = "mm"))
+barchart_facet_keyATOpos_cancers
+save_plot(file = "C:/Users/nwali/Downloads/barchart_facet_keyATOpos_cancers_combined.svg", 
+          barchart_facet_keyATOpos_cancers,
+          base_width = 32.5,
+          base_height = 27,
+          limitsize = FALSE)
+
+# make stacked barchart of 1:1 cancers matching germline
+barchart_facet_keyATOpos_matchedgermline_cancers <- ggplot(p53mutsATOpercancerpos_matchgermline_melted %>% 
+         subset(!str_detect(Cancer, 
+                            "OTHER")) %>% 
+         subset(ATO == "yes" & Label %in% top_ATO_germ_som_cbio_combined),
+       aes(x = factor(Cancer,
+                      levels = sort(unique(as.vector(p53mutsATOpercancerpos_matchgermline_melted$Cancer)))[!str_detect(sort(unique(as.vector(p53mutsATOpercancerpos_matchgermline_melted$Cancer))), 
+                                                                                                               "OTHER")]),
+           # factor(Cancer,
+           #          levels = c(sort(unique(as.vector(p53mutsATOpercancerpos_matchgermline_melted$Cancer)))[!str_detect(sort(unique(as.vector(p53mutsATOpercancerpos_matchgermline_melted$Cancer))), 
+           #                                                                                                     "OTHER")], sort(unique(as.vector(p53mutsATOpercancerpos_matchgermline_melted$Cancer)))[str_detect(sort(unique(as.vector(p53mutsATOpercancerpos_matchgermline_melted$Cancer))), 
+           #                                                                                                                                                                                               "OTHER")])),
+           y = Proportion,
+           fill = factor(Cancer,
+                         levels = sort(unique(as.vector(p53mutsATOpercancerpos_matchgermline_melted$Cancer)))[!str_detect(sort(unique(as.vector(p53mutsATOpercancerpos_matchgermline_melted$Cancer))), 
+                                                                                                                  "OTHER")])
+           # factor(Cancer,
+           #             levels = c(sort(unique(as.vector(p53mutsATOpercancerpos_matchgermline_melted$Cancer)))[!str_detect(sort(unique(as.vector(p53mutsATOpercancerpos_matchgermline_melted$Cancer))), 
+           #                                                                                                        "OTHER")], sort(unique(as.vector(p53mutsATOpercancerpos_matchgermline_melted$Cancer)))[str_detect(sort(unique(as.vector(p53mutsATOpercancerpos_matchgermline_melted$Cancer))), 
+           #                                                                                                                                                                                                  "OTHER")]))
+       )) + 
+  geom_bar(stat = "identity", 
+           position = position_dodge2()) + # to keep some space b/t barcharts in same mut
+  geom_text(aes(label = paste0(plyr::round_any(Proportion * 100, 
+                                               0.1),
+                               "%")),
+            color = "black",
+            size = 3.5,
+            fontface = "bold",
+            alpha = 0.75, # level of transparency (lower is more transparent)
+            vjust = -0.5,
+            hjust = 0.5) +
+  xlab("Cancer") +
+  ylab("Proportion of distinct individuals") +
+  labs(fill = "Cancer") + 
+  ggtitle("Proportion of ATO-Rescuable Mutations in TP53 in Individuals with Cancer") + # different facet_wrap function which allows conditional strip i.e. facet formatting
+  facet_wrap2(. ~ factor(Label,
+                         levels = top_ATO_germ_som_cbio_combined[order(abs(parse_number(top_ATO_germ_som_cbio_combined)))]), # order by codon number so that colors match
+              ncol = 3,
+              strip = conditional_strips_ATO,
+              trim_blank = FALSE, # leave blank plots where muts not in dataset
+              axes = "all", # show internal axes but without x labels
+              remove_labels = "x", # show internal axes but without x labels
+              drop = FALSE) + # ensure muts not in dataset still shown as blanks
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 5), 
+                     limits = c(0, ((p53mutsATOpercancerpos_matchgermline_melted %>% 
+                                       subset(!str_detect(Cancer, 
+                                                          "OTHER")) %>% 
+                                       subset(ATO == "yes" & Label %in% top_ATO_germ_som_cbio_combined) %>% 
+                                       pull(Proportion) %>% 
+                                       max() %>%
+                                       plyr::round_any(0.12, 
+                                                       f = ceiling)) * 1.000001))) +
+  scale_x_discrete(
+    #limits = rev, 
+    expand = c(0,0),
+    drop = FALSE) + # ensure muts not in dataset are still shown as blanks
+  scale_fill_manual(values = c("#CC79A7",
+                               "#E69F00",
+                               "#009E73",
+                               "#56B4E9",
+                               "#999999"
+                               #,
+                               #"#000000"
+  )) +
+  guides(fill = guide_legend(ncol = 1)) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(10,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,10,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,10,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        legend.box.spacing = margin(30), # increase space between legend and plot
+        legend.margin = margin(0,5,0,0, unit = "mm"),
+        legend.justification = "top", # put legend in top right of plot
+        #legend.position = c(,), # c(0,0) bottom left, c(1,1) top-right within plot
+        strip.background = element_blank(),
+        strip.text = element_text(color = "black",
+                                  size = 14,
+                                  face = "bold",
+                                  margin = margin(10,0,10,0, "mm")),
+        panel.spacing.x = unit(5, "lines"),
+        panel.spacing.y = unit(-8, "lines"),
+        plot.margin = margin(0,5,0,35, unit = "mm"))
+barchart_facet_keyATOpos_matchedgermline_cancers
+save_plot(file = "C:/Users/nwali/Downloads/barchart_facet_keyATOpos_matchedgermline_cancers_combined.svg",
+          barchart_facet_keyATOpos_matchedgermline_cancers,
+          base_width = 18,
+          base_height = 18,
+          limitsize = FALSE)
+
+# make facet barchart on top muts germ/som across cancers
+barchart_facet_keymutsifATO_cancers <- ggplot(p53mutsATOpercancerpos_pivot_melted %>% 
+                                                subset(!str_detect(Cancer,
+                                                                   "OTHER")) %>% 
+                                                subset(ATO == "yes" & Label %in% top_muts_germ_som_cbio_combined),
+                                              aes(x = factor(Cancer,
+                                                             levels = sort(unique(as.vector(p53mutsATOpercancerpos_pivot_melted$Cancer)))[!str_detect((sort(unique(as.vector(p53mutsATOpercancerpos_pivot_melted$Cancer)))), 
+                                                                                                                                                      "OTHER")]),
+                                                  # factor(Cancer,
+                                                  #          levels = c(sort(unique(as.vector(p53mutsATOpercancerpos_pivot_melted$Cancer)))[!str_detect(sort(unique(as.vector(p53mutsATOpercancerpos_pivot_melted$Cancer))), 
+                                                  #                                                                                                     "OTHER")], sort(unique(as.vector(p53mutsATOpercancerpos_pivot_melted$Cancer)))[str_detect(sort(unique(as.vector(p53mutsATOpercancerpos_pivot_melted$Cancer))), 
+                                                  #                                                                                                                                                                                               "OTHER")])),
+                                                  y = Proportion,
+                                                  fill = factor(Cancer,
+                                                                levels = sort(unique(as.vector(p53mutsATOpercancerpos_pivot_melted$Cancer)))[!str_detect((sort(unique(as.vector(p53mutsATOpercancerpos_pivot_melted$Cancer)))), 
+                                                                                                                                                         "OTHER")]),
+                                                  # factor(Cancer,
+                                                  #             levels = c(sort(unique(as.vector(p53mutsATOpercancerpos_pivot_melted$Cancer)))[!str_detect(sort(unique(as.vector(p53mutsATOpercancerpos_pivot_melted$Cancer))), 
+                                                  #                                                                                                        "OTHER")], sort(unique(as.vector(p53mutsATOpercancerpos_pivot_melted$Cancer)))[str_detect(sort(unique(as.vector(p53mutsATOpercancerpos_pivot_melted$Cancer))), 
+                                                  #                                                                                                                                                                                                  "OTHER")]))
+                                              )) + 
+  geom_bar(stat = "identity", 
+           position = position_dodge2()) + # to keep some space b/t barcharts in same mut
+  geom_text(aes(label = paste0(plyr::round_any(Proportion * 100, 
+                                               0.1),
+                               "%")),
+            color = "black",
+            size = 3.5,
+            fontface = "bold",
+            alpha = 0.75, # level of transparency (lower is more transparent)
+            vjust = -0.5,
+            hjust = 0.5) +
+  xlab("Cancer") +
+  ylab("Proportion of distinct individuals") +
+  labs(fill = "Cancer") + 
+  ggtitle("Proportion of Hotspot Mutations in TP53 in Individuals with Cancer that are Effectively Rescued by ATO") + # different facet_wrap function which allows conditional strip i.e. facet formatting
+  facet_wrap2(. ~ factor(Label,
+                         levels = top_muts_germ_som_cbio_combined[order(abs(parse_number(top_muts_germ_som_cbio_combined)))]), # order by codon number so that colors match
+              ncol = 3,
+              strip = conditional_strips_muts,
+              trim_blank = FALSE, # leave blank plots where muts not in dataset
+              axes = "all", # show internal axes but without x labels
+              remove_labels = "x", # show internal axes but without x labels
+              drop = FALSE) + # ensure muts not in dataset still shown as blanks
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 6), 
+                     limits = c(0, ((p53mutsATOpercancerpos_pivot_melted %>% 
+                                       subset(!str_detect(Cancer,
+                                                          "OTHER")) %>% 
+                                       subset(ATO == "yes" & Label %in% top_muts_germ_som_cbio_combined) %>% 
+                                       pull(Proportion) %>% 
+                                       max() %>%
+                                       plyr::round_any(0.12, 
+                                                       f = ceiling)) * 1.000001))) +
+  scale_x_discrete(
+    #limits = rev, 
+    expand = c(0,0),
+    drop = FALSE) + # ensure muts not in dataset are still shown as blanks
+  scale_fill_manual(values = c(#"#c670e5",
+    "limegreen",
+    "#84007e",
+    "#4342b3",
+    "#ff8ea5",
+    "#7e9900",
+    "#50006c",
+    "#e03e97",
+    "#930002",
+    "#ba0069",
+    "#006f17",
+    "lavender",
+    "#420f48",
+    "#eea52d",
+    "#6294ff",
+    "#cade66",
+    "#02e9c7",
+    "#806300",
+    #"#c4379f",
+    #"#5a1500",
+    "#004584",
+    "#ff865d",
+    #"#ada9ff",
+    "#007e3e",
+    "#eea3ff",
+    "#630021",
+    "#002670",
+    #"#ffa4d8",
+    "#a44c00",
+    "#d388be",
+    "#ebd386",
+    "red",
+    "#ff7f7d",
+    "#62742e",
+    "gray80"
+    #,"black"
+  )) +
+  guides(fill = guide_legend(ncol = 1)) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(10,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,10,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,10,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        legend.justification = "top", # put legend in top right of plot
+        legend.margin = margin(0,5,0,0, unit = "mm"),
+        #legend.position = c(,), # c(0,0) bottom left, c(1,1) top-right within plot
+        strip.background = element_blank(),
+        strip.text = element_text(color = "black",
+                                  size = 14,
+                                  face = "bold",
+                                  margin = margin(10,0,10,0, "mm")),
+        panel.spacing.x = unit(5, "lines"),
+        panel.spacing.y = unit(-21, "lines"),
+        plot.margin = margin(0,0,0,35, unit = "mm"))
+barchart_facet_keymutsifATO_cancers
+save_plot(file = "C:/Users/nwali/Downloads/barchart_facet_keymutsifATO_cancers_combined.svg", 
+          barchart_facet_keymutsifATO_cancers,
+          base_width = 43,
+          base_height = 27,
+          limitsize = FALSE)
+
+# make table of top ato-rescuable muts in cancers with p53mut
+df_grid <- p53mutsATOpercancerpos_pivot %>% # add num pts to cancer colnames
+  rename_at(vars(3:(ncol(.) 
+                    #- 1
+                    )),
+            ~ paste0(.,
+                     " (",
+                     format(as.numeric(p53mutsATOpercancerpos_pivot[nrow(p53mutsATOpercancerpos_pivot), .]), 
+                            big.mark = ",", 
+                            trim = TRUE),
+                     " individuals)")) %>% # divide down each col by last value i.e. total pts
+  mutate(across(where(is.numeric),
+                ~ .x/last(.x))) %>% 
+  mutate(Label = ifelse(ATO == "yes",
+                        proteinChange,
+                        "Other")) %>%
+  subset(ATO != "Total") %>%
+  #dplyr::select(-Total) %>% 
+  reshape2::melt() %>% 
+  dplyr::rename(Cancer = variable,
+                Proportion = value)
+
+top_ATO_allp53mut_gridprep <- condformat(df_grid %>%
+                                           subset(str_detect(Cancer, "Total") & ATO == "yes") %>%
+                                           arrange(-Proportion) %>%
+                                           dplyr::select(c(Label,
+                                                           Proportion)) %>%
+                                           head(10) %>%
+                                           mutate(Proportion = plyr::round_any(Proportion * 100,
+                                                                               0.01)) %>%
+                                           dplyr::rename(Mutation = Label,
+                                                         Percent = Proportion)) %>% 
+  rule_text_color(Mutation,
+                  ifelse(Mutation %in% top_ATO_germ_som_cbio_combined,
+                         "red",
+                         "")) %>%
+  rule_text_bold(Mutation,
+                 expression = Mutation %in% top_ATO_germ_som_cbio_combined) %>%
+  theme_grob(rows = NULL, 
+             theme = ttheme_default(base_size = 10,
+                                    core = list(padding = unit(c(15, 4), "mm")))) %>%
+  condformat2grob(draw = FALSE)
+
+top_ATO_allp53mut_grid <- grid.arrange(top_ATO_allp53mut_gridprep,
+                                       top = textGrob("Prevalence of Top ATO-Rescuable Mutations \nAcross Individuals with p53-Mutant Cancers \nin cBioPortal",
+                                                      hjust = 0.5,
+                                                      gp = gpar(fontface = "bold")))
+
+save_plot(file = "C:/Users/nwali/Downloads/top_ATO_allp53mut_grid.svg",
+          top_ATO_allp53mut_grid,
+          base_width = 4.5,
+          base_height = 4.5,
+          limitsize = FALSE)
+
+
+
+# draw stacked barchart of ATO-rescuable alterations
+p53mutsATOpossex_barchart <- ggplot(p53mutsATOpossex_pivot_melted,
+                                    aes(x = proteinChange,
+                                        y = Proportion,
+                                        fill = Sex)) +
+  geom_bar(position = "fill", 
+           stat = "identity") + 
+  ggtitle("Mutation Distribution of Individuals with ATO-Rescuable Somatic Mutations in cBioPortal") +
+  xlab("Mutation") +
+  ylab("Proportion of distinct individuals") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 6)) +
+  scale_x_discrete(expand = c(0,0)) +
+  scale_fill_manual(values = c("#56B4E9",
+                               "#CC79A7",
+                               "lightgray")
+                    # c((hue_pal()(length(unique(p53mutsATOpossex_pivot_melted$Sex)))[c(3,1,2)]) %>% 
+                    #            head(-1), 
+                    #          "lightgray")
+  ) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(5,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,5,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,5,0, "mm")),
+        # plot.title.position = "plot",
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        legend.margin = margin(0,5,0,0, "mm"),
+        plot.margin = margin(0,0,0,15, "mm"))
+p53mutsATOpossex_barchart
+save_plot(file = "C:/Users/nwali/Downloads/p53mutsATOpossex_barchart.svg",
+          p53mutsATOpossex_barchart,
+          base_width = 32,
+          base_height = 6.25,
+          limitsize = FALSE)
+
+# draw stacked barchart of ATO-rescuable alterations
+p53mutsATOposage_barchart <- ggplot(p53mutsATOposage_pivot_melted %>% 
+                                      mutate(Age = gsub("NA",
+                                                        "No age listed",
+                                                        Age)),
+                                    aes(x = proteinChange,
+                                        y = Proportion,
+                                        fill = Age)) +
+  geom_bar(position = "fill", 
+           stat = "identity") + 
+  ggtitle("Mutation Distribution of Individuals with ATO-Rescuable Somatic Mutations in cBioPortal") +
+  xlab("Mutation") +
+  ylab("Proportion of distinct individuals") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 6)) +
+  scale_x_discrete(expand = c(0,0)) +
+  scale_fill_manual(values = c("#F0E442",
+                               "#E69F00",
+                               "#CC79A7",
+                               "#56B4E9",
+                               "#D55E00",
+                               "#009E73",
+                               "#0072B2",
+                               "#000000",
+                               "#999999")
+                    # c((hue_pal()(length(unique(sort(p53mutsATOposage_pivot_melted$Age))))) %>% 
+                    #            head(-1), 
+                    #          "lightgray")
+  ) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(5,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,5,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,5,0, "mm")),
+        # plot.title.position = "plot",
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        legend.margin = margin(0,5,0,0, "mm"),
+        plot.margin = margin(0,0,0,10, "mm"))
+p53mutsATOposage_barchart
+save_plot(file = "C:/Users/nwali/Downloads/p53mutsATOposage_barchart.svg",
+          p53mutsATOposage_barchart,
+          base_width = 32,
+          base_height = 6.25,
+          limitsize = FALSE)
+
+# draw stacked barchart of ATO-rescuable alterations
+p53mutsATOpos_barchart <- ggplot(p53mutsATOpos_pivot_melted,
+                                 aes(x = proteinChange,
+                                     y = Proportion,
+                                     fill = Cancer)) +
+  geom_bar(position = "fill", 
+           stat = "identity") + 
+  ggtitle("Mutation Distribution of Individuals with ATO-Rescuable Somatic Mutations in cBioPortal") +
+  xlab("Mutation") +
+  ylab("Proportion of distinct individuals") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 6)) +
+  scale_x_discrete(expand = c(0,0)) +
+  # scale_fill_manual(values = c(hue_pal()(length(c(as.vector(sort(unique(p53mutsATOpos_pivot_melted$Cancer)))[(as.vector(sort(unique(p53mutsATOpos_pivot_melted$Cancer))) != "OTHER")], 
+  #                                                 "OTHER"))) %>% 
+  #                                head(-1),
+  #                              "lightgray")) + # extract automatic gradient colors and replace final one i.e. other with lightgray
+  scale_fill_manual(values = c(#"#c670e5",
+    "limegreen",
+    "#84007e",
+    "#4342b3",
+    "#ff8ea5",
+    "#7e9900",
+    "#50006c",
+    "#e03e97",
+    "#930002",
+    "#ba0069",
+    "#006f17",
+    "lavender",
+    "#420f48",
+    "#eea52d",
+    "#6294ff",
+    "#cade66",
+    "#02e9c7",
+    "#806300",
+    #"#c4379f",
+    #"#5a1500",
+    "#004584",
+    "#ff865d",
+    #"#ada9ff",
+    "#007e3e",
+    "#eea3ff",
+    "#630021",
+    "#002670",
+    #"#ffa4d8",
+    "#a44c00",
+    "#d388be",
+    "#ebd386",
+    "red",
+    "#ff7f7d",
+    "#62742e",
+    "gray80",
+    "black")) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(5,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,5,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,5,0, "mm")),
+        # plot.title.position = "plot",
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        legend.margin = margin(0,5,0,0, "mm"),
+        plot.margin = margin(0,0,0,10, "mm"))
+p53mutsATOpos_barchart
+save_plot(file = "C:/Users/nwali/Downloads/p53mutsATOpos_barchart.svg",
+          p53mutsATOpos_barchart,
+          base_width = 42,
+          base_height = 7,
+          limitsize = FALSE)
+
+# stacked barchart of ATO muts across all somatic cancers
+stackedbarchart_ATOtissuesomatic <- ggplot(ATOtissuesomatic_pivot_melted,
+                                              aes(x = factor(Cancer,
+                                                             levels = (ATOtissuesomatic_pivot_melted %>%
+                                                                         subset(ATO == "yes") %>%
+                                                                         arrange(-Proportion) %>%
+                                                                         pull(Cancer) %>% 
+                                                                         unique())),
+                                                  y = Proportion,
+                                                  fill = factor(temp,
+                                                                levels = c("yes",
+                                                                           "subset",
+                                                                           "total",
+                                                                           "no")))) +
+  geom_bar(position = "fill",
+           stat = "identity") + 
+  ggtitle("Presence of Somatic Mutations in TP53 Rescued by ATO in Individuals with Cancer in cBioPortal") + 
+  ylab("Proportion of distinct individuals") +
+  xlab("Cancer") +
+  labs(fill = "ATO-rescuable") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0, 0), 
+                     breaks = scales::pretty_breaks(n = 6)) + 
+  scale_x_discrete(expand = c(0, 0)) + 
+  scale_fill_manual(
+    #breaks = c("yes",
+    #           "no"),
+    labels = c("yes", 
+               "yes; subset", 
+               "yes; total", 
+               "no"),
+    values = c("yes" = "skyblue",#"#56B4E9"
+               "subset" = "#0072B2",
+               "total" = "black",#"#D55E00"
+               "no" = "gray90")) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   vjust = 1,
+                                   hjust = 1),
+        axis.text = element_text(color = "black",
+                                 size = 12,
+                                 vjust = 0.5), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(5,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,5,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,5,0, "mm")),
+        legend.title = element_text(face = "bold",
+                                    size = 14, 
+                                    color = "black"),
+        legend.text = element_text(size = 12, 
+                                   color = "black"),
+        plot.margin = margin(2,2,2,50, 
+                             unit = "mm")) 
+stackedbarchart_ATOtissuesomatic
+save_plot(file = "C:/Users/nwali/Downloads/stackedbarchart_ATOtissuesomatic.svg",
+          stackedbarchart_ATOtissuesomatic,
+          base_width = 32,
+          base_height = 12.5,
+          limitsize = FALSE)
+
+# make horiz barchart
+stackedbarchart_ATOtissuesomatic_horiz <- ggplot(ATOtissuesomatic_pivot_melted,
+                                                    aes(x = factor(Cancer,
+                                                                   levels = (ATOtissuesomatic_pivot_melted %>%
+                                                                               subset(ATO == "yes") %>%
+                                                                               arrange(-Proportion) %>%
+                                                                               pull(Cancer) %>% 
+                                                                               unique())),
+                                                        y = Proportion,
+                                                        fill = factor(temp,
+                                                                      levels = c("yes",
+                                                                                 "subset",
+                                                                                 "total",
+                                                                                 "no")))) +
+  geom_bar(position = position_fill(reverse = TRUE),
+           stat = "identity") + # add percents of yes to barchart
+  geom_text(aes(label = paste0(plyr::round_any(Proportion * 100,
+                                               0.1
+                                               #,
+                                               #f = ceiling
+                                               ),
+                               "%")),
+            position = position_fill(reverse = TRUE),
+            color = "black",
+            size = 4.5,
+            fontface = "bold",
+            alpha = 0.5, # level of transparency (lower is more transparent)
+            vjust = 0.5,
+            hjust = -0.25) +
+  ggtitle("Presence of Somatic Mutations in TP53 Rescued by ATO in Individuals with Cancer in cBioPortal") + 
+  ylab("Proportion of distinct individuals") +
+  xlab("Cancer") +
+  labs(fill = "ATO-rescuable") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0, 0), 
+                     breaks = scales::pretty_breaks(n = 6),
+                     position = "right") + 
+  scale_x_discrete(expand = c(0, 0),
+                   limits = rev) + 
+  scale_fill_manual(
+    #breaks = c("yes",
+    #           "no"),
+    labels = c("yes", 
+               "yes; subset", 
+               "yes; total", 
+               "no"),
+    values = c("yes" = "skyblue",#"#56B4E9"
+               "subset" = "#0072B2",
+               "total" = "black",#"#D55E00"
+               "no" = "gray90")) +
+  theme_classic() + 
+  coord_flip(ylim = c(0, ((ATOtissuesomatic_pivot_melted %>% 
+                             subset(ATO == "yes") %>% 
+                             pull(Proportion) %>% 
+                             max() %>% 
+                             plyr::round_any(0.1, 
+                                             f = ceiling)) * 1.00001))) + # calls coord_cartesian to set axis limits to zoom in on percentages
+  theme(axis.text.x = element_text(angle = 0, 
+                                   hjust = 0.5), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x.top = element_text(margin = unit(c(0,0,10,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,10,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,10,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.box.spacing = margin(30), # increase space between legend and plot
+        legend.justification = "top", # put legend in top right of plot
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        axis.text.y = element_text(vjust = 0.5))
+stackedbarchart_ATOtissuesomatic_horiz
+save_plot(file = "C:/Users/nwali/Downloads/stackedbarchart_ATOtissuesomatic_horiz.svg",
+          stackedbarchart_ATOtissuesomatic_horiz,
+          base_width = 18.5, 
+          base_height = 26,
+          limitsize = FALSE)
+
+
+# make table of top ato-rescuable muts across all somatic cancers
+top_ATO_allsomatic_gridprep <- condformat(pivotdfpos_somatic_melted %>%
+                                            subset(str_detect(Cancer, 
+                                                              "Total") & Mutation %in% mut_rescued) %>%
+                                            arrange(-Proportion) %>%
+                                            head(10) %>%
+                                            mutate(Proportion = plyr::round_any(Proportion * 100,
+                                                                                0.01)) %>%
+                                            dplyr::select(c(Mutation,
+                                                            Proportion)) %>%
+                                            dplyr::rename(Percent = Proportion)) %>% 
+  rule_text_color(Mutation,
+                  ifelse(Mutation %in% top_ATO_germ_som_cbio_combined,
+                         "red",
+                         "")) %>%
+  rule_text_bold(Mutation,
+                 expression = Mutation %in% top_ATO_germ_som_cbio_combined) %>%
+  theme_grob(rows = NULL, 
+             theme = ttheme_default(base_size = 10,
+                                    core = list(padding = unit(c(15, 4), "mm")))) %>%
+  condformat2grob(draw = FALSE)
+
+top_ATO_allsomatic_grid <- grid.arrange(top_ATO_allsomatic_gridprep,
+                                        top = textGrob("Prevalence of Top ATO-Rescuable Mutations \nAcross Individuals with Cancer \nin cBioPortal",
+                                                       hjust = 0.5,
+                                                       gp = gpar(fontface = "bold")))
+
+save_plot(file = "C:/Users/nwali/Downloads/top_ATO_allsomatic_grid.svg",
+          top_ATO_allsomatic_grid,
+          base_width = 4.5,
+          base_height = 4.5,
+          limitsize = FALSE)
+
+# make faceted barchart of top ato-rescuable mut combined germ/som across each somatic cancer
+barchart_facet_keyATOpos_cancers_somatic <- ggplot(pivotdfpos_somatic_melted %>% 
+         subset(!str_detect(Cancer, 
+                            "Total") & Mutation %in% top_ATO_germ_som_cbio_combined),
+       aes(x = factor(Cancer,
+                      levels = sort(unique(as.vector(pivotdfpos_somatic_melted$Cancer)))[!str_detect(sort(unique(as.vector(pivotdfpos_somatic_melted$Cancer))), 
+                                                                                                               "Total")]),
+           # factor(Cancer,
+           #          levels = c(sort(unique(as.vector(pivotdfpos_somatic_melted$Cancer)))[!str_detect(sort(unique(as.vector(pivotdfpos_somatic_melted$Cancer))), 
+           #                                                                                                     "Total")], sort(unique(as.vector(pivotdfpos_somatic_melted$Cancer)))[str_detect(sort(unique(as.vector(pivotdfpos_somatic_melted$Cancer))), 
+           #                                                                                                                                                                                               "Total")])),
+           y = Proportion,
+           fill = factor(Cancer,
+                         levels = sort(unique(as.vector(pivotdfpos_somatic_melted$Cancer)))[!str_detect(sort(unique(as.vector(pivotdfpos_somatic_melted$Cancer))), 
+                                                                                                                  "Total")])
+           # factor(Cancer,
+           #             levels = c(sort(unique(as.vector(pivotdfpos_somatic_melted$Cancer)))[!str_detect(sort(unique(as.vector(pivotdfpos_somatic_melted$Cancer))), 
+           #                                                                                                        "Total")], sort(unique(as.vector(pivotdfpos_somatic_melted$Cancer)))[str_detect(sort(unique(as.vector(pivotdfpos_somatic_melted$Cancer))), 
+           #                                                                                                                                                                                                  "Total")]))
+       )) + 
+  geom_bar(stat = "identity", 
+           position = position_dodge2()) + # to keep some space b/t barcharts in same mut
+  geom_text(aes(label = paste0(plyr::round_any(Proportion * 100, 
+                                               0.1),
+                               "%")),
+            color = "black",
+            size = 3.5,
+            fontface = "bold",
+            alpha = 0.75, # level of transparency (lower is more transparent)
+            vjust = -0.5,
+            hjust = 0.5) +
+  xlab("Cancer") +
+  ylab("Proportion of distinct individuals") +
+  labs(fill = "Cancer") + 
+  ggtitle("Proportion of ATO-Rescuable Mutations in TP53 in Individuals with Cancer") + # different facet_wrap function which allows conditional strip i.e. facet formatting
+  facet_wrap2(. ~ factor(Mutation,
+                         levels = top_ATO_germ_som_cbio_combined[order(abs(parse_number(top_ATO_germ_som_cbio_combined)))]), # order by codon number so that colors match
+              ncol = 2,
+              strip = conditional_strips_ATO,
+              trim_blank = FALSE, # leave blank plots where muts not in dataset
+              axes = "all", # show internal axes but without x labels
+              remove_labels = "x", # show internal axes but without x labels
+              drop = FALSE) + # ensure muts not in dataset still shown as blanks
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 5), 
+                     limits = c(0, ((pivotdfpos_somatic_melted %>% 
+                                       subset(!str_detect(Cancer, 
+                                                          "Total") & Mutation %in% top_ATO_germ_som_cbio_combined) %>% 
+                                       pull(Proportion) %>% 
+                                       na.omit() %>%
+                                       max() %>%
+                                       plyr::round_any(0.12, 
+                                                       f = ceiling)) * 1.000001))) +
+  scale_x_discrete(
+    #limits = rev, 
+    expand = c(0,0),
+    drop = FALSE) + # ensure muts not in dataset are still shown as blanks
+  scale_fill_manual(values = c("darkslateblue",
+                               "#5a1500",
+                               "#c4379f",
+                               "limegreen",
+                               "#84007e",
+                               "#4342b3",
+                               "#ff8ea5",
+                               "#7e9900",
+                               "#50006c",
+                               "#ada9ff",
+                               "#e03e97",
+                               "skyblue",
+                               "lightpink",
+                               "#930002",
+                               "#ba0069",
+                               "lightblue1",
+                               "dodgerblue",
+                               "#ffa4d8",
+                               "#006f17",
+                               "lavender",
+                               "hotpink",
+                               "slategray2",
+                               "#420f48",
+                               "#eea52d",
+                               "darkgray",
+                               "#6294ff",
+                               "#cade66",
+                               "#02e9c7",
+                               "#806300",
+                               "#004584",
+                               "lightgreen",
+                               "navajowhite2",
+                               "lightcyan2",
+                               "magenta",
+                               "black",
+                               "#ff865d",
+                               "#007e3e",
+                               "#eea3ff",
+                               "#630021",
+                               "#002670",
+                               "mediumseagreen",
+                               "olivedrab2",
+                               "lightsteelblue2",
+                               "#a44c00",
+                               "#d388be",
+                               "sandybrown",
+                               "springgreen",
+                               "#ebd386",
+                               "red",
+                               "paleturquoise",
+                               "wheat3",
+                               "thistle1",
+                               "yellow2",
+                               "yellowgreen",
+                               "steelblue",
+                               "tan",
+                               "#ff7f7d",
+                               "#62742e",
+                               "gray80")) +
+  guides(fill = guide_legend(ncol = 1)) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(10,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,10,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,10,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        legend.box.spacing = margin(30), # increase space between legend and plot
+        legend.margin = margin(0,5,0,0, unit = "mm"),
+        legend.justification = "top", # put legend in top right of plot
+        #legend.position = c(,), # c(0,0) bottom left, c(1,1) top-right within plot
+        strip.background = element_blank(),
+        strip.text = element_text(color = "black",
+                                  size = 14,
+                                  face = "bold",
+                                  margin = margin(10,0,10,0, "mm")),
+        panel.spacing.x = unit(5, "lines"),
+        panel.spacing.y = unit(-30, "lines"),
+        plot.margin = margin(0,5,0,35, unit = "mm"))
+barchart_facet_keyATOpos_cancers_somatic
+save_plot(file = "C:/Users/nwali/Downloads/barchart_facet_keyATOpos_cancers_somatic.svg",
+          barchart_facet_keyATOpos_cancers_somatic,
+          base_width = 44,
+          base_height = 27,
+          limitsize = FALSE)
+
+
+#### hematological ####
+mut_rescued_hematological_gridprep <- condformat(p53mutscancersover100 %>% 
+                                                   subset(str_detect(CANCER_TYPE, 
+                                                                     "ature|eukemia|ymphoma|hrombocythemia|istiocytosis|yelodysplastic|yeloproliferative|ymphoblastic")) %>%
+                                                   dplyr::select(c(CANCER_TYPE,
+                                                                   CANCER_TYPE_DETAILED,
+                                                                   #COUNTRY,
+                                                                   SEX,
+                                                                   Age_stratum,
+                                                                   mutationType,
+                                                                   proteinChange)) %>%
+                                                   dplyr::rename(Mutation = proteinChange) %>%
+                                                   mutate(Mutation = gsub("T125=",
+                                                                          "T125T",
+                                                                          Mutation)) %>% # to allow proper matching b/c fxcleaned has T125T
+                                                   mutate(Codon = as.numeric(abs(parse_number(Mutation)))) %>%
+                                                   left_join(.,
+                                                             origfxcleaned %>% 
+                                                               dplyr::select(c(Codon,
+                                                                               Residue_function)) %>%
+                                                               distinct(), 
+                                                             by = "Codon") %>%
+                                                   left_join(.,
+                                                             origfxcleaned %>% 
+                                                               dplyr::select(c(Mutation,
+                                                                               SIFTClass,
+                                                                               DNE_LOFclass)) %>%
+                                                               distinct(), 
+                                                             by = "Mutation") %>%
+                                                   # mutate(Mutation = gsub("T125T",
+                                                   #                        "T125=",
+                                                   #                        Mutation)) %>% # revert to original annotation
+                                                   arrange(Codon) %>%
+                                                   mutate(across(everything(), 
+                                                                 ~ replace(., 
+                                                                           . %in% c("NA", NA),
+                                                                           ""))) %>% 
+                                                   dplyr::rename(Category = CANCER_TYPE,
+                                                                 Cancer = CANCER_TYPE_DETAILED,
+                                                                 Sex = SEX,
+                                                                 `Age stratum` = Age_stratum,
+                                                                 Type = mutationType,
+                                                                 `Feature` = Residue_function,
+                                                                 `SIFT` = SIFTClass,
+                                                                 `DNE` = DNE_LOFclass) %>% 
+                                                   dplyr::select(-c(Codon)) %>%
+                                                   remove_rownames()) %>% 
+  rule_text_color(Mutation,
+                  ifelse(Mutation %in% mut_rescued,
+                         "red",
+                         "")) %>%
+  rule_text_bold(Mutation,
+                 expression = Mutation %in% mut_rescued) %>%
+  theme_grob(rows = NULL, 
+             theme = ttheme_default(base_size = 10,
+                                    core = list(padding = unit(c(15, 4), "mm")))) %>%
+  condformat2grob(draw = FALSE)
+
+mut_rescued_hematological_grid <- grid.arrange(mut_rescued_hematological_gridprep,
+                                               top = textGrob("Individuals with Hematological Cancers and Somatic TP53 Mutations",
+                                                              hjust = 0.5,
+                                                              gp = gpar(fontface = "bold")))
+
+save_plot(file = "C:/Users/nwali/Downloads/mut_rescued_hematological_grid.svg",
+          mut_rescued_hematological_grid,
+          base_width = 24,
+          base_height = 37,
+          limitsize = FALSE)
+
+#### 50 p53-mut pts and 1% justification ####
+svg(file = "C:/Users/nwali/Downloads/barplot_justify_50p53mutpts.svg",
+    height = 5.5,
+    width = 7.5)
+barplot(height = (pivotdf %>%
+                    subset(CANCER_TYPE_DETAILED != "Total") %>%
+                    pull(Total) %>% 
+                    replace_na(., 0) %>%
+                    as.numeric() %>%
+                    sort(decreasing = TRUE)),
+        xaxs = "i", # remove space between left side of bars and y axis
+        ylab = "Number of distinct individuals", 
+        xlab = "Cancer",
+        main = "Prevalence of Distinct Individuals with p53-Mutant Cancers",
+        ylim = c(0, plyr::round_any(pivotdf %>%
+                                      subset(CANCER_TYPE_DETAILED != "Total") %>%
+                                      pull(Total) %>%
+                                      as.numeric() %>%
+                                      max(),
+                                    500, 
+                                    f = ceiling)),
+        col = ifelse(pivotdf$CANCER_TYPE_DETAILED %in% gsub(" \\(.*",
+                                                            "",
+                                                            pivotdfnobottomtotal100muts$CANCER_TYPE_DETAILED),
+                     "black",
+                     "grey"),
+        font.lab = 2,
+        las = 1,
+        space = 0,
+        border = NA)
+abline(h = 50,
+       col = "red",
+       lty = 2,
+       lwd = 2)
+legend("right",
+       legend = c("Subset", 
+                  "Other"),
+       col = c("black", 
+               "gray"),
+       bty = "n", # no border around legend
+       pch = 15, # filled square shape
+       pt.cex = 1.75) # increase shape size in legend
+dev.off() #run multiple times until following error shows up: Error in dev.off() : cannot shut down device 1 (the null device)
+
+# calc prop of pts examined when 50 cutoff implemented i.e. most pts still looked at further
+# need to remove any pts who also had another cancer
+# setdiff syntax matters, here saying check which elements of first vector not in second vector, would need to reverse terms for other way or do union(setdiff(1,2), setdiff(2,1)) to get what is not common in in either vector
+# setdiff(x, y) returns the elements of x that are not in y but asymmetric difference, so setdiff(y, x) gives what elements of y are not in x and could be different answer  
+over50_p53prop <- setdiff(p53mutscancersover100 %>%
+                            subset(CANCER_TYPE_DETAILED %in% (pivotdf %>%
+                                                                subset(CANCER_TYPE_DETAILED != "Total") %>%
+                                                                subset(Total >= 50) %>%
+                                                                pull(CANCER_TYPE_DETAILED))) %>%
+                            pull(patientId),
+                          p53mutscancersover100 %>%
+                            subset(!(CANCER_TYPE_DETAILED %in% (pivotdf %>%
+                                                                  subset(CANCER_TYPE_DETAILED != "Total") %>%
+                                                                  subset(Total >= 50) %>%
+                                                                  pull(CANCER_TYPE_DETAILED)))) %>%
+                            pull(patientId)) %>% 
+  n_distinct() / n_distinct(p53mutscancersover100$patientId)
+
+# pie chart
+vec <- c(over50_p53prop,
+         1 - over50_p53prop)
+
+raw <- c(setdiff(p53mutscancersover100 %>%
+                   subset(CANCER_TYPE_DETAILED %in% (pivotdf %>%
+                                                       subset(CANCER_TYPE_DETAILED != "Total") %>%
+                                                       subset(Total >= 50) %>%
+                                                       pull(CANCER_TYPE_DETAILED))) %>%
+                   pull(patientId),
+                 p53mutscancersover100 %>%
+                   subset(!(CANCER_TYPE_DETAILED %in% (pivotdf %>%
+                                                         subset(CANCER_TYPE_DETAILED != "Total") %>%
+                                                         subset(Total >= 50) %>%
+                                                         pull(CANCER_TYPE_DETAILED)))) %>%
+                   pull(patientId)) %>% 
+           n_distinct(),
+         setdiff(p53mutscancersover100 %>%
+                   subset(!(CANCER_TYPE_DETAILED %in% (pivotdf %>%
+                                                         subset(CANCER_TYPE_DETAILED != "Total") %>%
+                                                         subset(Total >= 50) %>%
+                                                         pull(CANCER_TYPE_DETAILED)))) %>%
+                   pull(patientId),
+                 p53mutscancersover100 %>%
+                   subset(CANCER_TYPE_DETAILED %in% (pivotdf %>%
+                                                       subset(CANCER_TYPE_DETAILED != "Total") %>%
+                                                       subset(Total >= 50) %>%
+                                                       pull(CANCER_TYPE_DETAILED))) %>%
+                   pull(patientId)) %>% 
+           n_distinct())
+
+svg(file = "C:/Users/nwali/Downloads/piechart_justify_over50_p53prop.svg",
+    height = 5.5,
+    width = 7.5)
+pie(vec,
+    main = "Prevalence of Distinct Individuals with p53-Mutant Cancers",
+    labels = paste0(plyr::round_any(vec * 100,
+                                    0.1),
+                    "% (",
+                    format(raw, 
+                           big.mark = ",", 
+                           trim = TRUE),
+                    " individuals)"),
+    col = c("black", "grey"),
+    border = NA,
+    clockwise = TRUE)
+dev.off() #run multiple times until following error shows up: Error in dev.off() : cannot shut down device 1 (the null device)
+
+svg(file = "C:/Users/nwali/Downloads/barplot_justify_50somatic.svg",
+    height = 5.5,
+    width = 7.5)
+barplot(height = (pivotdf_muttissuesomatic %>%
+                    subset(CANCER_TYPE_DETAILED != "Total") %>%
+                    pull(Total) %>% 
+                    replace_na(., 0) %>%
+                    as.numeric() %>%
+                    sort(decreasing = TRUE)),
+        xaxs = "i", # remove space between left side of bars and y axis
+        ylab = "Number of distinct individuals", 
+        xlab = "Cancer",
+        main = "Prevalence of Distinct Individuals with Cancer",
+        ylim = c(0, plyr::round_any(pivotdf_muttissuesomatic %>%
+                                      subset(CANCER_TYPE_DETAILED != "Total") %>%
+                                      pull(Total) %>%
+                                      as.numeric() %>%
+                                      max(),
+                                    500, 
+                                    f = ceiling)),
+        col = ifelse(pivotdf_muttissuesomatic$CANCER_TYPE_DETAILED %in% (pivotdf_muttissuesomatic %>%
+                                                                           subset(CANCER_TYPE_DETAILED != "Total") %>%
+                                                                           subset(Total >= 50) %>%
+                                                                           pull(CANCER_TYPE_DETAILED) %>% 
+                                                                           unique()),
+                     "black",
+                     "grey"),
+        font.lab = 2,
+        las = 1,
+        space = 0,
+        border = NA)
+abline(h = 50,
+       col = "red",
+       lty = 2,
+       lwd = 2)
+legend("right",
+       legend = c("Subset", 
+                  "Other"),
+       col = c("black", 
+               "gray"),
+       bty = "n", # no border around legend
+       pch = 15, # filled square shape
+       pt.cex = 1.75) # increase shape size in legend
+dev.off() #run multiple times until following error shows up: Error in dev.off() : cannot shut down device 1 (the null device)
+
+over50_somaticprop <- setdiff(clindatacombined %>%
+                                subset(CANCER_TYPE_DETAILED %in% (pivotdf_muttissuesomatic %>%
+                                                                    subset(CANCER_TYPE_DETAILED != "Total") %>%
+                                                                    subset(Total >= 50) %>%
+                                                                    pull(CANCER_TYPE_DETAILED))) %>%
+                                pull(patientId),
+                              clindatacombined %>%
+                                subset(!(CANCER_TYPE_DETAILED %in% (pivotdf_muttissuesomatic %>%
+                                                                      subset(CANCER_TYPE_DETAILED != "Total") %>%
+                                                                      subset(Total >= 50) %>%
+                                                                      pull(CANCER_TYPE_DETAILED)))) %>%
+                                pull(patientId)) %>% 
+  n_distinct() / n_distinct(clindatacombined$patientId)
+
+# pie chart
+vec <- c(over50_somaticprop,
+         1 - over50_somaticprop)
+
+raw <- c(setdiff(clindatacombined %>%
+                   subset(CANCER_TYPE_DETAILED %in% (pivotdf_muttissuesomatic %>%
+                                                       subset(CANCER_TYPE_DETAILED != "Total") %>%
+                                                       subset(Total >= 50) %>%
+                                                       pull(CANCER_TYPE_DETAILED))) %>%
+                   pull(patientId),
+                 clindatacombined %>%
+                   subset(!(CANCER_TYPE_DETAILED %in% (pivotdf_muttissuesomatic %>%
+                                                         subset(CANCER_TYPE_DETAILED != "Total") %>%
+                                                         subset(Total >= 50) %>%
+                                                         pull(CANCER_TYPE_DETAILED)))) %>%
+                   pull(patientId)) %>% 
+           n_distinct(),
+         (n_distinct(clindatacombined$patientId) - (setdiff(clindatacombined %>%
+                                                              subset(CANCER_TYPE_DETAILED %in% (pivotdf_muttissuesomatic %>%
+                                                                                                  subset(CANCER_TYPE_DETAILED != "Total") %>%
+                                                                                                  subset(Total >= 50) %>%
+                                                                                                  pull(CANCER_TYPE_DETAILED))) %>%
+                                                              pull(patientId),
+                                                            clindatacombined %>%
+                                                              subset(!(CANCER_TYPE_DETAILED %in% (pivotdf_muttissuesomatic %>%
+                                                                                                    subset(CANCER_TYPE_DETAILED != "Total") %>%
+                                                                                                    subset(Total >= 50) %>%
+                                                                                                    pull(CANCER_TYPE_DETAILED)))) %>%
+                                                              pull(patientId)) %>% 
+                                                      n_distinct())))
+
+svg(file = "C:/Users/nwali/Downloads/piechart_justify_over50_somaticprop.svg",
+    height = 5.5,
+    width = 7.5)
+pie(vec,
+    main = "Prevalence of Distinct Individuals with Cancers",
+    labels = paste0(plyr::round_any(vec * 100,
+                                    0.1),
+                    "% (",
+                    format(raw, 
+                           big.mark = ",", 
+                           trim = TRUE),
+                    " individuals)"),
+    col = c("black", "grey"),
+    border = NA,
+    clockwise = TRUE)
+dev.off() #run multiple times until following error shows up: Error in dev.off() : cannot shut down device 1 (the null device)
+
+svg(file = "C:/Users/nwali/Downloads/barplot_justify_50p53mut_somatic.svg",
+    height = 5.5,
+    width = 7.5)
+barplot(height = (pivotdf_muttissuesomatic %>%
+                    subset(CANCER_TYPE_DETAILED != "Total") %>%
+                    pull(Total) %>%
+                    replace_na(., 0) %>%
+                    as.numeric() %>%
+                    sort(decreasing = TRUE)),
+        xaxs = "i", # remove space between left side of bars and y axis
+        ylab = "Number of distinct individuals", 
+        xlab = "Cancer",
+        main = "Prevalence of Distinct Individuals with Cancer",
+        ylim = c(0, plyr::round_any(pivotdf_muttissuesomatic %>%
+                                      subset(CANCER_TYPE_DETAILED != "Total") %>%
+                                      pull(Total) %>%
+                                      as.numeric() %>%
+                                      max(),
+                                    500, 
+                                    f = ceiling)),
+        col = ifelse(pivotdf_muttissuesomatic$CANCER_TYPE_DETAILED %in% gsub(" \\(.*",
+                                                                             "",
+                                                                             pivotdfnobottomtotal100muts$CANCER_TYPE_DETAILED),
+                     "black",
+                     "grey"),
+        font.lab = 2,
+        las = 1,
+        space = 0,
+        border = NA)
+abline(h = 50,
+       col = "red",
+       lty = 2,
+       lwd = 2)
+legend("right",
+       legend = c("Subset", 
+                  "Other"),
+       col = c("black", 
+               "gray"),
+       bty = "n", # no border around legend
+       pch = 15, # filled square shape
+       pt.cex = 1.75) # increase shape size in legend
+dev.off() #run multiple times until following error shows up: Error in dev.off() : cannot shut down device 1 (the null device)
+
+# also need to show global prevalence i.e. 13889/30000+
+p53prop_allsomatic <- n_distinct(p53muts$patientId) / n_distinct(clindatacombined$patientId)
+
+# pie chart
+vec <- c(p53prop_allsomatic,
+         1 - p53prop_allsomatic)
+
+raw <- c(n_distinct(p53muts$patientId),
+         n_distinct(setdiff(unique(clindatacombined$patientId),
+                            unique(p53muts$patientId))))
+
+svg("C:/Users/nwali/Downloads/piechart_justify_over50p53mut_somatic.svg",
+    height = 5.5,
+    width = 7.5)
+pie(vec,
+    main = "Prevalence of Distinct Individuals with Cancers",
+    labels = paste0(plyr::round_any(vec * 100,
+                                    0.1),
+                    "% (",
+                    format(raw, 
+                           big.mark = ",", 
+                           trim = TRUE),
+                    " individuals)"),
+    col = c("black", "grey"),
+    border = NA,
+    clockwise = TRUE)
+dev.off() #run multiple times until following error shows up: Error in dev.off() : cannot shut down device 1 (the null device)
+
+svg(file = "C:/Users/nwali/Downloads/barplot_justify_1pct_complexhm_totalmuts.svg",
+    height = 5.5,
+    width = 7.5)
+barplot(height = sort(as.numeric(datapospheatmap_melt$Proportion %>% replace_na(., 0)),
+                      decreasing = TRUE),
+        xaxs = "i", # remove space between left side of bars and y axis
+        ylab = "Proportion of distinct individuals with cancer", 
+        xlab = "p53 mutation",
+        main = "Prevalence of p53 Mutations in Distinct Individuals with Cancer",
+        ylim = c(0, plyr::round_any(max(datapospheatmap_melt$Proportion, 
+                                        na.rm = TRUE), 
+                                    0.01, 
+                                    f = ceiling)),
+        col = ifelse(datapospheatmap_melt$Mutation %in% datapospheatmap_meltover0.01$Mutation,
+                     "black",
+                     "grey"),
+        font.lab = 2,
+        las = 1,
+        space = 0,
+        border = NA)
+abline(h = 0.01,
+       col = "red",
+       lty = 2,
+       lwd = 2)
+legend("right",
+       legend = c("Subset", 
+                  "Other"),
+       col = c("black", 
+               "gray"),
+       bty = "n", # no border around legend
+       pch = 15, # filled square shape
+       pt.cex = 1.75) # increase shape size in legend
+dev.off() #run multiple times until following error shows up: Error in dev.off() : cannot shut down device 1 (the null device)
+
+# proportions of majority included with 1% muts for heatmaps
+hm_totalmuts_pos_1pct_prop <- n_distinct(datapospheatmap_meltover0.01$Mutation) / n_distinct(datapospheatmap_melt$Mutation)
+
+# pie chart
+vec <- c(hm_totalmuts_pos_1pct_prop,
+         1 - hm_totalmuts_pos_1pct_prop)
+
+raw <- c(n_distinct(datapospheatmap_meltover0.01$Mutation),
+         n_distinct(setdiff(unique(datapospheatmap_melt$Mutation), 
+                            unique(datapospheatmap_meltover0.01$Mutation))))
+
+svg(file = "C:/Users/nwali/Downloads/piechart_justify_hm_totalmuts_pos_1pct_prop.svg",
+    height = 5.5,
+    width = 7.5)
+pie(vec,
+    main = "Prevalence of p53 Mutations in Distinct Individuals with Cancer",
+    labels = paste0(plyr::round_any(vec * 100,
+                                    0.1),
+                    "% (",
+                    format(raw, 
+                           big.mark = ",", 
+                           trim = TRUE),
+                    " mutations)"),
+    col = c("black", "grey"),
+    border = NA,
+    clockwise = TRUE)
+dev.off() #run multiple times until following error shows up: Error in dev.off() : cannot shut down device 1 (the null device)
+
+svg(file = "C:/Users/nwali/Downloads/barplot_justify_1pct_complexhm_pos_sex.svg",
+    height = 5.5,
+    width = 7.5)
+barplot(height = sort(as.numeric(pivotsex_pos_melted$Proportion %>% replace_na(., 0)),
+                      decreasing = TRUE),
+        xaxs = "i", # remove space between left side of bars and y axis
+        ylab = "Proportion of distinct individuals with cancer", 
+        xlab = "p53 mutation",
+        main = "Prevalence of p53 Mutations in Distinct Individuals with Cancer",
+        ylim = c(0, plyr::round_any(max(pivotsex_pos_melted$Proportion, 
+                                        na.rm = TRUE), 
+                                    0.01, 
+                                    f = ceiling)),
+        col = ifelse(pivotsex_pos_melted$Mutation %in% pivotsex_pos_melted_over0.01$Mutation,
+                     "black",
+                     "grey"),
+        font.lab = 2,
+        las = 1,
+        space = 0,
+        border = NA)
+abline(h = 0.01,
+       col = "red",
+       lty = 2,
+       lwd = 2)
+legend("right",
+       legend = c("Subset", 
+                  "Other"),
+       col = c("black", 
+               "gray"),
+       bty = "n", # no border around legend
+       pch = 15, # filled square shape
+       pt.cex = 1.75) # increase shape size in legend
+dev.off() #run multiple times until following error shows up: Error in dev.off() : cannot shut down device 1 (the null device)
+
+hm_pos_sex_1pct_prop <- n_distinct(pivotsex_pos_melted_over0.01$Mutation) / n_distinct(pivotsex_pos_melted$Mutation)
+
+# pie chart
+vec <- c(hm_pos_sex_1pct_prop,
+         1 - hm_pos_sex_1pct_prop)
+
+raw <- c(n_distinct(pivotsex_pos_melted_over0.01$Mutation),
+         n_distinct(setdiff(unique(pivotsex_pos_melted$Mutation),
+                            unique(pivotsex_pos_melted_over0.01$Mutation))))
+
+svg(file = "C:/Users/nwali/Downloads/piechart_justify_hm_pos_sex_1pct_prop.svg",
+    height = 5.5,
+    width = 7.5)
+pie(vec,
+    main = "Prevalence of p53 Mutations in Distinct Individuals with Cancer",
+    labels = paste0(plyr::round_any(vec * 100,
+                                    0.1),
+                    "% (",
+                    format(raw, 
+                           big.mark = ",", 
+                           trim = TRUE),
+                    " mutations)"),
+    col = c("black", "grey"),
+    border = NA,
+    clockwise = TRUE)
+dev.off() #run multiple times until following error shows up: Error in dev.off() : cannot shut down device 1 (the null device)
+
+# make barchart and horiz barchart of each cancer in clindatacombined, with subset i.e. cancers with at least 50 pts in p53muts used for all analyses marked as dark blue
+df_to_plot <- pivotdf %>%
+  mutate(Prop = Total/last(Total)) %>%
+  subset(CANCER_TYPE_DETAILED != "Total") %>%
+  mutate(Cancer = paste0(CANCER_TYPE_DETAILED,
+                         " (",
+                         format(Total, 
+                                big.mark = ",", 
+                                trim = TRUE),
+                         " individuals)")) %>%
+  mutate(Cancer = ifelse(Total == 1,
+                                gsub("individuals",
+                                     "individual",
+                                     Cancer),
+                                Cancer)) %>% 
+  mutate(color_label = ifelse(gsub(" \\(.*",
+                                   "",
+                                   Cancer) %in% gsub(" \\(.*",
+                                                     "",
+                                                     pivotdfnobottomtotal100muts$CANCER_TYPE_DETAILED),
+                              "subset",
+                              "cancer")) %>%
+  dplyr::select(c(Cancer,
+                 Total,
+                 Prop,
+                 color_label))
+
+# barchart
+justify_p53mut_cancer_prevalence_barchart <- ggplot(df_to_plot,
+                                                    aes(x = factor(Cancer,
+                                                                   levels = unique(df_to_plot$Cancer)),
+                                                        y = Prop,
+                                                        fill = relevel(as.factor(color_label),
+                                                                       ref = "subset"))) + 
+  geom_bar(position = position_dodge2(), 
+           stat = "identity") + 
+  ggtitle("Proportion of Cancers in Individuals with Somatic Mutations in TP53") + 
+  xlab("Cancer") +
+  ylab("Proportion of distinct individuals") +
+  labs(fill = "Type") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 5),
+                     limits = c(0, plyr::round_any(max(df_to_plot$Prop),
+                                                   0.1,
+                                                   f = ceiling) * 1.0000001)) +
+  scale_x_discrete(expand = c(0,0)) +
+  scale_fill_manual(values = c("#0072B2",
+                               "skyblue")) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(10,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,10,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,10,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        plot.margin = margin(0,0,0,50, "mm"))
+justify_p53mut_cancer_prevalence_barchart
+save_plot(justify_p53mut_cancer_prevalence_barchart,
+          file = "C:/Users/nwali/Downloads/justify_p53mut_cancer_prevalence_barchart.svg",
+          base_width = 60,
+          base_height = 12,
+          limitsize = FALSE)
+
+# horiz barchart
+justify_p53mut_cancer_prevalence_barchart_horiz <- ggplot(df_to_plot,
+                                                          aes(x = factor(Cancer,
+                                                                         levels = unique(df_to_plot$Cancer)),
+                                                              y = Prop,
+                                                              fill = relevel(as.factor(color_label),
+                                                                             ref = "subset"))) + 
+  geom_bar(position = position_dodge2(),
+           stat = "identity") +
+  geom_text(aes(label = paste0(plyr::round_any(Prop * 100,
+                                               0.1
+                                               #,
+                                               #f = ceiling
+  ),
+  "%")),
+  position = position_dodge2(),
+  color = "black",
+  size = 4.5,
+  fontface = "bold",
+  alpha = 0.5, # level of transparency (lower is more transparent)
+  vjust = 0.5,
+  hjust = -0.25) +
+  ggtitle("Proportion of Cancers in Individuals with Somatic Mutations in TP53") + 
+  xlab("Cancer") +
+  ylab("Proportion of distinct individuals") +
+  labs(fill = "Type") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 5),
+                     position = "right") +
+  scale_x_discrete(expand = c(0,0),
+                   limits = rev) +
+  scale_fill_manual(values = c("#0072B2",
+                               "skyblue")) +
+  theme_classic() + 
+  coord_flip(ylim = c(0, plyr::round_any(max(df_to_plot$Prop),
+                                         0.1,
+                                         f = ceiling) * 1.0000001)) + # calls coord_cartesian to set axis limits to zoom in on percentages
+  theme(axis.text.x = element_text(angle = 0, 
+                                   hjust = 0.5), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x.top = element_text(margin = unit(c(0,0,10,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,10,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,10,0, "mm")),
+        legend.box.spacing = margin(30),
+        legend.justification = "top", # put legend in top right of plot
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        axis.text.y = element_text(vjust = 0.5))
+justify_p53mut_cancer_prevalence_barchart_horiz
+save_plot(justify_p53mut_cancer_prevalence_barchart_horiz,
+          file = "C:/Users/nwali/Downloads/justify_p53mut_cancer_prevalence_barchart_horiz.svg",
+          base_width = 18.5,
+          base_height = 72,
+          limitsize = FALSE)
+
+# make barchart and horiz barchart of each cancer in p53muts, with subset i.e. cancers with at least 50 pts in p53muts used for all analyses marked as dark blue
+df_to_plot <- pivotdf_muttissuesomatic %>%
+  mutate(Prop = Total/last(Total)) %>%
+  subset(CANCER_TYPE_DETAILED != "Total") %>%
+  mutate(Cancer = paste0(CANCER_TYPE_DETAILED,
+                         " (",
+                         format(Total, 
+                                big.mark = ",", 
+                                trim = TRUE),
+                         " individuals)")) %>%
+  mutate(Cancer = ifelse(Total == 1,
+                         gsub("individuals",
+                              "individual",
+                              Cancer),
+                         Cancer)) %>% 
+  mutate(color_label = ifelse(gsub(" \\(.*",
+                                   "",
+                                   Cancer) %in% gsub(" \\(.*",
+                                                     "",
+                                                     pivotdfnobottomtotal100muts$CANCER_TYPE_DETAILED),
+                              "subset",
+                              "cancer")) %>%
+  dplyr::select(c(Cancer,
+                  Total,
+                  Prop,
+                  color_label))
+
+# barchart
+justify_clindata_cancer_prevalence_barchart <- ggplot(df_to_plot,
+                                                      aes(x = factor(Cancer,
+                                                                     levels = unique(df_to_plot$Cancer)),
+                                                          y = Prop,
+                                                          fill = relevel(as.factor(color_label),
+                                                                         ref = "subset"))) + 
+  geom_bar(position = position_dodge2(), 
+           stat = "identity") + 
+  ggtitle("Proportion of Cancers in Individuals with Somatic Cancers") + 
+  xlab("Cancer") +
+  ylab("Proportion of distinct individuals") +
+  labs(fill = "Type") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 5),
+                     limits = c(0, plyr::round_any(max(df_to_plot$Prop),
+                                                   0.05,
+                                                   f = ceiling) * 1.0000001)) +
+  scale_x_discrete(expand = c(0,0)) +
+  scale_fill_manual(values = c("#0072B2",
+                               "skyblue")) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = unit(c(10,0,0,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,10,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,10,0, "mm")),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        plot.margin = margin(0,0,0,50, "mm"))
+justify_clindata_cancer_prevalence_barchart
+save_plot(justify_clindata_cancer_prevalence_barchart,
+          file = "C:/Users/nwali/Downloads/justify_clindata_cancer_prevalence_barchart.svg",
+          base_width = 90,
+          base_height = 12,
+          limitsize = FALSE)
+
+# horiz barchart
+justify_clindata_cancer_prevalence_barchart_horiz <- ggplot(df_to_plot,
+                                                            aes(x = factor(Cancer,
+                                                                           levels = unique(df_to_plot$Cancer)),
+                                                                y = Prop,
+                                                                fill = relevel(as.factor(color_label),
+                                                                               ref = "subset"))) + 
+  geom_bar(position = position_dodge2(),
+           stat = "identity") +
+  geom_text(aes(label = paste0(plyr::round_any(Prop * 100,
+                                               0.1
+                                               #,
+                                               #f = ceiling
+  ),
+  "%")),
+  position = position_dodge2(),
+  color = "black",
+  size = 4.5,
+  fontface = "bold",
+  alpha = 0.5, # level of transparency (lower is more transparent)
+  vjust = 0.5,
+  hjust = -0.25) +
+  ggtitle("Proportion of Cancers in Individuals with Somatic Cancers") + 
+  xlab("Cancer") +
+  ylab("Proportion of distinct individuals") +
+  labs(fill = "Type") +
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 5),
+                     position = "right") +
+  scale_x_discrete(expand = c(0,0),
+                   limits = rev) +
+  scale_fill_manual(values = c("#0072B2",
+                               "skyblue")) +
+  theme_classic() + 
+  coord_flip(ylim = c(0, plyr::round_any(max(df_to_plot$Prop),
+                                         0.05,
+                                         f = ceiling) * 1.0000001)) + # calls coord_cartesian to set axis limits to zoom in on percentages
+  theme(axis.text.x = element_text(angle = 0, 
+                                   hjust = 0.5), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x.top = element_text(margin = unit(c(0,0,10,0), units = "mm")),
+        axis.title.y = element_text(margin = unit(c(0,10,0,0), units = "mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,10,0, "mm")),
+        legend.box.spacing = margin(30),
+        legend.justification = "top", # put legend in top right of plot
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        axis.text.y = element_text(vjust = 0.5))
+justify_clindata_cancer_prevalence_barchart_horiz
+save_plot(justify_clindata_cancer_prevalence_barchart_horiz,
+          file = "C:/Users/nwali/Downloads/justify_clindata_cancer_prevalence_barchart_horiz.svg",
+          base_width = 18,
+          base_height = 115,
+          limitsize = FALSE)
+
+# barplot of each mut prevalence across entire p53muts dataset and top 20 muts table 
+bar_df <- pivotdfpos %>% 
+  subset(CANCER_TYPE_DETAILED == "Total") %>% 
+  remove_rownames() %>% 
+  column_to_rownames("CANCER_TYPE_DETAILED") %>% 
+  t() %>% 
+  as.data.frame() %>% 
+  rownames_to_column("Mutation") %>% 
+  mutate(Prop = Total/last(Total)) %>% 
+  mutate(Proportion = plyr::round_any(Prop * 100,
+                                      0.01)) %>% 
+  subset(Mutation != "Total")
+
+prop <- n_distinct(datapospheatmap_meltover0.01 %>% 
+                     drop_na(Proportion) %>% 
+                     pull(Mutation) %>%
+                     as.vector()) / n_distinct(p53mutscancersover100$proteinChange)
+vec <- c(prop,
+         1 - prop)
+raw <- c(n_distinct(datapospheatmap_meltover0.01 %>% 
+                      drop_na(Proportion) %>% 
+                      pull(Mutation) %>%
+                      as.vector()),
+         n_distinct(setdiff(unique(p53mutscancersover100$proteinChange),
+                            unique(datapospheatmap_meltover0.01 %>% 
+                                     drop_na(Proportion) %>% 
+                                     pull(Mutation) %>%
+                                     as.vector()))))
+
+svg(file = "C:/Users/nwali/Downloads/barplot_justify_overall_mut_prevalence.svg",
+    height = 5.5,
+    width = 7.5)
+barplot(height = sort(as.numeric(bar_df$Prop),
+                      decreasing = TRUE),
+        xaxs = "i", # remove space between left side of bars and y axis
+        ylab = "Proportion of distinct individuals with cancer", 
+        xlab = "p53 mutation",
+        main = "Prevalence of p53 Mutations in Distinct Individuals with Cancer",
+        ylim = c(0, plyr::round_any(max(bar_df$Prop, 
+                                        na.rm = TRUE), 
+                                    0.01, 
+                                    f = ceiling)),
+        font.lab = 2,
+        col = ifelse(bar_df$Mutation %in% (datapospheatmap_meltover0.01 %>% 
+                                             drop_na(Proportion) %>% 
+                                             pull(Mutation) %>%
+                                             as.vector()),
+                     "black",
+                     "grey"),
+        las = 1,
+        space = 0,
+        border = NA)
+legend("right",
+       legend = c("Subset", 
+                  "Other"),
+       col = c("black", 
+               "gray"),
+       bty = "n", # no border around legend
+       pch = 15, # filled square shape
+       pt.cex = 1.75) # increase shape size in legend
+dev.off() #run multiple times until following error shows up: Error in dev.off() : cannot shut down device 1 (the null device)
+
+# pie chart
+svg(file = "C:/Users/nwali/Downloads/piechart_justify_overall_mut_prevalence.svg",
+    height = 5.5,
+    width = 7.5)
+pie(vec,
+    main = "Prevalence of p53 Mutations in Distinct Individuals with Cancer",
+    labels = paste0(plyr::round_any(vec * 100,
+                                    0.1),
+                    "% (",
+                    format(raw, 
+                           big.mark = ",", 
+                           trim = TRUE),
+                    " mutations)"),
+    col = c("black", "grey"),
+    border = NA,
+    clockwise = TRUE)
+dev.off() #run multiple times until following error shows up: Error in dev.off() : cannot shut down device 1 (the null device)
+
+# save grid table of top muts across entire dataset
+overall_mut_prevalence_top_gridprep <- condformat(bar_df %>% 
+                                                    arrange(-Prop) %>%
+                                                    dplyr::select(c(Mutation,
+                                                                    Proportion)) %>% 
+                                                    subset(Proportion >= 1)) %>%
+  theme_grob(rows = NULL, # colnames are not removing with cols = NULL
+             theme = ttheme_default(base_size = 10,
+                                    core = list(padding = unit(c(15, 4), "mm")))) %>%
+  condformat2grob(draw = FALSE)
+
+overall_mut_prevalence_top_grid <- grid.arrange(overall_mut_prevalence_top_gridprep,
+                                                     top = textGrob("Proportion of Somatic p53 Mutations \nAcross Individuals with Cancer",
+                                                                    hjust = 0.5,
+                                                                    gp = gpar(fontface = "bold")))
+save_plot(overall_mut_prevalence_top_grid,
+          file = "C:/Users/nwali/Downloads/overall_mut_prevalence_top_grid.svg",
+          base_width = 5,
+          base_height = 8.5,
+          limitsize = FALSE)
+
+
+
+
+
+#### codon freq barplot ####
+
+# divide down to calc prop of muts in all pts, add as new col and mult by 100, remove codon 0 which is splice, indel, etc throughout p53 and 394 which is outside p53, remove total row, sort by inc codon
+codon_bar_df <- pivotcodonfreq %>%
+  mutate(Prop = `Count of distinct individuals`/last(`Count of distinct individuals`)) %>%
+  dplyr::rename(Count_of_distinct_individuals = `Count of distinct individuals`) %>%
+  mutate(Prop_Label = plyr::round_any(Prop * 100,
+                                      0.01)) %>%
+  subset(!(Codon %in% c("0", 
+                        "394",
+                               "Total"))) %>%
+  mutate_at("Codon",
+            as.numeric) %>%
+  arrange(Codon)
+
+# because not all codons mutated need to add in missing codons as 0 pts and 0 prop
+missing_codons_add <- data.frame(Codon = setdiff(1:393, # since p53 has 393 codons
+                                                    codon_bar_df$Codon),
+                             Count_of_distinct_individuals = 0,
+                             Prop = 0,
+                             Prop_Label = 0)
+
+# add missing codons to df
+codon_bar_df <- full_join(codon_bar_df,
+                              missing_codons_add) %>%
+  arrange(Codon)
+
+# barplot, adding codon numbers at intervals and label numbers of codons >= 1.5%
+svg(file = "C:/Users/nwali/Downloads/barplot_codon_freq.svg",
+  height = 5.5,
+  width = 9.5)
+barplot(height = codon_bar_df$Prop,
+        xaxs = "i", # remove space between left side of bars and y axis
+        ylab = "Proportion of distinct individuals with cancer", 
+        xlab = "Codon",
+        main = "Prevalence of p53 Mutations in Distinct Individuals with Cancer",
+        #axis.lty = 1,
+        #names.arg = codon_bar_df$Codon,
+        ylim = c(0, plyr::round_any(max(codon_bar_df$Prop, 
+                                        na.rm = TRUE), 
+                                    0.1, 
+                                    f = ceiling)),
+        font.lab = 2,
+        col = ifelse(codon_bar_df$Prop >= 0.02,
+                     "red",
+                     "gray"),
+        las = 1,
+        space = 0,
+        border = NA)
+axis(side = 1,
+     at = c(1, 
+            seq(50,
+                350, 
+                50),
+            393))
+text(codon_bar_df$Codon[codon_bar_df$Prop >= 0.015], # x location 
+     codon_bar_df$Prop[codon_bar_df$Prop >= 0.015], # y location
+     codon_bar_df$Codon[codon_bar_df$Prop >= 0.015], # label to put
+     cex = 1, # standard font size
+     pos = 3) # text above (x,y) coordinates where it's placed
+text(80,
+     plyr::round_any(max(codon_bar_df$Prop, 
+                         na.rm = TRUE), 
+                     0.1, 
+                     f = ceiling) * 0.95,
+     paste0("Somatic (",
+            format(last(pivotcodonfreq$`Count of distinct individuals`), 
+                   big.mark = ",", 
+                   trim = TRUE),
+            " individuals)"),
+     cex = 1.5) # increase font size
+legend("topright",
+       legend = c("≥ 2%", 
+                  "Other"),
+       col = c("red", 
+               "gray"),
+       bty = "n", # no border around legend
+       pch = 15, # filled square shape
+       pt.cex = 1.75) # increase shape size in legend
+dev.off() #run multiple times until following error shows up: Error in dev.off() : cannot shut down device 1 (the null device)
+
+
+
+#### tables of less common cancers ####
+
+# make grid of ages of dx in less common cancers
+age_othercancers_gridprep <- condformat(pivotage_othercancers %>%
+                                          mutate(across(everything(), 
+                                                        ~ replace(., 
+                                                                  . %in% c("NA", NA),
+                                                                  ""))) %>%
+                                          relocate(colnames(.)[c(6,10,9,7,5,3,4,8,2)], # make ages ascending 
+                                                   .after = CANCER_TYPE_DETAILED) %>%
+                                          dplyr::rename(Cancer = CANCER_TYPE_DETAILED) %>%
+                                          remove_rownames()) %>%
+  rule_text_bold(Total,
+                 expression = Total > 0) %>%
+  # rule_fill_discrete(Total,
+  #                    expression = Total > 0,
+  #                    colours = c("TRUE" = "grey80")) %>% # also adds unremovable black borders
+  theme_grob(rows = NULL, 
+             theme = ttheme_default(base_size = 10,
+                                    core = list(padding = unit(c(15, 4), "mm"),
+                                                fg_params = list(fontface = c(rep("plain", 
+                                                                                  nrow(pivotage_othercancers) - 1), 
+                                                                              "bold")),
+                                                bg_params = list(fill = c(rep(c("grey95", "grey90"),
+                                                                              length.out = (nrow(pivotage_othercancers) - 1)),
+                                                                          "grey80")))
+             )) %>%
+  condformat2grob(draw = FALSE)
+
+age_othercancers_grid <- grid.arrange(age_othercancers_gridprep,
+             top = textGrob("Ages of Cancer Diagnoses for Individuals with Less Prevalent Cancers and Somatic TP53 Mutations",
+                            hjust = 0.5,
+                            gp = gpar(fontface = "bold")))
+
+save_plot(age_othercancers_grid,
+          file = "C:/Users/nwali/Downloads/age_othercancers_grid.svg",
+          base_width = 18,
+          base_height = 48,
+          limitsize = FALSE)
+
+# make grid of sexes of pts with less prevalent cancers
+sex_othercancers_gridprep <- condformat(pivotsex_othercancers %>%
+                                          mutate(across(everything(), 
+                                                        ~ replace(., 
+                                                                  . %in% c("NA", NA),
+                                                                  ""))) %>%
+                                          dplyr::rename(Cancer = CANCER_TYPE_DETAILED) %>%
+                                          remove_rownames()) %>%
+  rule_text_bold(Total,
+                 expression = Total > 0) %>%
+  # rule_fill_discrete(Total,
+  #                    expression = Total > 0,
+  #                    colours = c("TRUE" = "grey80")) %>% # also adds unremovable black borders
+  theme_grob(rows = NULL, 
+             theme = ttheme_default(base_size = 10,
+                                    core = list(padding = unit(c(15, 4), "mm"),
+                                                fg_params = list(fontface = c(rep("plain", 
+                                                                                  nrow(pivotsex_othercancers) - 1), 
+                                                                              "bold")),
+                                                bg_params = list(fill = c(rep(c("grey95", "grey90"),
+                                                                              length.out = (nrow(pivotsex_othercancers) - 1)),
+                                                                          "grey80")))
+             )) %>%
+  condformat2grob(draw = FALSE)
+
+sex_othercancers_grid <- grid.arrange(sex_othercancers_gridprep,
+                                      top = textGrob("Sexes of Individuals with Less Prevalent Cancers and Somatic TP53 Mutations",
+                                                     hjust = 0.5,
+                                                     gp = gpar(fontface = "bold")))
+
+save_plot(sex_othercancers_grid,
+          file = "C:/Users/nwali/Downloads/sex_othercancers_grid.svg",
+          base_width = 14,
+          base_height = 48,
+          limitsize = FALSE)
+
+# make grid of mut types of pts with less prevalent cancers
+df_othercancers_gridprep <- condformat(pivotdf_othercancers %>%
+                                          mutate(across(everything(), 
+                                                        ~ replace(., 
+                                                                  . %in% c("NA", NA),
+                                                                  ""))) %>%
+                                          dplyr::rename(Cancer = CANCER_TYPE_DETAILED) %>%
+                                          remove_rownames()) %>%
+  rule_text_bold(Total,
+                 expression = Total > 0) %>%
+  # rule_fill_discrete(Total,
+  #                    expression = Total > 0,
+  #                    colours = c("TRUE" = "grey80")) %>% # also adds unremovable black borders
+  theme_grob(rows = NULL, 
+             theme = ttheme_default(base_size = 10,
+                                    core = list(padding = unit(c(15, 4), "mm"),
+                                                fg_params = list(fontface = c(rep("plain", 
+                                                                                  nrow(pivotdf_othercancers) - 1), 
+                                                                              "bold")),
+                                                bg_params = list(fill = c(rep(c("grey95", "grey90"),
+                                                                              length.out = (nrow(pivotdf_othercancers) - 1)),
+                                                                          "grey80")))
+             )) %>%
+  condformat2grob(draw = FALSE)
+
+df_othercancers_grid <- grid.arrange(df_othercancers_gridprep,
+                                      top = textGrob("Mutation Types of Individuals with Less Prevalent Cancers and Somatic TP53 Mutations",
+                                                     hjust = 0.5,
+                                                     gp = gpar(fontface = "bold")))
+
+save_plot(df_othercancers_grid,
+          file = "C:/Users/nwali/Downloads/df_othercancers_grid.svg",
+          base_width = 22,
+          base_height = 48,
+          limitsize = FALSE)
+
+# # make grid of mut pos of pts with less prevalent cancers
+# dfposother_gridprep <- condformat(pivotdfposother %>%
+#                                          mutate(across(everything(), 
+#                                                        ~ replace(., 
+#                                                                  . %in% c("NA", NA),
+#                                                                  ""))) %>%
+#                                          dplyr::rename(Cancer = CANCER_TYPE_DETAILED) %>%
+#                                          remove_rownames()) %>%
+#   rule_text_bold(Total,
+#                  expression = Total > 0) %>%
+#   # rule_fill_discrete(Total,
+#   #                    expression = Total > 0,
+#   #                    colours = c("TRUE" = "grey80")) %>% # also adds unremovable black borders
+#   theme_grob(rows = NULL, 
+#              theme = ttheme_default(base_size = 10,
+#                                     core = list(padding = unit(c(15, 4), "mm"),
+#                                                 fg_params = list(fontface = c(rep("plain", 
+#                                                                                   nrow(pivotdfposother) - 1), 
+#                                                                               "bold")),
+#                                                 bg_params = list(fill = c(rep(c("grey95", "grey90"),
+#                                                                               length.out = (nrow(pivotdfposother) - 1)),
+#                                                                           "grey80")))
+#              )) %>%
+#   condformat2grob(draw = FALSE)
+# 
+# dfposother_grid <- grid.arrange(dfposother_gridprep,
+#                                      top = textGrob("Mutations of Individuals with Less Prevalent Cancers and Somatic TP53 Mutations",
+#                                                     hjust = 0.5,
+#                                                     gp = gpar(fontface = "bold")))
+# 
+# save_plot(dfposother_grid,
+#           file = "C:/Users/nwali/Downloads/dfposother_grid.svg",
+#           base_width = 62,
+#           base_height = 48,
+#           limitsize = FALSE)
+
+# grid too large to create so output as table instead
+write_csv(pivotdfposother,
+          file = "C:/Users/nwali/Downloads/dfposother_table.csv")
+
+
+
+
+
+
+
+
+
+
+
+
+#### analyses of all patients with adrenocortical carcinoma ####
+# subset dataset of all cancers to just ACC
+p53muts_allACCpts <- p53muts %>%
+  mutate(Codon = abs((parse_number(as.character(proteinChange), 
+                                   na = character())))) %>% 
+  mutate(Domain = ifelse(Codon <= 39, 
+                         "TAD1", 
+                         "notyet")) %>%
+  mutate(Domain = ifelse(Codon >= 40 & Codon <= 61, 
+                         "TAD2", 
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 62 & Codon <= 93, 
+                         "PRD", 
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 94 & Codon <= 289, 
+                         "DBD",
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 112 & Codon <= 124,
+                         "DBD L1 loop",
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 163 & Codon <= 195, 
+                         "DBD L2 loop",
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 236 & Codon <= 251,
+                         "DBD L3 loop", 
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 290 & Codon <= 324, 
+                         "HD",
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 325 & Codon <= 356, 
+                         "OD", 
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 357, 
+                         "CTD", 
+                         Domain)) %>%
+  mutate(Rescued = ifelse(proteinChange %in% mut_rescued,
+                          "Rescued by treatment",
+                          "Not documented")) %>% 
+  subset(CANCER_TYPE_DETAILED == "Adrenocortical Carcinoma")  %>% 
+  # drop_na(c(SEX, 
+  #           Age_stratum)) %>% 
+  distinct() %>% 
+  remove_rownames()
+
+# # create pivot of number of female and male pts with ACC in each age stratum of diagnosis, replace any NA with 0, rename columns
+# p53muts_allACCpts_agestrata_sex <- PivotTable$new()
+# p53muts_allACCpts_agestrata_sex$addData(p53muts_allACCpts)
+# p53muts_allACCpts_agestrata_sex$addRowDataGroups("Age_stratum")
+# p53muts_allACCpts_agestrata_sex$addColumnDataGroups("SEX") 
+# p53muts_allACCpts_agestrata_sex$defineCalculation(calculationName = "Count of distinct patients", 
+#                                           summariseExpression = "n_distinct(patientId)")
+# p53muts_allACCpts_agestrata_sex$sortColumnDataGroups(levelNumber = 1, 
+#                                              orderBy = "calculation", 
+#                                              sortOrder = "desc")
+# p53muts_allACCpts_agestrata_sex$sortRowDataGroups(levelNumber = 1, 
+#                                           orderBy = "calculation", 
+#                                           sortOrder = "desc")
+# p53muts_allACCpts_agestrata_sex$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+# p53muts_allACCpts_agestrata_sex_pivot <- p53muts_allACCpts_agestrata_sex$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+#   mutate(across(everything(),
+#                 ~ replace_na(.,
+#                              0))) %>%
+#   #dplyr::rename(Age = Age_stratum,
+#                 #Num_Indiv = Total
+#) %>% 
+#   mutate(Age = ifelse(Age == "NA",
+#                       "No age listed",
+#                       Age)) %>%
+#   remove_rownames()
+# 
+# # create pivot of number of mut types in pts with ACC in each age stratum of diagnosis, replace any NA with 0, rename columns
+# p53muts_allACCpts_agestrata_type <- PivotTable$new()
+# p53muts_allACCpts_agestrata_type$addData(p53muts_allACCpts)
+# p53muts_allACCpts_agestrata_type$addRowDataGroups("Age_stratum")
+# p53muts_allACCpts_agestrata_type$addColumnDataGroups("mutationType") 
+# p53muts_allACCpts_agestrata_type$defineCalculation(calculationName = "Count of distinct patients", 
+#                                            summariseExpression = "n_distinct(patientId)")
+# p53muts_allACCpts_agestrata_type$sortColumnDataGroups(levelNumber = 1, 
+#                                               orderBy = "calculation", 
+#                                               sortOrder = "desc")
+# p53muts_allACCpts_agestrata_type$sortRowDataGroups(levelNumber = 1, 
+#                                            orderBy = "calculation", 
+#                                            sortOrder = "desc")
+# p53muts_allACCpts_agestrata_type$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+# p53muts_allACCpts_agestrata_type_pivot <- p53muts_allACCpts_agestrata_type$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+#   mutate(across(everything(),
+#                 ~ replace_na(.,
+#                              0))) %>%
+#   #dplyr::rename(Age = Age_stratum,
+#                 #Num_Indiv = Total
+#) %>% 
+#   mutate(Age = ifelse(Age == "NA",
+#                       "No age listed",
+#                       Age)) %>%
+#   remove_rownames()
+
+# # create pivot of mutated residues vs age strata in all ACC patients, replace NA with 0, arrange by increasing codon number, rename columns
+# p53muts_allACCpts_agestrata_pos <- PivotTable$new()
+# p53muts_allACCpts_agestrata_pos$addData(p53muts_allACCpts)
+# p53muts_allACCpts_agestrata_pos$addRowDataGroups("proteinChange")
+# p53muts_allACCpts_agestrata_pos$addColumnDataGroups("Age_stratum") 
+# p53muts_allACCpts_agestrata_pos$defineCalculation(calculationName = "Count of distinct patients", 
+#                                           summariseExpression = "n_distinct(patientId)")
+# p53muts_allACCpts_agestrata_pos$sortColumnDataGroups(levelNumber = 1, 
+#                                              orderBy = "calculation", 
+#                                              sortOrder = "desc")
+# p53muts_allACCpts_agestrata_pos$sortRowDataGroups(levelNumber = 1, 
+#                                           orderBy = "calculation", 
+#                                           sortOrder = "desc")
+# p53muts_allACCpts_agestrata_pos$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+# p53muts_allACCpts_agestrata_pos_pivot <- p53muts_allACCpts_agestrata_pos$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+#   arrange(abs(parse_number(proteinChange))) %>% # arrange muts by increasing codon number
+#   mutate(across(everything(),
+#                 ~ replace_na(.,
+#                              0))) %>%
+#   dplyr::rename(
+#Mutation = proteinChange,
+#                 `No age listed` = `NA`,
+#                 #Num_Indiv = Total
+#) %>% 
+#   remove_rownames()
+
+# create pivot of number of female and male pts with ACC in each mutation category, replace any NA with 0, rename columns
+p53muts_allACCpts_sex_type <- PivotTable$new()
+p53muts_allACCpts_sex_type$addData(p53muts_allACCpts)
+p53muts_allACCpts_sex_type$addRowDataGroups("mutationType")
+p53muts_allACCpts_sex_type$addColumnDataGroups("SEX") 
+p53muts_allACCpts_sex_type$defineCalculation(calculationName = "Count of distinct patients", 
+                                             summariseExpression = "n_distinct(patientId)")
+p53muts_allACCpts_sex_type$sortColumnDataGroups(levelNumber = 1, 
+                                                orderBy = "calculation", 
+                                                sortOrder = "desc")
+p53muts_allACCpts_sex_type$sortRowDataGroups(levelNumber = 1, 
+                                             orderBy = "calculation", 
+                                             sortOrder = "desc")
+p53muts_allACCpts_sex_type$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+p53muts_allACCpts_sex_type_pivot <- p53muts_allACCpts_sex_type$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>%
+  #dplyr::rename(Mutation = mutationType,
+  #Num_Indiv = Total
+  #              ) %>% 
+  remove_rownames()
+
+# create pivot of mutated residues vs sex in all ACC patients, replace NA with 0, arrange by increasing codon number, rename columns
+p53muts_allACCpts_sex_pos <- PivotTable$new()
+p53muts_allACCpts_sex_pos$addData(p53muts_allACCpts)
+p53muts_allACCpts_sex_pos$addRowDataGroups("proteinChange")
+p53muts_allACCpts_sex_pos$addColumnDataGroups("SEX") 
+p53muts_allACCpts_sex_pos$defineCalculation(calculationName = "Count of distinct patients", 
+                                            summariseExpression = "n_distinct(patientId)")
+p53muts_allACCpts_sex_pos$sortColumnDataGroups(levelNumber = 1, 
+                                               orderBy = "calculation", 
+                                               sortOrder = "desc")
+p53muts_allACCpts_sex_pos$sortRowDataGroups(levelNumber = 1, 
+                                            orderBy = "calculation", 
+                                            sortOrder = "desc")
+p53muts_allACCpts_sex_pos$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+p53muts_allACCpts_sex_pos_pivot <- p53muts_allACCpts_sex_pos$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  arrange(abs(parse_number(proteinChange))) %>% # arrange muts by increasing codon number
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>%
+  dplyr::rename(
+    #Mutation = proteinChange,
+    Num_Indiv = Total
+  ) %>% 
+  remove_rownames()
+
+# # divide number of female and male pts by total number of pts per age stratum
+# p53muts_allACCpts_agestrata_sex_pivot_calc <- p53muts_allACCpts_agestrata_sex_pivot %>% 
+#   mutate_at(vars(2:Total), 
+#             .funs = ~./Total)
+# 
+# # divide number of mut type pts by total number of pts per age stratum
+# p53muts_allACCpts_agestrata_type_pivot_calc <- p53muts_allACCpts_agestrata_type_pivot %>% 
+#   mutate_at(vars(2:Total), 
+#             .funs = ~./Total)
+
+# divide vertically down sex columns to calc proportions of each mut type in each sex, add number of total female and male pts to colnames
+p53muts_allACCpts_sex_type_pivot_calc <- p53muts_allACCpts_sex_type_pivot %>% 
+  dplyr::select(-Total) %>% 
+  transform(Female = Female/as.numeric(p53muts_allACCpts_sex_type_pivot[nrow(p53muts_allACCpts_sex_type_pivot), "Female"])) %>% 
+  transform(Male = Male/as.numeric(p53muts_allACCpts_sex_type_pivot[nrow(p53muts_allACCpts_sex_type_pivot), "Male"])) 
+
+
+
+names(p53muts_allACCpts_sex_type_pivot_calc) <- ifelse(names(p53muts_allACCpts_sex_type_pivot_calc) %in% c("Female"),
+                                                       paste0("Female (",
+                                                              as.numeric(p53muts_allACCpts_sex_type_pivot[nrow(p53muts_allACCpts_sex_type_pivot),
+                                                                                                          "Female"]),
+                                                              " patients)"),
+                                                       names(p53muts_allACCpts_sex_type_pivot_calc))
+
+names(p53muts_allACCpts_sex_type_pivot_calc) <- ifelse(names(p53muts_allACCpts_sex_type_pivot_calc) %in% c("Male"),
+                                                       paste0("Male (",
+                                                              as.numeric(p53muts_allACCpts_sex_type_pivot[nrow(p53muts_allACCpts_sex_type_pivot),
+                                                                                                          "Male"]),
+                                                              " patients)"),
+                                                       names(p53muts_allACCpts_sex_type_pivot_calc))
+
+# # remove total row and column and age column which doesn't have indication of number of total patients, melt pivot for ggplot and rename columns to be more sensible
+# p53muts_allACCpts_agestrata_sex_pivot_melted <- p53muts_allACCpts_agestrata_sex_pivot_calc %>% 
+#   dplyr::select(-Total) %>% 
+#   subset(Age_stratum != "Total") %>% 
+#   dplyr::select(-Age_stratum) %>% 
+#   reshape2::melt() %>% 
+#   dplyr::rename(Sex = variable,
+#                 Proportion = value)
+# 
+# # remove total row and column and age column which doesn't have indication of number of total patients, melt pivot for ggplot and rename columns to be more sensible
+# p53muts_allACCpts_agestrata_type_pivot_melted <- p53muts_allACCpts_agestrata_type_pivot_calc %>% 
+#   dplyr::select(-Total) %>% 
+#   subset(Age_stratum != "Total") %>% 
+#   dplyr::select(-Age_stratum) %>% 
+#   reshape2::melt() %>% 
+#   dplyr::rename(Effect = variable,
+#                 Proportion = value)
+
+# remove total row, melt pivot for ggplot and rename columns to be more sensible, make category column as factor with decreasing proportions
+p53muts_allACCpts_sex_type_pivot_melted <- p53muts_allACCpts_sex_type_pivot_calc %>% 
+  subset(mutationType != "Total") %>% 
+  reshape2::melt() %>% 
+  dplyr::rename(Effect = mutationType,
+                Sex = variable,
+                Proportion = value) %>% 
+  arrange(-Proportion)
+
+p53muts_allACCpts_sex_type_pivot_melted$Effect <- factor(p53muts_allACCpts_sex_type_pivot_melted$Effect,
+                                                         levels = unique(p53muts_allACCpts_sex_type_pivot_melted$Effect))
+
+# # draw stacked barchart
+# allACCpts_agestrata_sex_barchart <- ggplot(p53muts_allACCpts_agestrata_sex_pivot_melted,
+#                                            aes(x = Age,
+#                                                y = Proportion,
+#                                                fill = Sex)) +
+#   geom_bar(position = "fill", 
+#            stat = "identity") + 
+#   # facet_grid(. ~ Age_stratum,
+#   #            scales = "free") +
+#   ggtitle("Age Strata of Diagnosis vs. Sex in \n Individuals with Adrenocortical Carcinoma \nand Somatic p53 Mutations in cBioPortal") + 
+#   scale_y_continuous(labels = scales::percent_format(), 
+#                      expand = c(0,0), 
+#                      breaks = scales::pretty_breaks(n = 6)) +
+#   scale_x_discrete(expand = c(0,0)) +
+#   theme_classic() + 
+#   theme(axis.text.x = element_text(angle = 45, 
+#                                    hjust = 1, 
+#                                    vjust = 1), 
+#         axis.text = element_text(color = "black",
+#                                  size = 12), 
+#         axis.title = element_text(color = "black",
+#                                   face = "bold",
+#                                   size = 14),
+#         axis.title.x = element_text(margin = margin(5,0,0,0,"mm")),
+#         axis.title.y = element_text(margin = margin(0,5,0,0,"mm")),
+#         plot.title = element_text(hjust = 0.5,
+#                                   face = "bold",
+#                                   color = "black",
+#                                   size = 16,
+#                                   margin = margin(0,0,5,0, "mm")),
+#         plot.title.position = "plot",
+#         plot.margin = margin(0,0,0,4, "mm"),
+#         legend.text = element_text(color = "black",
+#                                    size = 12),
+#         legend.title = element_text(color = "black",
+#                                     face = "bold",
+#                                     size = 14),
+#         # strip.background = element_blank(),
+#         # strip.text = element_text(color = "black",
+#         #                           size = 11),
+#         # panel.spacing.x = unit(1.5, "lines")
+#   )
+# allACCpts_agestrata_sex_barchart
+# save_plot(file = "C:/Users/nwali/Downloads/allACCpts_agestrata_sex_barchart.svg", 
+#           allACCpts_agestrata_sex_barchart, 
+#           base_width = 5.5, 
+#           base_height = 6.15)
+
+# # draw stacked barchart
+# allACCpts_agestrata_type_barchart <- ggplot(p53muts_allACCpts_agestrata_type_pivot_melted,
+#                                             aes(x = Age,
+#                                                 y = Proportion,
+#                                                 fill = Effect)) +
+#   geom_bar(position = "fill", 
+#            stat = "identity") + 
+#   # facet_grid(. ~ Age_stratum,
+#   #            scales = "free") +
+#   ggtitle("Age Strata of Diagnosis vs. Mutation Types in \n Individuals with Adrenocortical Carcinoma \nand Somatic p53 Mutations in cBioPortal") + 
+#   scale_y_continuous(labels = scales::percent_format(), 
+#                      expand = c(0,0), 
+#                      breaks = scales::pretty_breaks(n = 6)) +
+#   scale_x_discrete(expand = c(0,0)) +
+#   theme_classic() + 
+#   theme(axis.text.x = element_text(angle = 45, 
+#                                    hjust = 1, 
+#                                    vjust = 1), 
+#         axis.text = element_text(color = "black",
+#                                  size = 12), 
+#         axis.title = element_text(color = "black",
+#                                   face = "bold",
+#                                   size = 14),
+#         axis.title.x = element_text(margin = margin(5,0,0,0,"mm")),
+#         axis.title.y = element_text(margin = margin(0,5,0,0,"mm")),
+#         plot.title = element_text(hjust = 0.5,
+#                                   face = "bold",
+#                                   color = "black",
+#                                   size = 16,
+#                                   margin = margin(0,0,5,0, "mm")),
+#         plot.title.position = "plot",
+#         plot.margin = margin(0,0,0,4, "mm"),
+#         legend.text = element_text(color = "black",
+#                                    size = 12),
+#         legend.title = element_text(color = "black",
+#                                     face = "bold",
+#                                     size = 14),
+#         # strip.background = element_blank(),
+#         # strip.text = element_text(color = "black",
+#         #                           size = 11),
+#         # panel.spacing.x = unit(1.5, "lines")
+#   )
+# allACCpts_agestrata_type_barchart
+# save_plot(file = "C:/Users/nwali/Downloads/allACCpts_agestrata_type_barchart.svg", 
+#           allACCpts_agestrata_type_barchart, 
+#           base_width = 6, 
+#           base_height = 5.75)
+
+# draw stacked barchart
+allACCpts_sex_type_barchart <- ggplot(p53muts_allACCpts_sex_type_pivot_melted,
+                                      aes(x = Sex,
+                                          y = Proportion,
+                                          fill = Effect)) +
+  geom_bar(position = "fill", 
+           stat = "identity") + 
+  # facet_grid(. ~ Age_stratum,
+  #            scales = "free") +
+  ggtitle("Mutation Types vs. Sex in \n Individuals with Adrenocortical Carcinoma \nand Somatic p53 Mutations in cBioPortal") + 
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 6)) +
+  scale_x_discrete(expand = c(0,0)) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = margin(5,0,0,0,"mm")),
+        axis.title.y = element_text(margin = margin(0,5,0,0,"mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,5,0, "mm")),
+        plot.title.position = "plot",
+        plot.margin = margin(0,0,0,4, "mm"),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        # strip.background = element_blank(),
+        # strip.text = element_text(color = "black",
+        #                           size = 11),
+        # panel.spacing.x = unit(1.5, "lines")
+  )
+allACCpts_sex_type_barchart
+save_plot(file = "C:/Users/nwali/Downloads/allACCpts_sex_type_barchart.svg", 
+          allACCpts_sex_type_barchart, 
+          base_width = 4.5, 
+          base_height = 6.15,
+          limitsize = FALSE)
+
+# find top hotspots actually in dataset to color grid by and see if hotspots actually in a given cancer
+top_muts_p53muts <- p53muts %>% 
+  # drop_na(c(SEX, 
+  #           Age_stratum)) %>% 
+  group_by(proteinChange) %>% 
+  summarise(n = n_distinct(patientId)) %>% 
+  arrange(-n) %>% 
+  filter(!(grepl("\\?", 
+                 proteinChange))) %>% # removes splices, indels, anything without specific residue
+  head(10) %>% 
+  dplyr::rename(Mutant_Residue = proteinChange,
+                Num_Pts = n)
+
+top_muts_p53muts_vector <- top_muts_p53muts %>% 
+  pull(Mutant_Residue) %>% 
+  trimws() 
+
+# pull out damage info of muts in origfunction df, remove p. prefix, arrange by increasing codon, remove rows without damage information
+origfunction_damageinfo <- origfunction %>% 
+  dplyr::select(c(ProtDescription, # first few cols are mut info, then agvgdc onwards are damage info
+                  Effect,
+                  AGVGDClass,
+                  BayesDel,
+                  REVEL,
+                  SIFTClass,
+                  Polyphen2,
+                  TransactivationClass,
+                  DNE_LOFclass,
+                  DNEclass,
+                  StructureFunctionClass)) %>% 
+  filter(!str_detect(ProtDescription,
+                     "\\?")) %>% # must remove these because can't exactly match my muts
+  filter(!str_detect(ProtDescription,
+                     "delins")) %>% # don't have any info on damage muts
+  filter(!str_detect(ProtDescription, 
+                     "\\;")) %>% # double muts which can't be properly accounted for
+  subset(Effect %in% c("missense",
+                       "nonsense",
+                       "silent")) %>% # can only keep these because they have fixed final residues/effects
+  dplyr::select(-Effect) %>% # causing duplicated residues otherwise because at nucleotide level were diff
+  distinct() %>% 
+  remove_rownames()
+
+origfunction_damageinfo <- origfunction_damageinfo[!(origfunction_damageinfo$DNE_LOFclass == "unclass." & is.na(origfunction_damageinfo$SIFTClass)),] # removes all that effectively had no damage information as unclass means nothing and sift class chosen as it had the next most information in unclass residues
+
+origfunction_damageinfo$ProtDescription <- substring(origfunction_damageinfo$ProtDescription, 3)
+
+origfunction_damageinfo <- origfunction_damageinfo %>% 
+  arrange(abs(parse_number(ProtDescription))) %>% 
+  remove_rownames() %>% 
+  remove_empty("rows")
+
+# add damage info to pivot of mut residues in sexes and replace NAs with blanks so that can plot as grid
+p53muts_allACCpts_sex_pos_pivot_damage <- left_join(p53muts_allACCpts_sex_pos_pivot, 
+                                                    origfunction_damageinfo, 
+                                                    by = c("proteinChange" = "ProtDescription")) %>% 
+  mutate(across(everything(),
+                ~ str_replace(.,
+                              "NA",
+                              ""))) %>%
+  mutate(across(where(is.character),
+                ~ replace_na(.,
+                             ""))) %>% 
+  dplyr::rename(Mutation = proteinChange)
+
+# # add damage info to pivot of mut residues in age strata, replace NAs with blanks so that can plot as grid
+# p53muts_allACCpts_agestrata_pos_pivot_damage <- left_join(p53muts_allACCpts_agestrata_pos_pivot, 
+#                                                           origfunction_damageinfo, 
+#                                                           by = c("proteinChange" = "ProtDescription")) %>% 
+#   mutate(across(everything(),
+#                 ~ str_replace(.,
+#                               "NA",
+#                               ""))) %>%
+#   mutate(across(where(is.character),
+#                 ~ replace_na(.,
+#                              ""))) %>% 
+#   dplyr::rename(Mutation = proteinChange)
+
+# create colorful grid table of mutated residues across sexes in pts with ACC
+allACCpts_sex_pos_gridprep <- condformat(p53muts_allACCpts_sex_pos_pivot_damage) %>% 
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 1 & abs(parse_number(Mutation)) <= 61, # both TADs
+                         "#CC79A7",
+                         "")) %>% 
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 62 & abs(parse_number(Mutation)) <= 93, # PRD
+                         "yellow4",
+                         "")) %>%
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 94 & abs(parse_number(Mutation)) <= 289, # DBD
+                         "#0072B2",
+                         "")) %>%
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 112 & abs(parse_number(Mutation)) <= 124, # L1
+                         "hotpink", 
+                         "")) %>% 
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 163 & abs(parse_number(Mutation)) <= 195, # L2
+                         "brown", 
+                         "")) %>% 
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 236 & abs(parse_number(Mutation)) <= 251, # L3
+                         "purple", 
+                         "")) %>% 
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 290 & abs(parse_number(Mutation)) <= 324, # HD
+                         "#009E73",
+                         ""))  %>% 
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 325 & abs(parse_number(Mutation)) <= 356, # OD; CTD is black
+                         "#D55E00",
+                         "")) %>% 
+  # rule_text_color(1,
+  #                 ifelse(Mutation %in% top_muts_p53muts_vector,
+  #                        "red",
+  #                        "")) %>%
+  # rule_text_bold(1,
+  #                expression = Mutation %in% top_muts_p53muts_vector) %>%
+  # rule_text_color(Num_Indiv,
+  #                 ifelse(as.numeric(Num_Indiv) > 3 & as.numeric(Num_Indiv) < n_distinct(p53muts_allACCpts$patientId),
+  #                        "red",
+  #                        "")) %>%
+  # rule_text_bold(Num_Indiv,
+  #                expression = as.numeric(Num_Indiv) > 3 & as.numeric(Num_Indiv) < n_distinct(p53muts_allACCpts$patientId)) %>%
+  rule_text_color(1,
+                  ifelse(Mutation %in% mut_rescued,
+                         "red",
+                         "")) %>%
+  rule_text_bold(1,
+                 expression = Mutation %in% mut_rescued) %>%
+  rule_text_color(AGVGDClass,
+                  ifelse(AGVGDClass %in% c("C65", 
+                                           "C55"), 
+                         "red",
+                         "")) %>% 
+  rule_text_color(BayesDel,
+                  ifelse(as.numeric(BayesDel) >= 0.16, 
+                         "red",
+                         "")) %>% 
+  rule_text_color(REVEL,
+                  ifelse(as.numeric(REVEL) >= 0.5, 
+                         "red",
+                         "")) %>% 
+  rule_text_color(SIFTClass,
+                  ifelse(SIFTClass %in% c("Damaging"), 
+                         "red",
+                         "")) %>% 
+  rule_text_color(Polyphen2,
+                  ifelse(Polyphen2 %in% c("D"), 
+                         "red",
+                         "")) %>% 
+  rule_text_color(TransactivationClass,
+                  ifelse(TransactivationClass %in% c("non-functional"), 
+                         "red",
+                         "")) %>% 
+  rule_text_color(DNE_LOFclass,
+                  ifelse(DNE_LOFclass %in% c("DNE_LOF",
+                                             "notDNE_LOF"), 
+                         "red",
+                         "")) %>% 
+  rule_text_color(DNEclass,
+                  ifelse(DNEclass %in% c("Yes"), 
+                         "red",
+                         "")) %>% 
+  rule_text_color(StructureFunctionClass,
+                  ifelse(StructureFunctionClass %in% c("non-functional"), 
+                         "red",
+                         "")) %>% 
+  theme_grob(rows = NULL,
+             theme = ttheme_default(base_size = 10,
+                                    core = list(padding = unit(c(15, 4), "mm"),
+                                                fg_params = list(fontface = c(rep("plain", 
+                                                                                  nrow(p53muts_allACCpts_sex_pos_pivot_damage) - 1), 
+                                                                              "bold")),
+                                                bg_params = list(fill = c(rep(c("grey95", "grey90"),
+                                                                              length.out = (nrow(p53muts_allACCpts_sex_pos_pivot_damage) - 1)),
+                                                                          "grey80")))
+             )) %>%
+  condformat2grob(draw = FALSE)
+
+allACCpts_sex_pos_grid <- grid.arrange(allACCpts_sex_pos_gridprep,
+                                       top = textGrob("Mutated Residues and Functional Effects by Sex in Individuals with Adrenocortical Carcinoma and Somatic p53 Mutations in cBioPortal",
+                                                      hjust = 0.5,
+                                                      gp = gpar(fontface = "bold")))
+
+save_plot(file = "C:/Users/nwali/Downloads/allACCpts_sex_pos_grid.svg", 
+          allACCpts_sex_pos_grid, 
+          base_width = 16, 
+          base_height = 8,
+          limitsize = FALSE)
+
+# # create colorful grid table of mutated residues across age strata in pts with ACC
+# allACCpts_agestrata_pos_gridprep <- condformat(p53muts_allACCpts_agestrata_pos_pivot_damage) %>% 
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 1 & abs(parse_number(Mutation)) <= 61, # both TADs
+#                          "#CC79A7",
+#                          "")) %>% 
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 62 & abs(parse_number(Mutation)) <= 93, # PRD
+#                          "yellow4",
+#                          "")) %>%
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 94 & abs(parse_number(Mutation)) <= 289, # DBD
+#                          "#0072B2",
+#                          "")) %>%
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 112 & abs(parse_number(Mutation)) <= 124, # L1
+#                          "hotpink", 
+#                          "")) %>% 
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 163 & abs(parse_number(Mutation)) <= 195, # L2
+#                          "brown", 
+#                          "")) %>% 
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 236 & abs(parse_number(Mutation)) <= 251, # L3
+#                          "purple", 
+#                          "")) %>% 
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 290 & abs(parse_number(Mutation)) <= 324, # HD
+#                          "#009E73",
+#                          ""))  %>% 
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 325 & abs(parse_number(Mutation)) <= 356, # OD; CTD is black
+#                          "#D55E00",
+#                          "")) %>% 
+#   rule_text_color(1,
+#                   ifelse(Mutation %in% top_muts_p53muts_vector,
+#                          "red",
+#                          "")) %>%
+#   rule_text_color(Num_Indiv,
+#                   ifelse(as.numeric(Num_Indiv) > 3 & as.numeric(Num_Indiv) < n_distinct(p53muts_allACCpts$patientId),
+#                          "red",
+#                          "")) %>%
+#   rule_text_bold(1,
+#                  expression = Mutation %in% top_muts_p53muts_vector) %>%
+#   rule_text_bold(Num_Indiv,
+#                  expression = as.numeric(Num_Indiv) > 3 & as.numeric(Num_Indiv) < n_distinct(p53muts_allACCpts$patientId)) %>%
+#   rule_text_color(AGVGDClass,
+#                   ifelse(AGVGDClass %in% c("C65", 
+#                                            "C55"), 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(BayesDel,
+#                   ifelse(as.numeric(BayesDel) >= 0.16, 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(REVEL,
+#                   ifelse(as.numeric(REVEL) >= 0.5, 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(SIFTClass,
+#                   ifelse(SIFTClass %in% c("Damaging"), 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(Polyphen2,
+#                   ifelse(Polyphen2 %in% c("D"), 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(TransactivationClass,
+#                   ifelse(TransactivationClass %in% c("non-functional"), 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(DNE_LOFclass,
+#                   ifelse(DNE_LOFclass %in% c("DNE_LOF",
+#                                              "notDNE_LOF"), 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(DNEclass,
+#                   ifelse(DNEclass %in% c("Yes"), 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(StructureFunctionClass,
+#                   ifelse(StructureFunctionClass %in% c("non-functional"), 
+#                          "red",
+#                          "")) %>% 
+#   theme_grob(rows = NULL,
+#              theme = ttheme_default(base_size = 10,
+#                                     core = list(padding = unit(c(2, 2), "mm")))) %>%
+#   condformat2grob(draw = FALSE)
+# 
+# allACCpts_agestrata_pos_grid <- grid.arrange(allACCpts_agestrata_pos_gridprep,
+#                                              top = textGrob("Mutated Residues and Functional Effects by Age of Diagnosis in Individuals with Adrenocortical Carcinoma and Somatic p53 Mutations in cBioPortal",
+#                                                             hjust = 0.5,
+#                                                             gp = gpar(fontface = "bold")))
+# 
+# save_plot(file = "C:/Users/nwali/Downloads/allACCpts_agestrata_pos_grid.svg", 
+#           allACCpts_agestrata_pos_grid, 
+#           base_width = 15.5, 
+#           base_height = 6.5)
+
+
+#### analyses of all patients with soft tissue sarcomas ####
+# subset dataset of all cancers to just soft tissues
+p53muts_allsofttissuespts <- p53muts %>%
+  mutate(Codon = abs((parse_number(as.character(proteinChange), 
+                                   na = character())))) %>% 
+  mutate(Domain = ifelse(Codon <= 39, 
+                         "TAD1", 
+                         "notyet")) %>%
+  mutate(Domain = ifelse(Codon >= 40 & Codon <= 61, 
+                         "TAD2", 
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 62 & Codon <= 93, 
+                         "PRD", 
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 94 & Codon <= 289, 
+                         "DBD",
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 112 & Codon <= 124,
+                         "DBD L1 loop",
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 163 & Codon <= 195, 
+                         "DBD L2 loop",
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 236 & Codon <= 251,
+                         "DBD L3 loop", 
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 290 & Codon <= 324, 
+                         "HD",
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 325 & Codon <= 356, 
+                         "OD", 
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 357, 
+                         "CTD", 
+                         Domain)) %>%
+  mutate(Rescued = ifelse(proteinChange %in% mut_rescued,
+                          "Rescued by treatment",
+                          "Not documented")) %>% 
+  subset(CANCER_TYPE == "Soft Tissue Sarcoma")  %>% 
+  # drop_na(c(SEX, 
+  #           Age_stratum)) %>% 
+  distinct() %>% 
+  remove_rownames()
+
+# # create pivot of number of female and male pts with soft tissues in each age stratum of diagnosis, replace any NA with 0, rename columns
+# p53muts_allsofttissuespts_agestrata_sex <- PivotTable$new()
+# p53muts_allsofttissuespts_agestrata_sex$addData(p53muts_allsofttissuespts)
+# p53muts_allsofttissuespts_agestrata_sex$addRowDataGroups("Age_stratum")
+# p53muts_allsofttissuespts_agestrata_sex$addColumnDataGroups("SEX") 
+# p53muts_allsofttissuespts_agestrata_sex$defineCalculation(calculationName = "Count of distinct patients", 
+#                                           summariseExpression = "n_distinct(patientId)")
+# p53muts_allsofttissuespts_agestrata_sex$sortColumnDataGroups(levelNumber = 1, 
+#                                              orderBy = "calculation", 
+#                                              sortOrder = "desc")
+# p53muts_allsofttissuespts_agestrata_sex$sortRowDataGroups(levelNumber = 1, 
+#                                           orderBy = "calculation", 
+#                                           sortOrder = "desc")
+# p53muts_allsofttissuespts_agestrata_sex$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+# p53muts_allsofttissuespts_agestrata_sex_pivot <- p53muts_allsofttissuespts_agestrata_sex$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+#   mutate(across(everything(),
+#                 ~ replace_na(.,
+#                              0))) %>%
+#   #dplyr::rename(Age = Age_stratum,
+#                 #Num_Indiv = Total
+#) %>% 
+#   mutate(Age = ifelse(Age == "NA",
+#                       "No age listed",
+#                       Age)) %>%
+#   remove_rownames()
+# 
+# # create pivot of number of mut types in pts with soft tissues in each age stratum of diagnosis, replace any NA with 0, rename columns
+# p53muts_allsofttissuespts_agestrata_type <- PivotTable$new()
+# p53muts_allsofttissuespts_agestrata_type$addData(p53muts_allsofttissuespts)
+# p53muts_allsofttissuespts_agestrata_type$addRowDataGroups("Age_stratum")
+# p53muts_allsofttissuespts_agestrata_type$addColumnDataGroups("mutationType") 
+# p53muts_allsofttissuespts_agestrata_type$defineCalculation(calculationName = "Count of distinct patients", 
+#                                            summariseExpression = "n_distinct(patientId)")
+# p53muts_allsofttissuespts_agestrata_type$sortColumnDataGroups(levelNumber = 1, 
+#                                               orderBy = "calculation", 
+#                                               sortOrder = "desc")
+# p53muts_allsofttissuespts_agestrata_type$sortRowDataGroups(levelNumber = 1, 
+#                                            orderBy = "calculation", 
+#                                            sortOrder = "desc")
+# p53muts_allsofttissuespts_agestrata_type$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+# p53muts_allsofttissuespts_agestrata_type_pivot <- p53muts_allsofttissuespts_agestrata_type$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+#   mutate(across(everything(),
+#                 ~ replace_na(.,
+#                              0))) %>%
+#   #dplyr::rename(Age = Age_stratum,
+#                 #Num_Indiv = Total
+#) %>% 
+#   mutate(Age = ifelse(Age == "NA",
+#                       "No age listed",
+#                       Age)) %>%
+#   remove_rownames()
+
+# # create pivot of mutated residues vs age strata in all soft tissues patients, replace NA with 0, arrange by increasing codon number, rename columns
+# p53muts_allsofttissuespts_agestrata_pos <- PivotTable$new()
+# p53muts_allsofttissuespts_agestrata_pos$addData(p53muts_allsofttissuespts)
+# p53muts_allsofttissuespts_agestrata_pos$addRowDataGroups("proteinChange")
+# p53muts_allsofttissuespts_agestrata_pos$addColumnDataGroups("Age_stratum") 
+# p53muts_allsofttissuespts_agestrata_pos$defineCalculation(calculationName = "Count of distinct patients", 
+#                                           summariseExpression = "n_distinct(patientId)")
+# p53muts_allsofttissuespts_agestrata_pos$sortColumnDataGroups(levelNumber = 1, 
+#                                              orderBy = "calculation", 
+#                                              sortOrder = "desc")
+# p53muts_allsofttissuespts_agestrata_pos$sortRowDataGroups(levelNumber = 1, 
+#                                           orderBy = "calculation", 
+#                                           sortOrder = "desc")
+# p53muts_allsofttissuespts_agestrata_pos$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+# p53muts_allsofttissuespts_agestrata_pos_pivot <- p53muts_allsofttissuespts_agestrata_pos$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+#   arrange(abs(parse_number(proteinChange))) %>% # arrange muts by increasing codon number
+#   mutate(across(everything(),
+#                 ~ replace_na(.,
+#                              0))) %>%
+#   dplyr::rename(
+#Mutation = proteinChange,
+#                 `No age listed` = `NA`,
+#                 #Num_Indiv = Total
+#) %>% 
+#   remove_rownames()
+
+# create pivot of number of female and male pts with soft tissues in each mutation category, replace any NA with 0, rename columns
+p53muts_allsofttissuespts_sex_type <- PivotTable$new()
+p53muts_allsofttissuespts_sex_type$addData(p53muts_allsofttissuespts)
+p53muts_allsofttissuespts_sex_type$addRowDataGroups("mutationType")
+p53muts_allsofttissuespts_sex_type$addColumnDataGroups("SEX") 
+p53muts_allsofttissuespts_sex_type$defineCalculation(calculationName = "Count of distinct patients", 
+                                                     summariseExpression = "n_distinct(patientId)")
+p53muts_allsofttissuespts_sex_type$sortColumnDataGroups(levelNumber = 1, 
+                                                        orderBy = "calculation", 
+                                                        sortOrder = "desc")
+p53muts_allsofttissuespts_sex_type$sortRowDataGroups(levelNumber = 1, 
+                                                     orderBy = "calculation", 
+                                                     sortOrder = "desc")
+p53muts_allsofttissuespts_sex_type$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+p53muts_allsofttissuespts_sex_type_pivot <- p53muts_allsofttissuespts_sex_type$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>%
+  #dplyr::rename(Mutation = mutationType,
+  #Num_Indiv = Total
+  #              ) %>% 
+  remove_rownames()
+
+# create pivot of mutated residues vs sex in all soft tissues patients, replace NA with 0, arrange by increasing codon number, rename columns
+p53muts_allsofttissuespts_sex_pos <- PivotTable$new()
+p53muts_allsofttissuespts_sex_pos$addData(p53muts_allsofttissuespts)
+p53muts_allsofttissuespts_sex_pos$addRowDataGroups("proteinChange")
+p53muts_allsofttissuespts_sex_pos$addColumnDataGroups("SEX") 
+p53muts_allsofttissuespts_sex_pos$defineCalculation(calculationName = "Count of distinct patients", 
+                                                    summariseExpression = "n_distinct(patientId)")
+p53muts_allsofttissuespts_sex_pos$sortColumnDataGroups(levelNumber = 1, 
+                                                       orderBy = "calculation", 
+                                                       sortOrder = "desc")
+p53muts_allsofttissuespts_sex_pos$sortRowDataGroups(levelNumber = 1, 
+                                                    orderBy = "calculation", 
+                                                    sortOrder = "desc")
+p53muts_allsofttissuespts_sex_pos$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+p53muts_allsofttissuespts_sex_pos_pivot <- p53muts_allsofttissuespts_sex_pos$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  arrange(abs(parse_number(proteinChange))) %>% # arrange muts by increasing codon number
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>%
+  dplyr::rename(
+    #Mutation = proteinChange,
+    Num_Indiv = Total
+  ) %>% 
+  remove_rownames()
+
+# # divide number of female and male pts by total number of pts per age stratum
+# p53muts_allsofttissuespts_agestrata_sex_pivot_calc <- p53muts_allsofttissuespts_agestrata_sex_pivot %>% 
+#   mutate_at(vars(2:Total), 
+#             .funs = ~./Total)
+# 
+# # divide number of mut type pts by total number of pts per age stratum
+# p53muts_allsofttissuespts_agestrata_type_pivot_calc <- p53muts_allsofttissuespts_agestrata_type_pivot %>% 
+#   mutate_at(vars(2:Total), 
+#             .funs = ~./Total)
+
+# divide vertically down sex columns to calc proportions of each mut type in each sex, add number of total female and male pts to colnames
+p53muts_allsofttissuespts_sex_type_pivot_calc <- p53muts_allsofttissuespts_sex_type_pivot %>% 
+  dplyr::select(-Total) %>% 
+  transform(Female = Female/as.numeric(p53muts_allsofttissuespts_sex_type_pivot[nrow(p53muts_allsofttissuespts_sex_type_pivot), "Female"])) %>% 
+  transform(Male = Male/as.numeric(p53muts_allsofttissuespts_sex_type_pivot[nrow(p53muts_allsofttissuespts_sex_type_pivot), "Male"])) 
+# %>% 
+#   transform(Unknown = Unknown/as.numeric(p53muts_allsofttissuespts_sex_type_pivot[nrow(p53muts_allsofttissuespts_sex_type_pivot), "Unknown"])) 
+
+
+names(p53muts_allsofttissuespts_sex_type_pivot_calc) <- ifelse(names(p53muts_allsofttissuespts_sex_type_pivot_calc) %in% c("Female"),
+                                                               paste0("Female (",
+                                                                      as.numeric(p53muts_allsofttissuespts_sex_type_pivot[nrow(p53muts_allsofttissuespts_sex_type_pivot),
+                                                                                                                          "Female"]),
+                                                                      " patients)"),
+                                                               names(p53muts_allsofttissuespts_sex_type_pivot_calc))
+
+names(p53muts_allsofttissuespts_sex_type_pivot_calc) <- ifelse(names(p53muts_allsofttissuespts_sex_type_pivot_calc) %in% c("Male"),
+                                                               paste0("Male (",
+                                                                      as.numeric(p53muts_allsofttissuespts_sex_type_pivot[nrow(p53muts_allsofttissuespts_sex_type_pivot),
+                                                                                                                          "Male"]),
+                                                                      " patients)"),
+                                                               names(p53muts_allsofttissuespts_sex_type_pivot_calc))
+
+names(p53muts_allsofttissuespts_sex_type_pivot_calc) <- ifelse(names(p53muts_allsofttissuespts_sex_type_pivot_calc) %in% c("Unknown"),
+                                                               paste0("Unknown (",
+                                                                      as.numeric(p53muts_allsofttissuespts_sex_type_pivot[nrow(p53muts_allsofttissuespts_sex_type_pivot),
+                                                                                                                          "Unknown"]),
+                                                                      " patients)"),
+                                                               names(p53muts_allsofttissuespts_sex_type_pivot_calc))
+
+# # remove total row and column and age column which doesn't have indication of number of total patients, melt pivot for ggplot and rename columns to be more sensible
+# p53muts_allsofttissuespts_agestrata_sex_pivot_melted <- p53muts_allsofttissuespts_agestrata_sex_pivot_calc %>% 
+#   dplyr::select(-Total) %>% 
+#   subset(Age_stratum != "Total") %>% 
+#   dplyr::select(-Age_stratum) %>% 
+#   reshape2::melt() %>% 
+#   dplyr::rename(Sex = variable,
+#                 Proportion = value)
+# 
+# # remove total row and column and age column which doesn't have indication of number of total patients, melt pivot for ggplot and rename columns to be more sensible, make category column as factor with decreasing proportions
+# p53muts_allsofttissuespts_agestrata_type_pivot_melted <- p53muts_allsofttissuespts_agestrata_type_pivot_calc %>% 
+#   dplyr::select(-Total) %>% 
+#   subset(Age_stratum != "Total") %>% 
+#   dplyr::select(-Age_stratum) %>% 
+#   reshape2::melt() %>% 
+#   dplyr::rename(Effect = variable,
+#                 Proportion = value) %>% 
+#   arrange(-Proportion)
+# 
+# p53muts_allsofttissuespts_agestrata_type_pivot_melted$Effect <- factor(p53muts_allsofttissuespts_agestrata_type_pivot_melted$Effect,
+#                                                                  levels = unique(p53muts_allsofttissuespts_agestrata_type_pivot_melted$Effect))
+
+# remove total row, melt pivot for ggplot and rename columns to be more sensible, make category column as factor with decreasing proportions
+p53muts_allsofttissuespts_sex_type_pivot_melted <- p53muts_allsofttissuespts_sex_type_pivot_calc %>% 
+  subset(mutationType != "Total") %>% 
+  reshape2::melt() %>% 
+  dplyr::rename(Effect = mutationType,
+                Sex = variable,
+                Proportion = value) %>% 
+  arrange(-Proportion)
+
+p53muts_allsofttissuespts_sex_type_pivot_melted$Effect <- factor(p53muts_allsofttissuespts_sex_type_pivot_melted$Effect,
+                                                                 levels = unique(p53muts_allsofttissuespts_sex_type_pivot_melted$Effect))
+
+# # draw stacked barchart
+# allsofttissuespts_agestrata_sex_barchart <- ggplot(p53muts_allsofttissuespts_agestrata_sex_pivot_melted,
+#                                            aes(x = Age,
+#                                                y = Proportion,
+#                                                fill = Sex)) +
+#   geom_bar(position = "fill", 
+#            stat = "identity") + 
+#   # facet_grid(. ~ Age_stratum,
+#   #            scales = "free") +
+#   ggtitle("Age Strata of Diagnosis vs. Sex in \n Individuals with Soft Tissue Sarcomas \nand Somatic p53 Mutations in cBioPortal") + 
+#   scale_y_continuous(labels = scales::percent_format(), 
+#                      expand = c(0,0), 
+#                      breaks = scales::pretty_breaks(n = 6)) +
+#   scale_x_discrete(expand = c(0,0)) +
+#   theme_classic() + 
+#   theme(axis.text.x = element_text(angle = 45, 
+#                                    hjust = 1, 
+#                                    vjust = 1), 
+#         axis.text = element_text(color = "black",
+#                                  size = 12), 
+#         axis.title = element_text(color = "black",
+#                                   face = "bold",
+#                                   size = 14),
+#         axis.title.x = element_text(margin = margin(5,0,0,0,"mm")),
+#         axis.title.y = element_text(margin = margin(0,5,0,0,"mm")),
+#         plot.title = element_text(hjust = 0.5,
+#                                   face = "bold",
+#                                   color = "black",
+#                                   size = 16,
+#                                   margin = margin(0,0,5,0, "mm")),
+#         plot.title.position = "plot",
+#         plot.margin = margin(0,0,0,4, "mm"),
+#         legend.text = element_text(color = "black",
+#                                    size = 12),
+#         legend.title = element_text(color = "black",
+#                                     face = "bold",
+#                                     size = 14),
+#         # strip.background = element_blank(),
+#         # strip.text = element_text(color = "black",
+#         #                           size = 11),
+#         # panel.spacing.x = unit(1.5, "lines")
+#   )
+# allsofttissuespts_agestrata_sex_barchart
+# save_plot(file = "C:/Users/nwali/Downloads/allsofttissuespts_agestrata_sex_barchart.svg", 
+#           allsofttissuespts_agestrata_sex_barchart, 
+#           base_width = 5.5, 
+#           base_height = 6.15)
+
+# # draw stacked barchart
+# allsofttissuespts_agestrata_type_barchart <- ggplot(p53muts_allsofttissuespts_agestrata_type_pivot_melted,
+#                                             aes(x = Age,
+#                                                 y = Proportion,
+#                                                 fill = Effect)) +
+#   geom_bar(position = "fill", 
+#            stat = "identity") + 
+#   # facet_grid(. ~ Age_stratum,
+#   #            scales = "free") +
+#   ggtitle("Age Strata of Diagnosis vs. Mutation Types in \n Individuals with Soft Tissue Sarcomas \nand Somatic p53 Mutations in cBioPortal") + 
+#   scale_y_continuous(labels = scales::percent_format(), 
+#                      expand = c(0,0), 
+#                      breaks = scales::pretty_breaks(n = 6)) +
+#   scale_x_discrete(expand = c(0,0)) +
+#   theme_classic() + 
+#   theme(axis.text.x = element_text(angle = 45, 
+#                                    hjust = 1, 
+#                                    vjust = 1), 
+#         axis.text = element_text(color = "black",
+#                                  size = 12), 
+#         axis.title = element_text(color = "black",
+#                                   face = "bold",
+#                                   size = 14),
+#         axis.title.x = element_text(margin = margin(5,0,0,0,"mm")),
+#         axis.title.y = element_text(margin = margin(0,5,0,0,"mm")),
+#         plot.title = element_text(hjust = 0.5,
+#                                   face = "bold",
+#                                   color = "black",
+#                                   size = 16,
+#                                   margin = margin(0,0,5,0, "mm")),
+#         plot.title.position = "plot",
+#         plot.margin = margin(0,0,0,4, "mm"),
+#         legend.text = element_text(color = "black",
+#                                    size = 12),
+#         legend.title = element_text(color = "black",
+#                                     face = "bold",
+#                                     size = 14),
+#         # strip.background = element_blank(),
+#         # strip.text = element_text(color = "black",
+#         #                           size = 11),
+#         # panel.spacing.x = unit(1.5, "lines")
+#   )
+# allsofttissuespts_agestrata_type_barchart
+# save_plot(file = "C:/Users/nwali/Downloads/allsofttissuespts_agestrata_type_barchart.svg", 
+#           allsofttissuespts_agestrata_type_barchart, 
+#           base_width = 6, 
+#           base_height = 5.75)
+
+# draw stacked barchart
+allsofttissuespts_sex_type_barchart <- ggplot(p53muts_allsofttissuespts_sex_type_pivot_melted,
+                                              aes(x = Sex,
+                                                  y = Proportion,
+                                                  fill = Effect)) +
+  geom_bar(position = "fill", 
+           stat = "identity") + 
+  # facet_grid(. ~ Age_stratum,
+  #            scales = "free") +
+  ggtitle("Mutation Types vs. Sex in \n Individuals with Soft Tissue Sarcomas \nand Somatic p53 Mutations in cBioPortal") + 
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 6)) +
+  scale_x_discrete(expand = c(0,0)) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = margin(5,0,0,0,"mm")),
+        axis.title.y = element_text(margin = margin(0,5,0,0,"mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,5,0, "mm")),
+        plot.title.position = "plot",
+        plot.margin = margin(0,0,0,4, "mm"),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        # strip.background = element_blank(),
+        # strip.text = element_text(color = "black",
+        #                           size = 11),
+        # panel.spacing.x = unit(1.5, "lines")
+  )
+allsofttissuespts_sex_type_barchart
+save_plot(file = "C:/Users/nwali/Downloads/allsofttissuespts_sex_type_barchart.svg", 
+          allsofttissuespts_sex_type_barchart, 
+          base_width = 4.5, 
+          base_height = 6.15,
+          limitsize = FALSE)
+
+# add damage info to pivot of mut residues in sexes and replace NAs with blanks so that can plot as grid
+p53muts_allsofttissuespts_sex_pos_pivot_damage <- left_join(p53muts_allsofttissuespts_sex_pos_pivot, 
+                                                            origfunction_damageinfo, 
+                                                            by = c("proteinChange" = "ProtDescription")) %>% 
+  mutate(across(everything(),
+                ~ str_replace(.,
+                              "NA",
+                              ""))) %>%
+  mutate(across(where(is.character),
+                ~ replace_na(.,
+                             ""))) %>% 
+  dplyr::rename(Mutation = proteinChange)
+
+# # add damage info to pivot of mut residues in age strata, replace NAs with blanks so that can plot as grid
+# p53muts_allsofttissuespts_agestrata_pos_pivot_damage <- left_join(p53muts_allsofttissuespts_agestrata_pos_pivot, 
+#                                                           origfunction_damageinfo, 
+#                                                           by = c("proteinChange" = "ProtDescription")) %>% 
+#   mutate(across(everything(),
+#                 ~ str_replace(.,
+#                               "NA",
+#                               ""))) %>%
+#   mutate(across(where(is.character),
+#                 ~ replace_na(.,
+#                              ""))) %>% 
+#   dplyr::rename(Mutation = proteinChange)
+
+# create colorful grid table of mutated residues across sexes in pts with soft tissues
+allsofttissuespts_sex_pos_gridprep <- condformat(p53muts_allsofttissuespts_sex_pos_pivot_damage %>% 
+                                                   subset(as.numeric(Num_Indiv) > 1) %>% 
+                                                   filter(Mutation != "Total")) %>% 
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 1 & abs(parse_number(Mutation)) <= 61, # both TADs
+                         "#CC79A7",
+                         "")) %>% 
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 62 & abs(parse_number(Mutation)) <= 93, # PRD
+                         "yellow4",
+                         "")) %>%
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 94 & abs(parse_number(Mutation)) <= 289, # DBD
+                         "#0072B2",
+                         "")) %>%
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 112 & abs(parse_number(Mutation)) <= 124, # L1
+                         "hotpink", 
+                         "")) %>% 
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 163 & abs(parse_number(Mutation)) <= 195, # L2
+                         "brown", 
+                         "")) %>% 
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 236 & abs(parse_number(Mutation)) <= 251, # L3
+                         "purple", 
+                         "")) %>% 
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 290 & abs(parse_number(Mutation)) <= 324, # HD
+                         "#009E73",
+                         ""))  %>% 
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 325 & abs(parse_number(Mutation)) <= 356, # OD; CTD is black
+                         "#D55E00",
+                         "")) %>% 
+  # rule_text_color(1,
+  #                 ifelse(Mutation %in% top_muts_p53muts_vector,
+  #                        "red",
+  #                        "")) %>%
+  # rule_text_bold(1,
+  #                expression = Mutation %in% top_muts_p53muts_vector) %>%
+  # rule_text_color(Num_Indiv,
+  #                 ifelse(as.numeric(Num_Indiv) > 3 & as.numeric(Num_Indiv) < n_distinct(p53muts_allsofttissuespts$patientId),
+  #                        "red",
+  #                        "")) %>%
+  # rule_text_bold(Num_Indiv,
+  #                expression = as.numeric(Num_Indiv) > 3 & as.numeric(Num_Indiv) < n_distinct(p53muts_allsofttissuespts$patientId)) %>%
+  rule_text_color(1,
+                  ifelse(Mutation %in% mut_rescued,
+                         "red",
+                         "")) %>%
+  rule_text_bold(1,
+                 expression = Mutation %in% mut_rescued) %>%
+  rule_text_color(AGVGDClass,
+                  ifelse(AGVGDClass %in% c("C65", 
+                                           "C55"), 
+                         "red",
+                         "")) %>% 
+  rule_text_color(BayesDel,
+                  ifelse(as.numeric(BayesDel) >= 0.16, 
+                         "red",
+                         "")) %>% 
+  rule_text_color(REVEL,
+                  ifelse(as.numeric(REVEL) >= 0.5, 
+                         "red",
+                         "")) %>% 
+  rule_text_color(SIFTClass,
+                  ifelse(SIFTClass %in% c("Damaging"), 
+                         "red",
+                         "")) %>% 
+  rule_text_color(Polyphen2,
+                  ifelse(Polyphen2 %in% c("D"), 
+                         "red",
+                         "")) %>% 
+  rule_text_color(TransactivationClass,
+                  ifelse(TransactivationClass %in% c("non-functional"), 
+                         "red",
+                         "")) %>% 
+  rule_text_color(DNE_LOFclass,
+                  ifelse(DNE_LOFclass %in% c("DNE_LOF",
+                                             "notDNE_LOF"), 
+                         "red",
+                         "")) %>% 
+  rule_text_color(DNEclass,
+                  ifelse(DNEclass %in% c("Yes"), 
+                         "red",
+                         "")) %>% 
+  rule_text_color(StructureFunctionClass,
+                  ifelse(StructureFunctionClass %in% c("non-functional"), 
+                         "red",
+                         "")) %>% 
+  theme_grob(rows = NULL,
+             theme = ttheme_default(base_size = 10,
+                                    core = list(padding = unit(c(15, 4), "mm"),
+                                                fg_params = list(fontface = c(rep("plain", 
+                                                                                  nrow(p53muts_allsofttissuespts_sex_pos_pivot_damage) - 1), 
+                                                                              "bold")),
+                                                bg_params = list(fill = c(rep(c("grey95", "grey90"),
+                                                                              length.out = (nrow(p53muts_allsofttissuespts_sex_pos_pivot_damage) - 1)),
+                                                                          "grey80")))
+             )) %>%
+  condformat2grob(draw = FALSE)
+
+allsofttissuespts_sex_pos_grid <- grid.arrange(allsofttissuespts_sex_pos_gridprep,
+                                               top = textGrob("Mutated Residues and Functional Effects by Sex in Individuals with Soft Tissue Sarcomas and Selected Somatic p53 Mutations in cBioPortal",
+                                                              hjust = 0.5,
+                                                              gp = gpar(fontface = "bold")))
+
+save_plot(file = "C:/Users/nwali/Downloads/allsofttissuespts_sex_pos_grid.svg", 
+          allsofttissuespts_sex_pos_grid, 
+          base_width = 17, 
+          base_height = 11,
+          limitsize = FALSE)
+
+# # create colorful grid table of mutated residues across age strata in pts with soft tissues
+# allsofttissuespts_agestrata_pos_gridprep <- condformat(p53muts_allsofttissuespts_agestrata_pos_pivot_damage %>% 
+#                                                          subset(as.numeric(Num_Indiv) > 1) %>% 
+#                                                          filter(Mutation != "Total")) %>% 
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 1 & abs(parse_number(Mutation)) <= 61, # both TADs
+#                          "#CC79A7",
+#                          "")) %>% 
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 62 & abs(parse_number(Mutation)) <= 93, # PRD
+#                          "yellow4",
+#                          "")) %>%
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 94 & abs(parse_number(Mutation)) <= 289, # DBD
+#                          "#0072B2",
+#                          "")) %>%
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 112 & abs(parse_number(Mutation)) <= 124, # L1
+#                          "hotpink", 
+#                          "")) %>% 
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 163 & abs(parse_number(Mutation)) <= 195, # L2
+#                          "brown", 
+#                          "")) %>% 
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 236 & abs(parse_number(Mutation)) <= 251, # L3
+#                          "purple", 
+#                          "")) %>% 
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 290 & abs(parse_number(Mutation)) <= 324, # HD
+#                          "#009E73",
+#                          ""))  %>% 
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 325 & abs(parse_number(Mutation)) <= 356, # OD; CTD is black
+#                          "#D55E00",
+#                          "")) %>% 
+#   rule_text_color(1,
+#                   ifelse(Mutation %in% top_muts_p53muts_vector,
+#                          "red",
+#                          "")) %>%
+#   rule_text_color(Num_Indiv,
+#                   ifelse(as.numeric(Num_Indiv) > 3 & as.numeric(Num_Indiv) < n_distinct(p53muts_allsofttissuespts$patientId),
+#                          "red",
+#                          "")) %>%
+#   rule_text_bold(1,
+#                  expression = Mutation %in% top_muts_p53muts_vector) %>%
+#   rule_text_bold(Num_Indiv,
+#                  expression = as.numeric(Num_Indiv) > 3 & as.numeric(Num_Indiv) < n_distinct(p53muts_allsofttissuespts$patientId)) %>%
+#   rule_text_color(AGVGDClass,
+#                   ifelse(AGVGDClass %in% c("C65", 
+#                                            "C55"), 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(BayesDel,
+#                   ifelse(as.numeric(BayesDel) >= 0.16, 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(REVEL,
+#                   ifelse(as.numeric(REVEL) >= 0.5, 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(SIFTClass,
+#                   ifelse(SIFTClass %in% c("Damaging"), 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(Polyphen2,
+#                   ifelse(Polyphen2 %in% c("D"), 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(TransactivationClass,
+#                   ifelse(TransactivationClass %in% c("non-functional"), 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(DNE_LOFclass,
+#                   ifelse(DNE_LOFclass %in% c("DNE_LOF",
+#                                              "notDNE_LOF"), 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(DNEclass,
+#                   ifelse(DNEclass %in% c("Yes"), 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(StructureFunctionClass,
+#                   ifelse(StructureFunctionClass %in% c("non-functional"), 
+#                          "red",
+#                          "")) %>% 
+#   theme_grob(rows = NULL,
+#              theme = ttheme_default(base_size = 10,
+#                                     core = list(padding = unit(c(2, 2), "mm")))) %>%
+#   condformat2grob(draw = FALSE)
+# 
+# allsofttissuespts_agestrata_pos_grid <- grid.arrange(allsofttissuespts_agestrata_pos_gridprep,
+#                                              top = textGrob("Mutated Residues and Functional Effects by Age of Diagnosis in Individuals with Soft Tissue Sarcomas and Selected Somatic p53 Mutations in cBioPortal",
+#                                                             hjust = 0.5,
+#                                                             gp = gpar(fontface = "bold")))
+# 
+# save_plot(file = "C:/Users/nwali/Downloads/allsofttissuespts_agestrata_pos_grid.svg", 
+#           allsofttissuespts_agestrata_pos_grid, 
+#           base_width = 16, 
+#           base_height = 9.5)
+
+#### analyses of all patients with osteosarcoma ####
+# subset dataset of all cancers to just osteosarcoma
+p53muts_allosteosarcpts <- p53muts %>%
+  mutate(Codon = abs((parse_number(as.character(proteinChange), 
+                                   na = character())))) %>% 
+  mutate(Domain = ifelse(Codon <= 39, 
+                         "TAD1", 
+                         "notyet")) %>%
+  mutate(Domain = ifelse(Codon >= 40 & Codon <= 61, 
+                         "TAD2", 
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 62 & Codon <= 93, 
+                         "PRD", 
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 94 & Codon <= 289, 
+                         "DBD",
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 112 & Codon <= 124,
+                         "DBD L1 loop",
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 163 & Codon <= 195, 
+                         "DBD L2 loop",
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 236 & Codon <= 251,
+                         "DBD L3 loop", 
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 290 & Codon <= 324, 
+                         "HD",
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 325 & Codon <= 356, 
+                         "OD", 
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 357, 
+                         "CTD", 
+                         Domain)) %>%
+  mutate(Rescued = ifelse(proteinChange %in% mut_rescued,
+                          "Rescued by treatment",
+                          "Not documented")) %>% 
+  filter(str_detect(CANCER_TYPE_DETAILED,
+                    "Osteosarcoma"))  %>% 
+  # drop_na(c(SEX, 
+  #           Age_stratum)) %>% 
+  distinct() %>% 
+  remove_rownames()
+
+# # create pivot of number of female and male pts with osteosarcoma in each age stratum of diagnosis, replace any NA with 0, rename columns
+# p53muts_allosteosarcpts_agestrata_sex <- PivotTable$new()
+# p53muts_allosteosarcpts_agestrata_sex$addData(p53muts_allosteosarcpts)
+# p53muts_allosteosarcpts_agestrata_sex$addRowDataGroups("Age_stratum")
+# p53muts_allosteosarcpts_agestrata_sex$addColumnDataGroups("SEX") 
+# p53muts_allosteosarcpts_agestrata_sex$defineCalculation(calculationName = "Count of distinct patients", 
+#                                           summariseExpression = "n_distinct(patientId)")
+# p53muts_allosteosarcpts_agestrata_sex$sortColumnDataGroups(levelNumber = 1, 
+#                                              orderBy = "calculation", 
+#                                              sortOrder = "desc")
+# p53muts_allosteosarcpts_agestrata_sex$sortRowDataGroups(levelNumber = 1, 
+#                                           orderBy = "calculation", 
+#                                           sortOrder = "desc")
+# p53muts_allosteosarcpts_agestrata_sex$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+# p53muts_allosteosarcpts_agestrata_sex_pivot <- p53muts_allosteosarcpts_agestrata_sex$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+#   mutate(across(everything(),
+#                 ~ replace_na(.,
+#                              0))) %>%
+#   #dplyr::rename(Age = Age_stratum,
+#                 #Num_Indiv = Total
+#) %>% 
+#   mutate(Age = ifelse(Age == "NA",
+#                       "No age listed",
+#                       Age)) %>%
+#   remove_rownames()
+# 
+# # create pivot of number of mut types in pts with osteosarcoma in each age stratum of diagnosis, replace any NA with 0, rename columns
+# p53muts_allosteosarcpts_agestrata_type <- PivotTable$new()
+# p53muts_allosteosarcpts_agestrata_type$addData(p53muts_allosteosarcpts)
+# p53muts_allosteosarcpts_agestrata_type$addRowDataGroups("Age_stratum")
+# p53muts_allosteosarcpts_agestrata_type$addColumnDataGroups("mutationType") 
+# p53muts_allosteosarcpts_agestrata_type$defineCalculation(calculationName = "Count of distinct patients", 
+#                                            summariseExpression = "n_distinct(patientId)")
+# p53muts_allosteosarcpts_agestrata_type$sortColumnDataGroups(levelNumber = 1, 
+#                                               orderBy = "calculation", 
+#                                               sortOrder = "desc")
+# p53muts_allosteosarcpts_agestrata_type$sortRowDataGroups(levelNumber = 1, 
+#                                            orderBy = "calculation", 
+#                                            sortOrder = "desc")
+# p53muts_allosteosarcpts_agestrata_type$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+# p53muts_allosteosarcpts_agestrata_type_pivot <- p53muts_allosteosarcpts_agestrata_type$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+#   mutate(across(everything(),
+#                 ~ replace_na(.,
+#                              0))) %>%
+#   #dplyr::rename(Age = Age_stratum,
+#                 #Num_Indiv = Total
+#) %>% 
+#   mutate(Age = ifelse(Age == "NA",
+#                       "No age listed",
+#                       Age)) %>%
+#   remove_rownames()
+
+# # create pivot of mutated residues vs age strata in all osteosarcoma patients, replace NA with 0, arrange by increasing codon number, rename columns
+# p53muts_allosteosarcpts_agestrata_pos <- PivotTable$new()
+# p53muts_allosteosarcpts_agestrata_pos$addData(p53muts_allosteosarcpts)
+# p53muts_allosteosarcpts_agestrata_pos$addRowDataGroups("proteinChange")
+# p53muts_allosteosarcpts_agestrata_pos$addColumnDataGroups("Age_stratum") 
+# p53muts_allosteosarcpts_agestrata_pos$defineCalculation(calculationName = "Count of distinct patients", 
+#                                           summariseExpression = "n_distinct(patientId)")
+# p53muts_allosteosarcpts_agestrata_pos$sortColumnDataGroups(levelNumber = 1, 
+#                                              orderBy = "calculation", 
+#                                              sortOrder = "desc")
+# p53muts_allosteosarcpts_agestrata_pos$sortRowDataGroups(levelNumber = 1, 
+#                                           orderBy = "calculation", 
+#                                           sortOrder = "desc")
+# p53muts_allosteosarcpts_agestrata_pos$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+# p53muts_allosteosarcpts_agestrata_pos_pivot <- p53muts_allosteosarcpts_agestrata_pos$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+#   arrange(abs(parse_number(proteinChange))) %>% # arrange muts by increasing codon number
+#   mutate(across(everything(),
+#                 ~ replace_na(.,
+#                              0))) %>%
+#   dplyr::rename(
+#Mutation = proteinChange,
+#                 `No age listed` = `NA`,
+#                 #Num_Indiv = Total
+#) %>% 
+#   remove_rownames()
+
+# create pivot of number of female and male pts with osteosarcoma in each mutation category, replace any NA with 0, rename columns
+p53muts_allosteosarcpts_sex_type <- PivotTable$new()
+p53muts_allosteosarcpts_sex_type$addData(p53muts_allosteosarcpts)
+p53muts_allosteosarcpts_sex_type$addRowDataGroups("mutationType")
+p53muts_allosteosarcpts_sex_type$addColumnDataGroups("SEX") 
+p53muts_allosteosarcpts_sex_type$defineCalculation(calculationName = "Count of distinct patients", 
+                                                   summariseExpression = "n_distinct(patientId)")
+p53muts_allosteosarcpts_sex_type$sortColumnDataGroups(levelNumber = 1, 
+                                                      orderBy = "calculation", 
+                                                      sortOrder = "desc")
+p53muts_allosteosarcpts_sex_type$sortRowDataGroups(levelNumber = 1, 
+                                                   orderBy = "calculation", 
+                                                   sortOrder = "desc")
+p53muts_allosteosarcpts_sex_type$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+p53muts_allosteosarcpts_sex_type_pivot <- p53muts_allosteosarcpts_sex_type$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>%
+  #dplyr::rename(Mutation = mutationType,
+  #Num_Indiv = Total
+  #              ) %>% 
+  remove_rownames()
+
+# create pivot of mutated residues vs sex in all osteosarcoma patients, replace NA with 0, arrange by increasing codon number, rename columns
+p53muts_allosteosarcpts_sex_pos <- PivotTable$new()
+p53muts_allosteosarcpts_sex_pos$addData(p53muts_allosteosarcpts)
+p53muts_allosteosarcpts_sex_pos$addRowDataGroups("proteinChange")
+p53muts_allosteosarcpts_sex_pos$addColumnDataGroups("SEX") 
+p53muts_allosteosarcpts_sex_pos$defineCalculation(calculationName = "Count of distinct patients", 
+                                                  summariseExpression = "n_distinct(patientId)")
+p53muts_allosteosarcpts_sex_pos$sortColumnDataGroups(levelNumber = 1, 
+                                                     orderBy = "calculation", 
+                                                     sortOrder = "desc")
+p53muts_allosteosarcpts_sex_pos$sortRowDataGroups(levelNumber = 1, 
+                                                  orderBy = "calculation", 
+                                                  sortOrder = "desc")
+p53muts_allosteosarcpts_sex_pos$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+p53muts_allosteosarcpts_sex_pos_pivot <- p53muts_allosteosarcpts_sex_pos$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  arrange(abs(parse_number(proteinChange))) %>% # arrange muts by increasing codon number
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>%
+  dplyr::rename(
+    #Mutation = proteinChange,
+    Num_Indiv = Total
+  ) %>% 
+  remove_rownames()
+
+# # divide number of female and male pts by total number of pts per age stratum
+# p53muts_allosteosarcpts_agestrata_sex_pivot_calc <- p53muts_allosteosarcpts_agestrata_sex_pivot %>% 
+#   mutate_at(vars(2:Total), 
+#             .funs = ~./Total)
+# 
+# # divide number of mut type pts by total number of pts per age stratum
+# p53muts_allosteosarcpts_agestrata_type_pivot_calc <- p53muts_allosteosarcpts_agestrata_type_pivot %>% 
+#   mutate_at(vars(2:Total), 
+#             .funs = ~./Total)
+
+# divide vertically down sex columns to calc proportions of each mut type in each sex, add number of total female and male pts to colnames
+p53muts_allosteosarcpts_sex_type_pivot_calc <- p53muts_allosteosarcpts_sex_type_pivot %>% 
+  dplyr::select(-Total) %>% 
+  transform(Female = Female/as.numeric(p53muts_allosteosarcpts_sex_type_pivot[nrow(p53muts_allosteosarcpts_sex_type_pivot), "Female"])) %>% 
+  transform(Male = Male/as.numeric(p53muts_allosteosarcpts_sex_type_pivot[nrow(p53muts_allosteosarcpts_sex_type_pivot), "Male"])) 
+# %>% 
+#   transform(Unknown = Unknown/as.numeric(p53muts_allosteosarcpts_sex_type_pivot[nrow(p53muts_allosteosarcpts_sex_type_pivot), "Unknown"])) 
+
+
+names(p53muts_allosteosarcpts_sex_type_pivot_calc) <- ifelse(names(p53muts_allosteosarcpts_sex_type_pivot_calc) %in% c("Female"),
+                                                             paste0("Female (",
+                                                                    as.numeric(p53muts_allosteosarcpts_sex_type_pivot[nrow(p53muts_allosteosarcpts_sex_type_pivot),
+                                                                                                                      "Female"]),
+                                                                    " patients)"),
+                                                             names(p53muts_allosteosarcpts_sex_type_pivot_calc))
+
+names(p53muts_allosteosarcpts_sex_type_pivot_calc) <- ifelse(names(p53muts_allosteosarcpts_sex_type_pivot_calc) %in% c("Male"),
+                                                             paste0("Male (",
+                                                                    as.numeric(p53muts_allosteosarcpts_sex_type_pivot[nrow(p53muts_allosteosarcpts_sex_type_pivot),
+                                                                                                                      "Male"]),
+                                                                    " patients)"),
+                                                             names(p53muts_allosteosarcpts_sex_type_pivot_calc))
+
+
+names(p53muts_allosteosarcpts_sex_type_pivot_calc) <- ifelse(names(p53muts_allosteosarcpts_sex_type_pivot_calc) %in% c("Unknown"),
+                                                             paste0("Unknown (",
+                                                                    as.numeric(p53muts_allosteosarcpts_sex_type_pivot[nrow(p53muts_allosteosarcpts_sex_type_pivot),
+                                                                                                                      "Unknown"]),
+                                                                    " patients)"),
+                                                             names(p53muts_allosteosarcpts_sex_type_pivot_calc))
+
+# # remove total row and column and age column which doesn't have indication of number of total patients, melt pivot for ggplot and rename columns to be more sensible
+# p53muts_allosteosarcpts_agestrata_sex_pivot_melted <- p53muts_allosteosarcpts_agestrata_sex_pivot_calc %>% 
+#   dplyr::select(-Total) %>% 
+#   subset(Age_stratum != "Total") %>% 
+#   dplyr::select(-Age_stratum) %>% 
+#   reshape2::melt() %>% 
+#   dplyr::rename(Sex = variable,
+#                 Proportion = value) %>% 
+#   arrange(-Proportion)
+# 
+# # remove total row and column and age column which doesn't have indication of number of total patients, melt pivot for ggplot and rename columns to be more sensible
+# p53muts_allosteosarcpts_agestrata_type_pivot_melted <- p53muts_allosteosarcpts_agestrata_type_pivot_calc %>% 
+#   dplyr::select(-Total) %>% 
+#   subset(Age_stratum != "Total") %>% 
+#   dplyr::select(-Age_stratum) %>% 
+#   reshape2::melt() %>% 
+#   dplyr::rename(Effect = variable,
+#                 Proportion = value) %>% 
+#   arrange(-Proportion)
+
+# remove total row, melt pivot for ggplot and rename columns to be more sensible, make category column as factor with decreasing proportions
+p53muts_allosteosarcpts_sex_type_pivot_melted <- p53muts_allosteosarcpts_sex_type_pivot_calc %>% 
+  subset(mutationType != "Total") %>% 
+  reshape2::melt() %>% 
+  dplyr::rename(Effect = mutationType,
+                Sex = variable,
+                Proportion = value) %>% 
+  arrange(-Proportion)
+
+p53muts_allosteosarcpts_sex_type_pivot_melted$Effect <- factor(p53muts_allosteosarcpts_sex_type_pivot_melted$Effect,
+                                                               levels = unique(p53muts_allosteosarcpts_sex_type_pivot_melted$Effect))
+
+# # draw stacked barchart
+# allosteosarcpts_agestrata_sex_barchart <- ggplot(p53muts_allosteosarcpts_agestrata_sex_pivot_melted,
+#                                            aes(x = Age,
+#                                                y = Proportion,
+#                                                fill = Sex)) +
+#   geom_bar(position = "fill", 
+#            stat = "identity") + 
+#   # facet_grid(. ~ Age_stratum,
+#   #            scales = "free") +
+#   ggtitle("Age Strata of Diagnosis vs. Sex in \n Individuals with Osteosarcoma and \nSomatic p53 Mutations in cBioPortal") + 
+#   scale_y_continuous(labels = scales::percent_format(), 
+#                      expand = c(0,0), 
+#                      breaks = scales::pretty_breaks(n = 6)) +
+#   scale_x_discrete(expand = c(0,0)) +
+#   theme_classic() + 
+#   theme(axis.text.x = element_text(angle = 45, 
+#                                    hjust = 1, 
+#                                    vjust = 1), 
+#         axis.text = element_text(color = "black",
+#                                  size = 12), 
+#         axis.title = element_text(color = "black",
+#                                   face = "bold",
+#                                   size = 14),
+#         axis.title.x = element_text(margin = margin(5,0,0,0,"mm")),
+#         axis.title.y = element_text(margin = margin(0,5,0,0,"mm")),
+#         plot.title = element_text(hjust = 0.5,
+#                                   face = "bold",
+#                                   color = "black",
+#                                   size = 16,
+#                                   margin = margin(0,0,5,0, "mm")),
+#         plot.title.position = "plot",
+#         plot.margin = margin(0,0,0,4, "mm"),
+#         legend.text = element_text(color = "black",
+#                                    size = 12),
+#         legend.title = element_text(color = "black",
+#                                     face = "bold",
+#                                     size = 14),
+#         # strip.background = element_blank(),
+#         # strip.text = element_text(color = "black",
+#         #                           size = 11),
+#         # panel.spacing.x = unit(1.5, "lines")
+#   )
+# allosteosarcpts_agestrata_sex_barchart
+# save_plot(file = "C:/Users/nwali/Downloads/allosteosarcpts_agestrata_sex_barchart.svg", 
+#           allosteosarcpts_agestrata_sex_barchart, 
+#           base_width = 5.5, 
+#           base_height = 6.15)
+
+# # draw stacked barchart
+# allosteosarcpts_agestrata_type_barchart <- ggplot(p53muts_allosteosarcpts_agestrata_type_pivot_melted,
+#                                             aes(x = Age,
+#                                                 y = Proportion,
+#                                                 fill = Effect)) +
+#   geom_bar(position = "fill", 
+#            stat = "identity") + 
+#   # facet_grid(. ~ Age_stratum,
+#   #            scales = "free") +
+#   ggtitle("Age Strata of Diagnosis vs. Mutation Types in \n Individuals with Osteosarcoma and \nSomatic p53 Mutations in cBioPortal") + 
+#   scale_y_continuous(labels = scales::percent_format(), 
+#                      expand = c(0,0), 
+#                      breaks = scales::pretty_breaks(n = 6)) +
+#   scale_x_discrete(expand = c(0,0)) +
+#   theme_classic() + 
+#   theme(axis.text.x = element_text(angle = 45, 
+#                                    hjust = 1, 
+#                                    vjust = 1), 
+#         axis.text = element_text(color = "black",
+#                                  size = 12), 
+#         axis.title = element_text(color = "black",
+#                                   face = "bold",
+#                                   size = 14),
+#         axis.title.x = element_text(margin = margin(5,0,0,0,"mm")),
+#         axis.title.y = element_text(margin = margin(0,5,0,0,"mm")),
+#         plot.title = element_text(hjust = 0.5,
+#                                   face = "bold",
+#                                   color = "black",
+#                                   size = 16,
+#                                   margin = margin(0,0,5,0, "mm")),
+#         plot.title.position = "plot",
+#         plot.margin = margin(0,0,0,4, "mm"),
+#         legend.text = element_text(color = "black",
+#                                    size = 12),
+#         legend.title = element_text(color = "black",
+#                                     face = "bold",
+#                                     size = 14),
+#         # strip.background = element_blank(),
+#         # strip.text = element_text(color = "black",
+#         #                           size = 11),
+#         # panel.spacing.x = unit(1.5, "lines")
+#   )
+# allosteosarcpts_agestrata_type_barchart
+# save_plot(file = "C:/Users/nwali/Downloads/allosteosarcpts_agestrata_type_barchart.svg", 
+#           allosteosarcpts_agestrata_type_barchart, 
+#           base_width = 6, 
+#           base_height = 5.75)
+
+# draw stacked barchart
+allosteosarcpts_sex_type_barchart <- ggplot(p53muts_allosteosarcpts_sex_type_pivot_melted,
+                                            aes(x = Sex,
+                                                y = Proportion,
+                                                fill = Effect)) +
+  geom_bar(position = "fill", 
+           stat = "identity") + 
+  # facet_grid(. ~ Age_stratum,
+  #            scales = "free") +
+  ggtitle("Mutation Types vs. Sex in \n Individuals with Osteosarcoma and \nSomatic p53 Mutations in cBioPortal") + 
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 6)) +
+  scale_x_discrete(expand = c(0,0)) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = margin(5,0,0,0,"mm")),
+        axis.title.y = element_text(margin = margin(0,5,0,0,"mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,5,0, "mm")),
+        plot.title.position = "plot",
+        plot.margin = margin(0,0,0,4, "mm"),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        # strip.background = element_blank(),
+        # strip.text = element_text(color = "black",
+        #                           size = 11),
+        # panel.spacing.x = unit(1.5, "lines")
+  )
+allosteosarcpts_sex_type_barchart
+save_plot(file = "C:/Users/nwali/Downloads/allosteosarcpts_sex_type_barchart.svg", 
+          allosteosarcpts_sex_type_barchart, 
+          base_width = 4.5, 
+          base_height = 6.15,
+          limitsize = FALSE)
+
+# add damage info to pivot of mut residues in sexes and replace NAs with blanks so that can plot as grid
+p53muts_allosteosarcpts_sex_pos_pivot_damage <- left_join(p53muts_allosteosarcpts_sex_pos_pivot, 
+                                                          origfunction_damageinfo, 
+                                                          by = c("proteinChange" = "ProtDescription")) %>% 
+  mutate(across(everything(),
+                ~ str_replace(.,
+                              "NA",
+                              ""))) %>%
+  mutate(across(where(is.character),
+                ~ replace_na(.,
+                             ""))) %>% 
+  dplyr::rename(Mutation = proteinChange)
+
+# # add damage info to pivot of mut residues in age strata, replace NAs with blanks so that can plot as grid
+# p53muts_allosteosarcpts_agestrata_pos_pivot_damage <- left_join(p53muts_allosteosarcpts_agestrata_pos_pivot, 
+#                                                           origfunction_damageinfo, 
+#                                                           by = c("proteinChange" = "ProtDescription")) %>% 
+#   mutate(across(everything(),
+#                 ~ str_replace(.,
+#                               "NA",
+#                               ""))) %>%
+#   mutate(across(where(is.character),
+#                 ~ replace_na(.,
+#                              ""))) %>% 
+#   dplyr::rename(Mutation = proteinChange)
+
+# create colorful grid table of mutated residues across sexes in pts with osteosarc
+allosteosarcpts_sex_pos_gridprep <- condformat(p53muts_allosteosarcpts_sex_pos_pivot_damage) %>% 
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 1 & abs(parse_number(Mutation)) <= 61, # both TADs
+                         "#CC79A7",
+                         "")) %>% 
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 62 & abs(parse_number(Mutation)) <= 93, # PRD
+                         "yellow4",
+                         "")) %>%
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 94 & abs(parse_number(Mutation)) <= 289, # DBD
+                         "#0072B2",
+                         "")) %>%
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 112 & abs(parse_number(Mutation)) <= 124, # L1
+                         "hotpink", 
+                         "")) %>% 
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 163 & abs(parse_number(Mutation)) <= 195, # L2
+                         "brown", 
+                         "")) %>% 
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 236 & abs(parse_number(Mutation)) <= 251, # L3
+                         "purple", 
+                         "")) %>% 
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 290 & abs(parse_number(Mutation)) <= 324, # HD
+                         "#009E73",
+                         ""))  %>% 
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 325 & abs(parse_number(Mutation)) <= 356, # OD; CTD is black
+                         "#D55E00",
+                         "")) %>% 
+  # rule_text_color(1,
+  #                 ifelse(Mutation %in% top_muts_p53muts_vector,
+  #                        "red",
+  #                        "")) %>%
+  # rule_text_bold(1,
+  #                expression = Mutation %in% top_muts_p53muts_vector) %>%
+  # rule_text_color(Num_Indiv,
+  #                 ifelse(as.numeric(Num_Indiv) > 3 & as.numeric(Num_Indiv) < n_distinct(p53muts_allosteosarcpts$patientId),
+  #                        "red",
+  #                        "")) %>%
+  # rule_text_bold(Num_Indiv,
+  #                expression = as.numeric(Num_Indiv) > 3 & as.numeric(Num_Indiv) < n_distinct(p53muts_allosteosarcpts$patientId)) %>%
+  rule_text_color(1,
+                  ifelse(Mutation %in% mut_rescued,
+                         "red",
+                         "")) %>%
+  rule_text_bold(1,
+                 expression = Mutation %in% mut_rescued) %>%
+  rule_text_color(AGVGDClass,
+                  ifelse(AGVGDClass %in% c("C65", 
+                                           "C55"), 
+                         "red",
+                         "")) %>% 
+  rule_text_color(BayesDel,
+                  ifelse(as.numeric(BayesDel) >= 0.16, 
+                         "red",
+                         "")) %>% 
+  rule_text_color(REVEL,
+                  ifelse(as.numeric(REVEL) >= 0.5, 
+                         "red",
+                         "")) %>% 
+  rule_text_color(SIFTClass,
+                  ifelse(SIFTClass %in% c("Damaging"), 
+                         "red",
+                         "")) %>% 
+  rule_text_color(Polyphen2,
+                  ifelse(Polyphen2 %in% c("D"), 
+                         "red",
+                         "")) %>% 
+  rule_text_color(TransactivationClass,
+                  ifelse(TransactivationClass %in% c("non-functional"), 
+                         "red",
+                         "")) %>% 
+  rule_text_color(DNE_LOFclass,
+                  ifelse(DNE_LOFclass %in% c("DNE_LOF",
+                                             "notDNE_LOF"), 
+                         "red",
+                         "")) %>% 
+  rule_text_color(DNEclass,
+                  ifelse(DNEclass %in% c("Yes"), 
+                         "red",
+                         "")) %>% 
+  rule_text_color(StructureFunctionClass,
+                  ifelse(StructureFunctionClass %in% c("non-functional"), 
+                         "red",
+                         "")) %>% 
+  theme_grob(rows = NULL,
+             theme = ttheme_default(base_size = 10,
+                                    core = list(padding = unit(c(15, 4), "mm"),
+                                                fg_params = list(fontface = c(rep("plain", 
+                                                                                  nrow(p53muts_allosteosarcpts_sex_pos_pivot_damage) - 1), 
+                                                                              "bold")),
+                                                bg_params = list(fill = c(rep(c("grey95", "grey90"),
+                                                                              length.out = (nrow(p53muts_allosteosarcpts_sex_pos_pivot_damage) - 1)),
+                                                                          "grey80")))
+             )) %>%
+  condformat2grob(draw = FALSE)
+
+allosteosarcpts_sex_pos_grid <- grid.arrange(allosteosarcpts_sex_pos_gridprep,
+                                             top = textGrob("Mutated Residues and Functional Effects by Sex in Individuals with Osteosarcoma and Somatic p53 Mutations in cBioPortal",
+                                                            hjust = 0.5,
+                                                            gp = gpar(fontface = "bold")))
+
+save_plot(file = "C:/Users/nwali/Downloads/allosteosarcpts_sex_pos_grid.svg", 
+          allosteosarcpts_sex_pos_grid, 
+          base_width = 14.5, 
+          base_height = 13,
+          limitsize = FALSE)
+
+# # create colorful grid table of mutated residues across age strata in pts with osteosarc
+# allosteosarcpts_agestrata_pos_gridprep <- condformat(p53muts_allosteosarcpts_agestrata_pos_pivot_damage) %>% 
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 1 & abs(parse_number(Mutation)) <= 61, # both TADs
+#                          "#CC79A7",
+#                          "")) %>% 
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 62 & abs(parse_number(Mutation)) <= 93, # PRD
+#                          "yellow4",
+#                          "")) %>%
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 94 & abs(parse_number(Mutation)) <= 289, # DBD
+#                          "#0072B2",
+#                          "")) %>%
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 112 & abs(parse_number(Mutation)) <= 124, # L1
+#                          "hotpink", 
+#                          "")) %>% 
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 163 & abs(parse_number(Mutation)) <= 195, # L2
+#                          "brown", 
+#                          "")) %>% 
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 236 & abs(parse_number(Mutation)) <= 251, # L3
+#                          "purple", 
+#                          "")) %>% 
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 290 & abs(parse_number(Mutation)) <= 324, # HD
+#                          "#009E73",
+#                          ""))  %>% 
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 325 & abs(parse_number(Mutation)) <= 356, # OD; CTD is black
+#                          "#D55E00",
+#                          "")) %>% 
+#   rule_text_color(1,
+#                   ifelse(Mutation %in% top_muts_p53muts_vector,
+#                          "red",
+#                          "")) %>%
+#   rule_text_color(Num_Indiv,
+#                   ifelse(as.numeric(Num_Indiv) > 3 & as.numeric(Num_Indiv) < n_distinct(p53muts_allosteosarcpts$patientId),
+#                          "red",
+#                          "")) %>%
+#   rule_text_bold(1,
+#                  expression = Mutation %in% top_muts_p53muts_vector) %>%
+#   rule_text_bold(Num_Indiv,
+#                  expression = as.numeric(Num_Indiv) > 3 & as.numeric(Num_Indiv) < n_distinct(p53muts_allosteosarcpts$patientId)) %>%
+#   rule_text_color(AGVGDClass,
+#                   ifelse(AGVGDClass %in% c("C65", 
+#                                            "C55"), 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(BayesDel,
+#                   ifelse(as.numeric(BayesDel) >= 0.16, 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(REVEL,
+#                   ifelse(as.numeric(REVEL) >= 0.5, 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(SIFTClass,
+#                   ifelse(SIFTClass %in% c("Damaging"), 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(Polyphen2,
+#                   ifelse(Polyphen2 %in% c("D"), 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(TransactivationClass,
+#                   ifelse(TransactivationClass %in% c("non-functional"), 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(DNE_LOFclass,
+#                   ifelse(DNE_LOFclass %in% c("DNE_LOF",
+#                                              "notDNE_LOF"), 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(DNEclass,
+#                   ifelse(DNEclass %in% c("Yes"), 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(StructureFunctionClass,
+#                   ifelse(StructureFunctionClass %in% c("non-functional"), 
+#                          "red",
+#                          "")) %>% 
+#   theme_grob(rows = NULL,
+#              theme = ttheme_default(base_size = 10,
+#                                     core = list(padding = unit(c(2, 2), "mm")))) %>%
+#   condformat2grob(draw = FALSE)
+# 
+# allosteosarcpts_agestrata_pos_grid <- grid.arrange(allosteosarcpts_agestrata_pos_gridprep,
+#                                              top = textGrob("Mutated Residues and Functional Effects by Age of Diagnosis in Individuals with Osteosarcoma and Somatic p53 Mutations in cBioPortal",
+#                                                             hjust = 0.5,
+#                                                             gp = gpar(fontface = "bold")))
+# 
+# save_plot(file = "C:/Users/nwali/Downloads/allosteosarcpts_agestrata_pos_grid.svg", 
+#           allosteosarcpts_agestrata_pos_grid, 
+#           base_width = 15.5, 
+#           base_height = 13)
+
+#### analyses of all patients with brain cancers ####
+# subset dataset of all cancers to just brain
+p53muts_allbrainpts <- p53muts %>%
+  mutate(Codon = abs((parse_number(as.character(proteinChange), 
+                                   na = character())))) %>% 
+  mutate(Domain = ifelse(Codon <= 39, 
+                         "TAD1", 
+                         "notyet")) %>%
+  mutate(Domain = ifelse(Codon >= 40 & Codon <= 61, 
+                         "TAD2", 
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 62 & Codon <= 93, 
+                         "PRD", 
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 94 & Codon <= 289, 
+                         "DBD",
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 112 & Codon <= 124,
+                         "DBD L1 loop",
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 163 & Codon <= 195, 
+                         "DBD L2 loop",
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 236 & Codon <= 251,
+                         "DBD L3 loop", 
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 290 & Codon <= 324, 
+                         "HD",
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 325 & Codon <= 356, 
+                         "OD", 
+                         Domain)) %>% 
+  mutate(Domain = ifelse(Codon >= 357, 
+                         "CTD", 
+                         Domain)) %>%
+  mutate(Rescued = ifelse(proteinChange %in% mut_rescued,
+                          "Rescued by treatment",
+                          "Not documented")) %>% 
+  filter(str_detect(CANCER_TYPE,
+                    "Brain|Glio|Ependy|Embryo|glio|astrocy|Neuroep|Sellar"))  %>% # string match multiple types of brain cancers since no one brain category
+  # drop_na(c(SEX, 
+  #           Age_stratum)) %>% 
+  distinct() %>% 
+  remove_rownames()
+
+# # create pivot of number of female and male pts with brain in each age stratum of diagnosis, replace any NA with 0, rename columns
+# p53muts_allbrainpts_agestrata_sex <- PivotTable$new()
+# p53muts_allbrainpts_agestrata_sex$addData(p53muts_allbrainpts)
+# p53muts_allbrainpts_agestrata_sex$addRowDataGroups("Age_stratum")
+# p53muts_allbrainpts_agestrata_sex$addColumnDataGroups("SEX") 
+# p53muts_allbrainpts_agestrata_sex$defineCalculation(calculationName = "Count of distinct patients", 
+#                                           summariseExpression = "n_distinct(patientId)")
+# p53muts_allbrainpts_agestrata_sex$sortColumnDataGroups(levelNumber = 1, 
+#                                              orderBy = "calculation", 
+#                                              sortOrder = "desc")
+# p53muts_allbrainpts_agestrata_sex$sortRowDataGroups(levelNumber = 1, 
+#                                           orderBy = "calculation", 
+#                                           sortOrder = "desc")
+# p53muts_allbrainpts_agestrata_sex$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+# p53muts_allbrainpts_agestrata_sex_pivot <- p53muts_allbrainpts_agestrata_sex$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+#   mutate(across(everything(),
+#                 ~ replace_na(.,
+#                              0))) %>%
+#   #dplyr::rename(Age = Age_stratum,
+#                 #Num_Indiv = Total
+#) %>% 
+#   mutate(Age = ifelse(Age == "NA",
+#                       "No age listed",
+#                       Age)) %>%
+#   remove_rownames()
+# 
+# # create pivot of number of mut types in pts with brain in each age stratum of diagnosis, replace any NA with 0, rename columns
+# p53muts_allbrainpts_agestrata_type <- PivotTable$new()
+# p53muts_allbrainpts_agestrata_type$addData(p53muts_allbrainpts)
+# p53muts_allbrainpts_agestrata_type$addRowDataGroups("Age_stratum")
+# p53muts_allbrainpts_agestrata_type$addColumnDataGroups("mutationType") 
+# p53muts_allbrainpts_agestrata_type$defineCalculation(calculationName = "Count of distinct patients", 
+#                                            summariseExpression = "n_distinct(patientId)")
+# p53muts_allbrainpts_agestrata_type$sortColumnDataGroups(levelNumber = 1, 
+#                                               orderBy = "calculation", 
+#                                               sortOrder = "desc")
+# p53muts_allbrainpts_agestrata_type$sortRowDataGroups(levelNumber = 1, 
+#                                            orderBy = "calculation", 
+#                                            sortOrder = "desc")
+# p53muts_allbrainpts_agestrata_type$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+# p53muts_allbrainpts_agestrata_type_pivot <- p53muts_allbrainpts_agestrata_type$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+#   mutate(across(everything(),
+#                 ~ replace_na(.,
+#                              0))) %>%
+#   #dplyr::rename(Age = Age_stratum,
+#                 #Num_Indiv = Total
+#) %>% 
+#   mutate(Age = ifelse(Age == "NA",
+#                       "No age listed",
+#                       Age)) %>%
+#   remove_rownames()
+
+# # create pivot of mutated residues vs age strata in all brain patients, replace NA with 0, arrange by increasing codon number, rename columns
+# p53muts_allbrainpts_agestrata_pos <- PivotTable$new()
+# p53muts_allbrainpts_agestrata_pos$addData(p53muts_allbrainpts)
+# p53muts_allbrainpts_agestrata_pos$addRowDataGroups("proteinChange")
+# p53muts_allbrainpts_agestrata_pos$addColumnDataGroups("Age_stratum") 
+# p53muts_allbrainpts_agestrata_pos$defineCalculation(calculationName = "Count of distinct patients", 
+#                                           summariseExpression = "n_distinct(patientId)")
+# p53muts_allbrainpts_agestrata_pos$sortColumnDataGroups(levelNumber = 1, 
+#                                              orderBy = "calculation", 
+#                                              sortOrder = "desc")
+# p53muts_allbrainpts_agestrata_pos$sortRowDataGroups(levelNumber = 1, 
+#                                           orderBy = "calculation", 
+#                                           sortOrder = "desc")
+# p53muts_allbrainpts_agestrata_pos$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+# p53muts_allbrainpts_agestrata_pos_pivot <- p53muts_allbrainpts_agestrata_pos$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+#   arrange(abs(parse_number(proteinChange))) %>% # arrange muts by increasing codon number
+#   mutate(across(everything(),
+#                 ~ replace_na(.,
+#                              0))) %>%
+#   dplyr::rename(
+#Mutation = proteinChange,
+#                 `No age listed` = `NA`,
+#                 #Num_Indiv = Total
+#) %>% 
+#   remove_rownames()
+
+# create pivot of number of female and male pts with brain in each mutation category, replace any NA with 0, rename columns
+p53muts_allbrainpts_sex_type <- PivotTable$new()
+p53muts_allbrainpts_sex_type$addData(p53muts_allbrainpts)
+p53muts_allbrainpts_sex_type$addRowDataGroups("mutationType")
+p53muts_allbrainpts_sex_type$addColumnDataGroups("SEX") 
+p53muts_allbrainpts_sex_type$defineCalculation(calculationName = "Count of distinct patients", 
+                                               summariseExpression = "n_distinct(patientId)")
+p53muts_allbrainpts_sex_type$sortColumnDataGroups(levelNumber = 1, 
+                                                  orderBy = "calculation", 
+                                                  sortOrder = "desc")
+p53muts_allbrainpts_sex_type$sortRowDataGroups(levelNumber = 1, 
+                                               orderBy = "calculation", 
+                                               sortOrder = "desc")
+p53muts_allbrainpts_sex_type$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+p53muts_allbrainpts_sex_type_pivot <- p53muts_allbrainpts_sex_type$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>%
+  #dplyr::rename(Mutation = mutationType,
+  #Num_Indiv = Total
+  #              ) %>% 
+  remove_rownames()
+
+# create pivot of mutated residues vs sex in all brain patients, replace NA with 0, arrange by increasing codon number, rename columns
+p53muts_allbrainpts_sex_pos <- PivotTable$new()
+p53muts_allbrainpts_sex_pos$addData(p53muts_allbrainpts)
+p53muts_allbrainpts_sex_pos$addRowDataGroups("proteinChange")
+p53muts_allbrainpts_sex_pos$addColumnDataGroups("SEX") 
+p53muts_allbrainpts_sex_pos$defineCalculation(calculationName = "Count of distinct patients", 
+                                              summariseExpression = "n_distinct(patientId)")
+p53muts_allbrainpts_sex_pos$sortColumnDataGroups(levelNumber = 1, 
+                                                 orderBy = "calculation", 
+                                                 sortOrder = "desc")
+p53muts_allbrainpts_sex_pos$sortRowDataGroups(levelNumber = 1, 
+                                              orderBy = "calculation", 
+                                              sortOrder = "desc")
+p53muts_allbrainpts_sex_pos$evaluatePivot() #doing this instead of renderPivot() which takes too long as it shows an actual pivot table, but we need this as a dataframe anyways for calculations later so we don't need to print a pivot table
+p53muts_allbrainpts_sex_pos_pivot <- p53muts_allbrainpts_sex_pos$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
+  arrange(abs(parse_number(proteinChange))) %>% # arrange muts by increasing codon number
+  mutate(across(everything(),
+                ~ replace_na(.,
+                             0))) %>%
+  dplyr::rename(
+    #Mutation = proteinChange,
+    Num_Indiv = Total
+  ) %>% 
+  remove_rownames()
+
+# # divide number of female and male pts by total number of pts per age stratum
+# p53muts_allbrainpts_agestrata_sex_pivot_calc <- p53muts_allbrainpts_agestrata_sex_pivot %>% 
+#   mutate_at(vars(2:Total), 
+#             .funs = ~./Total)
+# 
+# # divide number of mut type pts by total number of pts per age stratum
+# p53muts_allbrainpts_agestrata_type_pivot_calc <- p53muts_allbrainpts_agestrata_type_pivot %>% 
+#   mutate_at(vars(2:Total), 
+#             .funs = ~./Total)
+
+# divide vertically down sex columns to calc proportions of each mut type in each sex, add number of total female and male pts to colnames
+p53muts_allbrainpts_sex_type_pivot_calc <- p53muts_allbrainpts_sex_type_pivot %>% 
+  dplyr::select(-Total) %>% 
+  transform(Female = Female/as.numeric(p53muts_allbrainpts_sex_type_pivot[nrow(p53muts_allbrainpts_sex_type_pivot), "Female"])) %>% 
+  transform(Male = Male/as.numeric(p53muts_allbrainpts_sex_type_pivot[nrow(p53muts_allbrainpts_sex_type_pivot), "Male"])) %>% 
+  transform(Unknown = Unknown/as.numeric(p53muts_allbrainpts_sex_type_pivot[nrow(p53muts_allbrainpts_sex_type_pivot), "Unknown"])) 
+
+
+names(p53muts_allbrainpts_sex_type_pivot_calc) <- ifelse(names(p53muts_allbrainpts_sex_type_pivot_calc) %in% c("Female"),
+                                                         paste0("Female (",
+                                                                as.numeric(p53muts_allbrainpts_sex_type_pivot[nrow(p53muts_allbrainpts_sex_type_pivot),
+                                                                                                              "Female"]),
+                                                                " patients)"),
+                                                         names(p53muts_allbrainpts_sex_type_pivot_calc))
+
+names(p53muts_allbrainpts_sex_type_pivot_calc) <- ifelse(names(p53muts_allbrainpts_sex_type_pivot_calc) %in% c("Male"),
+                                                         paste0("Male (",
+                                                                as.numeric(p53muts_allbrainpts_sex_type_pivot[nrow(p53muts_allbrainpts_sex_type_pivot),
+                                                                                                              "Male"]),
+                                                                " patients)"),
+                                                         names(p53muts_allbrainpts_sex_type_pivot_calc))
+
+names(p53muts_allbrainpts_sex_type_pivot_calc) <- ifelse(names(p53muts_allbrainpts_sex_type_pivot_calc) %in% c("Unknown"),
+                                                         paste0("Unknown (",
+                                                                as.numeric(p53muts_allbrainpts_sex_type_pivot[nrow(p53muts_allbrainpts_sex_type_pivot),
+                                                                                                              "Unknown"]),
+                                                                " patients)"),
+                                                         names(p53muts_allbrainpts_sex_type_pivot_calc))
+
+# # remove total row and column and age column which doesn't have indication of number of total patients, melt pivot for ggplot and rename columns to be more sensible
+# p53muts_allbrainpts_agestrata_sex_pivot_melted <- p53muts_allbrainpts_agestrata_sex_pivot_calc %>% 
+#   dplyr::select(-Total) %>% 
+#   subset(Age_stratum != "Total") %>% 
+#   dplyr::select(-Age_stratum) %>% 
+#   reshape2::melt() %>% 
+#   dplyr::rename(Sex = variable,
+#                 Proportion = value) %>% 
+#   arrange(-Proportion)
+# 
+# # remove total row and column and age column which doesn't have indication of number of total patients, melt pivot for ggplot and rename columns to be more sensible, make category column as factor with decreasing proportions
+# p53muts_allbrainpts_agestrata_type_pivot_melted <- p53muts_allbrainpts_agestrata_type_pivot_calc %>% 
+#   dplyr::select(-Total) %>% 
+#   subset(Age_stratum != "Total") %>% 
+#   dplyr::select(-Age_stratum) %>% 
+#   reshape2::melt() %>% 
+#   dplyr::rename(Effect = variable,
+#                 Proportion = value) %>% 
+#   arrange(-Proportion)
+# 
+# p53muts_allbrainpts_agestrata_type_pivot_melted$Effect <- factor(p53muts_allbrainpts_agestrata_type_pivot_melted$Effect,
+#                                                                        levels = unique(p53muts_allbrainpts_agestrata_type_pivot_melted$Effect))
+
+# remove total row, melt pivot for ggplot and rename columns to be more sensible, make category column as factor with decreasing proportions
+p53muts_allbrainpts_sex_type_pivot_melted <- p53muts_allbrainpts_sex_type_pivot_calc %>% 
+  subset(mutationType != "Total") %>% 
+  reshape2::melt() %>% 
+  dplyr::rename(Effect = mutationType,
+                Sex = variable,
+                Proportion = value) %>% 
+  arrange(-Proportion)
+
+p53muts_allbrainpts_sex_type_pivot_melted$Effect <- factor(p53muts_allbrainpts_sex_type_pivot_melted$Effect,
+                                                           levels = unique(p53muts_allbrainpts_sex_type_pivot_melted$Effect))
+
+# # draw stacked barchart
+# allbrainpts_agestrata_sex_barchart <- ggplot(p53muts_allbrainpts_agestrata_sex_pivot_melted,
+#                                                    aes(x = Age,
+#                                                        y = Proportion,
+#                                                        fill = Sex)) +
+#   geom_bar(position = "fill", 
+#            stat = "identity") + 
+#   # facet_grid(. ~ Age_stratum,
+#   #            scales = "free") +
+#   ggtitle("Age Strata of Diagnosis vs. Sex in \n Individuals with Brain Cancers and \nSomatic p53 Mutations in cBioPortal") + 
+#   scale_y_continuous(labels = scales::percent_format(), 
+#                      expand = c(0,0), 
+#                      breaks = scales::pretty_breaks(n = 6)) +
+#   scale_x_discrete(expand = c(0,0)) +
+#   theme_classic() + 
+#   theme(axis.text.x = element_text(angle = 45, 
+#                                    hjust = 1, 
+#                                    vjust = 1), 
+#         axis.text = element_text(color = "black",
+#                                  size = 12), 
+#         axis.title = element_text(color = "black",
+#                                   face = "bold",
+#                                   size = 14),
+#         axis.title.x = element_text(margin = margin(5,0,0,0,"mm")),
+#         axis.title.y = element_text(margin = margin(0,5,0,0,"mm")),
+#         plot.title = element_text(hjust = 0.5,
+#                                   face = "bold",
+#                                   color = "black",
+#                                   size = 16,
+#                                   margin = margin(0,0,5,0, "mm")),
+#         plot.title.position = "plot",
+#         plot.margin = margin(0,0,0,4, "mm"),
+#         legend.text = element_text(color = "black",
+#                                    size = 12),
+#         legend.title = element_text(color = "black",
+#                                     face = "bold",
+#                                     size = 14),
+#         # strip.background = element_blank(),
+#         # strip.text = element_text(color = "black",
+#         #                           size = 11),
+#         # panel.spacing.x = unit(1.5, "lines")
+#   )
+# allbrainpts_agestrata_sex_barchart
+# save_plot(file = "C:/Users/nwali/Downloads/allbrainpts_agestrata_sex_barchart.svg", 
+#           allbrainpts_agestrata_sex_barchart, 
+#           base_width = 5.5, 
+#           base_height = 6.15)
+
+# # draw stacked barchart
+# allbrainpts_agestrata_type_barchart <- ggplot(p53muts_allbrainpts_agestrata_type_pivot_melted,
+#                                                     aes(x = Age,
+#                                                         y = Proportion,
+#                                                         fill = Effect)) +
+#   geom_bar(position = "fill", 
+#            stat = "identity") + 
+#   # facet_grid(. ~ Age_stratum,
+#   #            scales = "free") +
+#   ggtitle("Age Strata of Diagnosis vs. Mutation Types in \n Individuals with Brain Cancers and \nSomatic p53 Mutations in cBioPortal") + 
+#   scale_y_continuous(labels = scales::percent_format(), 
+#                      expand = c(0,0), 
+#                      breaks = scales::pretty_breaks(n = 6)) +
+#   scale_x_discrete(expand = c(0,0)) +
+#   theme_classic() + 
+#   theme(axis.text.x = element_text(angle = 45, 
+#                                    hjust = 1, 
+#                                    vjust = 1), 
+#         axis.text = element_text(color = "black",
+#                                  size = 12), 
+#         axis.title = element_text(color = "black",
+#                                   face = "bold",
+#                                   size = 14),
+#         axis.title.x = element_text(margin = margin(5,0,0,0,"mm")),
+#         axis.title.y = element_text(margin = margin(0,5,0,0,"mm")),
+#         plot.title = element_text(hjust = 0.5,
+#                                   face = "bold",
+#                                   color = "black",
+#                                   size = 16,
+#                                   margin = margin(0,0,5,0, "mm")),
+#         plot.title.position = "plot",
+#         plot.margin = margin(0,0,0,4, "mm"),
+#         legend.text = element_text(color = "black",
+#                                    size = 12),
+#         legend.title = element_text(color = "black",
+#                                     face = "bold",
+#                                     size = 14),
+#         # strip.background = element_blank(),
+#         # strip.text = element_text(color = "black",
+#         #                           size = 11),
+#         # panel.spacing.x = unit(1.5, "lines")
+#   )
+# allbrainpts_agestrata_type_barchart
+# save_plot(file = "C:/Users/nwali/Downloads/allbrainpts_agestrata_type_barchart.svg", 
+#           allbrainpts_agestrata_type_barchart, 
+#           base_width = 6, 
+#           base_height = 5.75)
+
+# draw stacked barchart
+allbrainpts_sex_type_barchart <- ggplot(p53muts_allbrainpts_sex_type_pivot_melted,
+                                        aes(x = Sex,
+                                            y = Proportion,
+                                            fill = Effect)) +
+  geom_bar(position = "fill", 
+           stat = "identity") + 
+  # facet_grid(. ~ Age_stratum,
+  #            scales = "free") +
+  ggtitle("Mutation Types vs. Sex in \n Individuals with Brain Cancers and \nSomatic p53 Mutations in cBioPortal") + 
+  scale_y_continuous(labels = scales::percent_format(), 
+                     expand = c(0,0), 
+                     breaks = scales::pretty_breaks(n = 6)) +
+  scale_x_discrete(expand = c(0,0)) +
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   vjust = 1), 
+        axis.text = element_text(color = "black",
+                                 size = 12), 
+        axis.title = element_text(color = "black",
+                                  face = "bold",
+                                  size = 14),
+        axis.title.x = element_text(margin = margin(5,0,0,0,"mm")),
+        axis.title.y = element_text(margin = margin(0,5,0,0,"mm")),
+        plot.title = element_text(hjust = 0.5,
+                                  face = "bold",
+                                  color = "black",
+                                  size = 16,
+                                  margin = margin(0,0,5,0, "mm")),
+        plot.title.position = "plot",
+        plot.margin = margin(0,0,0,4, "mm"),
+        legend.text = element_text(color = "black",
+                                   size = 12),
+        legend.title = element_text(color = "black",
+                                    face = "bold",
+                                    size = 14),
+        # strip.background = element_blank(),
+        # strip.text = element_text(color = "black",
+        #                           size = 11),
+        # panel.spacing.x = unit(1.5, "lines")
+  )
+allbrainpts_sex_type_barchart
+save_plot(file = "C:/Users/nwali/Downloads/allbrainpts_sex_type_barchart.svg", 
+          allbrainpts_sex_type_barchart, 
+          base_width = 4.5, 
+          base_height = 6.15,
+          limitsize = FALSE)
+
+# add damage info to pivot of mut residues in sexes and replace NAs with blanks so that can plot as grid
+p53muts_allbrainpts_sex_pos_pivot_damage <- left_join(p53muts_allbrainpts_sex_pos_pivot, 
+                                                      origfunction_damageinfo, 
+                                                      by = c("proteinChange" = "ProtDescription")) %>% 
+  mutate(across(everything(),
+                ~ str_replace(.,
+                              "NA",
+                              ""))) %>%
+  mutate(across(where(is.character),
+                ~ replace_na(.,
+                             ""))) %>% 
+  dplyr::rename(Mutation = proteinChange)
+
+# # add damage info to pivot of mut residues in age strata, replace NAs with blanks so that can plot as grid
+# p53muts_allbrainpts_agestrata_pos_pivot_damage <- left_join(p53muts_allbrainpts_agestrata_pos_pivot, 
+#                                                                   origfunction_damageinfo, 
+#                                                                   by = c("proteinChange" = "ProtDescription")) %>% 
+#   mutate(across(everything(),
+#                 ~ str_replace(.,
+#                               "NA",
+#                               ""))) %>%
+#   mutate(across(where(is.character),
+#                 ~ replace_na(.,
+#                              ""))) %>% 
+#   dplyr::rename(Mutation = proteinChange)
+
+# create colorful grid table of mutated residues across sexes in pts with brain
+allbrainpts_sex_pos_gridprep <- condformat(p53muts_allbrainpts_sex_pos_pivot_damage %>% 
+                                             subset(as.numeric(Num_Indiv) > 5) %>% 
+                                             filter(Mutation != "Total")) %>% 
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 1 & abs(parse_number(Mutation)) <= 61, # both TADs
+                         "#CC79A7",
+                         "")) %>% 
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 62 & abs(parse_number(Mutation)) <= 93, # PRD
+                         "yellow4",
+                         "")) %>%
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 94 & abs(parse_number(Mutation)) <= 289, # DBD
+                         "#0072B2",
+                         "")) %>%
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 112 & abs(parse_number(Mutation)) <= 124, # L1
+                         "hotpink", 
+                         "")) %>% 
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 163 & abs(parse_number(Mutation)) <= 195, # L2
+                         "brown", 
+                         "")) %>% 
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 236 & abs(parse_number(Mutation)) <= 251, # L3
+                         "purple", 
+                         "")) %>% 
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 290 & abs(parse_number(Mutation)) <= 324, # HD
+                         "#009E73",
+                         ""))  %>% 
+  rule_text_color(1:Num_Indiv,
+                  ifelse(abs(parse_number(Mutation)) >= 325 & abs(parse_number(Mutation)) <= 356, # OD; CTD is black
+                         "#D55E00",
+                         "")) %>% 
+  # rule_text_color(1,
+  #                 ifelse(Mutation %in% top_muts_p53muts_vector,
+  #                        "red",
+  #                        "")) %>%
+  # rule_text_bold(1,
+  #                expression = Mutation %in% top_muts_p53muts_vector) %>%
+  # rule_text_color(Num_Indiv,
+  #                 ifelse(as.numeric(Num_Indiv) > 10 & as.numeric(Num_Indiv) < n_distinct(p53muts_allbrainpts$patientId),
+  #                        "red",
+  #                        "")) %>%
+  # rule_text_bold(Num_Indiv,
+  #                expression = as.numeric(Num_Indiv) > 10 & as.numeric(Num_Indiv) < n_distinct(p53muts_allbrainpts$patientId)) %>%
+  rule_text_color(1,
+                  ifelse(Mutation %in% mut_rescued,
+                         "red",
+                         "")) %>%
+  rule_text_bold(1,
+                 expression = Mutation %in% mut_rescued) %>%
+  rule_text_color(AGVGDClass,
+                  ifelse(AGVGDClass %in% c("C65", 
+                                           "C55"), 
+                         "red",
+                         "")) %>% 
+  rule_text_color(BayesDel,
+                  ifelse(as.numeric(BayesDel) >= 0.16, 
+                         "red",
+                         "")) %>% 
+  rule_text_color(REVEL,
+                  ifelse(as.numeric(REVEL) >= 0.5, 
+                         "red",
+                         "")) %>% 
+  rule_text_color(SIFTClass,
+                  ifelse(SIFTClass %in% c("Damaging"), 
+                         "red",
+                         "")) %>% 
+  rule_text_color(Polyphen2,
+                  ifelse(Polyphen2 %in% c("D"), 
+                         "red",
+                         "")) %>% 
+  rule_text_color(TransactivationClass,
+                  ifelse(TransactivationClass %in% c("non-functional"), 
+                         "red",
+                         "")) %>% 
+  rule_text_color(DNE_LOFclass,
+                  ifelse(DNE_LOFclass %in% c("DNE_LOF",
+                                             "notDNE_LOF"), 
+                         "red",
+                         "")) %>% 
+  rule_text_color(DNEclass,
+                  ifelse(DNEclass %in% c("Yes"), 
+                         "red",
+                         "")) %>% 
+  rule_text_color(StructureFunctionClass,
+                  ifelse(StructureFunctionClass %in% c("non-functional"), 
+                         "red",
+                         "")) %>% 
+  theme_grob(rows = NULL,
+             theme = ttheme_default(base_size = 10,
+                                    core = list(padding = unit(c(15, 4), "mm"),
+                                                fg_params = list(fontface = c(rep("plain", 
+                                                                                  nrow(p53muts_allbrainpts_sex_pos_pivot_damage) - 1), 
+                                                                              "bold")),
+                                                bg_params = list(fill = c(rep(c("grey95", "grey90"),
+                                                                              length.out = (nrow(p53muts_allbrainpts_sex_pos_pivot_damage) - 1)),
+                                                                          "grey80")))
+             )) %>%
+  condformat2grob(draw = FALSE)
+
+allbrainpts_sex_pos_grid <- grid.arrange(allbrainpts_sex_pos_gridprep,
+                                         top = textGrob("Mutated Residues and Functional Effects by Sex in Individuals with Brain Cancers and Selected Somatic p53 Mutations in cBioPortal",
+                                                        hjust = 0.5,
+                                                        gp = gpar(fontface = "bold")))
+
+save_plot(file = "C:/Users/nwali/Downloads/allbrainpts_sex_pos_grid.svg", 
+          allbrainpts_sex_pos_grid, 
+          base_width = 16.5, 
+          base_height = 8.5,
+          limitsize = FALSE)
+
+# # create colorful grid table of mutated residues across age strata in pts with brain
+# allbrainpts_agestrata_pos_gridprep <- condformat(p53muts_allbrainpts_agestrata_pos_pivot_damage %>% 
+#                                                          subset(as.numeric(Num_Indiv) > 5) %>% 
+#                                                          filter(Mutation != "Total")) %>% 
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 1 & abs(parse_number(Mutation)) <= 61, # both TADs
+#                          "#CC79A7",
+#                          "")) %>% 
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 62 & abs(parse_number(Mutation)) <= 93, # PRD
+#                          "yellow4",
+#                          "")) %>%
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 94 & abs(parse_number(Mutation)) <= 289, # DBD
+#                          "#0072B2",
+#                          "")) %>%
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 112 & abs(parse_number(Mutation)) <= 124, # L1
+#                          "hotpink", 
+#                          "")) %>% 
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 163 & abs(parse_number(Mutation)) <= 195, # L2
+#                          "brown", 
+#                          "")) %>% 
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 236 & abs(parse_number(Mutation)) <= 251, # L3
+#                          "purple", 
+#                          "")) %>% 
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 290 & abs(parse_number(Mutation)) <= 324, # HD
+#                          "#009E73",
+#                          ""))  %>% 
+#   rule_text_color(1:Num_Indiv,
+#                   ifelse(abs(parse_number(Mutation)) >= 325 & abs(parse_number(Mutation)) <= 356, # OD; CTD is black
+#                          "#D55E00",
+#                          "")) %>% 
+#   rule_text_color(1,
+#                   ifelse(Mutation %in% top_muts_p53muts_vector,
+#                          "red",
+#                          "")) %>%
+#   rule_text_color(Num_Indiv,
+#                   ifelse(as.numeric(Num_Indiv) > 10 & as.numeric(Num_Indiv) < n_distinct(p53muts_allbrainpts$patientId),
+#                          "red",
+#                          "")) %>%
+#   rule_text_bold(1,
+#                  expression = Mutation %in% top_muts_p53muts_vector) %>%
+#   rule_text_bold(Num_Indiv,
+#                  expression = as.numeric(Num_Indiv) > 10 & as.numeric(Num_Indiv) < n_distinct(p53muts_allbrainpts$patientId)) %>%
+#   rule_text_color(AGVGDClass,
+#                   ifelse(AGVGDClass %in% c("C65", 
+#                                            "C55"), 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(BayesDel,
+#                   ifelse(as.numeric(BayesDel) >= 0.16, 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(REVEL,
+#                   ifelse(as.numeric(REVEL) >= 0.5, 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(SIFTClass,
+#                   ifelse(SIFTClass %in% c("Damaging"), 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(Polyphen2,
+#                   ifelse(Polyphen2 %in% c("D"), 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(TransactivationClass,
+#                   ifelse(TransactivationClass %in% c("non-functional"), 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(DNE_LOFclass,
+#                   ifelse(DNE_LOFclass %in% c("DNE_LOF",
+#                                              "notDNE_LOF"), 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(DNEclass,
+#                   ifelse(DNEclass %in% c("Yes"), 
+#                          "red",
+#                          "")) %>% 
+#   rule_text_color(StructureFunctionClass,
+#                   ifelse(StructureFunctionClass %in% c("non-functional"), 
+#                          "red",
+#                          "")) %>% 
+#   theme_grob(rows = NULL,
+#              theme = ttheme_default(base_size = 10,
+#                                     core = list(padding = unit(c(2, 2), "mm")))) %>%
+#   condformat2grob(draw = FALSE)
+# 
+# allbrainpts_agestrata_pos_grid <- grid.arrange(allbrainpts_agestrata_pos_gridprep,
+#                                                      top = textGrob("Mutated Residues and Functional Effects by Age of Diagnosis in Individuals with Brain Cancers and Selected Somatic p53 Mutations in cBioPortal",
+#                                                                     hjust = 0.5,
+#                                                                     gp = gpar(fontface = "bold")))
+# 
+# save_plot(file = "C:/Users/nwali/Downloads/allbrainpts_agestrata_pos_grid.svg", 
+#           allbrainpts_agestrata_pos_grid, 
+#           base_width = 16.5, 
+#           base_height = 7.25)
+
+
+
+#### complex heatmaps ####
+
+# #draw complexheatmaps, two pairs without and with cancer clustering for samples or total muts
+# x <- scale(x) # scale and center columns
+# x <- t(scale(t(x))) # scale and center rows
+
+svg(file = "C:/Users/nwali/Downloads/complexheatmap_totalmuts.svg", 
+    width = 85, 
+    height = 12)
+complexhm_totalmuts <- ComplexHeatmap::Heatmap(t(scale(t(pos_matrix_ordered_totalmuts))),
+                                               col = circlize::colorRamp2(c(plyr::round_any(min(t(scale(t(pos_matrix_ordered_totalmuts))), na.rm = TRUE), 0.1, f = floor),
+                                                                            0,
+                                                                            plyr::round_any(max(t(scale(t(pos_matrix_ordered_totalmuts))), na.rm = TRUE), 0.1, f = ceiling)),
+                                                                          c("lavender", 
+                                                                            "white",
+                                                                            "red")),
+                                               name = "Row Z-Score",
+                                               na_col = "white",
+                                               row_names_side = "left",
+                                               column_names_side = "top",
+                                               row_dend_side = "left",
+                                               column_dend_side = "top",
+                                               clustering_distance_rows = "euclidean",
+                                               clustering_method_rows = "complete",
+                                               clustering_distance_columns = "euclidean",
+                                               clustering_method_columns = "complete",
+                                               column_title = "Mutations in Individuals with Cancer and Somatic p53 Mutations in cBioPortal, ≥ 1% proportion",
+                                               column_title_side = "top",
+                                               column_title_gp = gpar(fontface = "bold"),
+                                               row_names_gp = gpar(fontsize = 10),
+                                               row_names_max_width = max_text_width(
+                                                 rownames(pos_matrix_ordered_totalmuts), 
+                                                 gp = gpar(fontsize = 10)),
+                                               column_names_gp = gpar(fontsize = 10),
+                                               top_annotation = column_ha_2,
+                                               left_annotation = row_ha_2,
+                                               heatmap_legend_param = list(at = c(plyr::round_any(min(t(scale(t(pos_matrix_ordered_totalmuts))), na.rm = TRUE), 0.1, f = floor), 
+                                                                                  0, plyr::round_any(max(t(scale(t(pos_matrix_ordered_totalmuts))), na.rm = TRUE), 0.1, f = ceiling))
+                                               ))
+draw(complexhm_totalmuts,
+     heatmap_legend_side = "bottom",
+     annotation_legend_side = "bottom",
+     legend_grouping = "original",
+     merge_legend = TRUE)
+dev.off() #run multiple times until following error shows up: Error in dev.off() : cannot shut down device 1 (the null device)
+
+# svg(file = "C:/Users/nwali/Downloads/complexhm_age.svg", 
+#     width = 10.5, 
+#     height = 6.8)
+# complexhm_age <- ComplexHeatmap::Heatmap(age_matrix_ordered,
+#                                                 col = color,
+#                                                 name = "Row Z-Score",
+#                                                 na_col = "white",
+#                                                 row_names_side = "left",
+#                                                 column_names_side = "top",
+#                                                 row_dend_side = "left",
+#                                                 column_dend_side = "top",
+#                                                 column_title = "# muts/# total muts",
+#                                                 column_title_side = "top",
+#                                                 column_title_gp = gpar(fontface = "bold"),
+#                                                 row_names_gp = gpar(fontsize = 10),
+#                                                 row_names_max_width = max_text_width(rownames(age_matrix_ordered), 
+#                                                                                      gp = gpar(fontsize = 10)),
+#                                                 column_names_gp = gpar(fontsize = 10),
+#                                                 column_names_max_height = max_text_width(colnames(age_matrix_ordered)),
+#                                                 top_annotation = column_ha_age_cancer,
+#                                                 heatmap_legend_param = list(at = seq(from = 0, 
+#                                                                                      to = plyr::round_any(max(age_matrix_ordered, na.rm = TRUE), 0.1, f = ceiling), 
+#                                                                                      by = plyr::round_any(max(age_matrix_ordered, na.rm = TRUE), 0.1, f = ceiling)/5)))
+# draw(complexhm_age)
+# dev.off() #run multiple times until following error shows up: Error in dev.off() : cannot shut down device 1 (the null device)
+
+# svg(file = "C:/Users/nwali/Downloads/complexhm_age_type.svg", 
+#     width = 4.5, 
+#     height = 4)
+# complexhm_age_type <- ComplexHeatmap::Heatmap(age_type_matrix,
+#                                                      col = color,
+#                                                      name = "Row Z-Score",
+#                                                      na_col = "white",
+#                                                      row_names_side = "left",
+#                                                      column_names_side = "top",
+#                                                      row_dend_side = "left",
+#                                                      column_dend_side = "top",
+#                                                      column_title = "# muts/# total muts",
+#                                                      column_title_side = "top",
+#                                                      column_title_gp = gpar(fontface = "bold"),
+#                                                      row_names_gp = gpar(fontsize = 10),
+#                                                      row_names_max_width = max_text_width(rownames(age_type_matrix), 
+#                                                                                           gp = gpar(fontsize = 10)),
+#                                                      column_names_gp = gpar(fontsize = 10),
+#                                                      heatmap_legend_param = list(at = seq(from = 0, 
+#                                                                                           to = plyr::round_any(max(age_type_matrix, na.rm = TRUE), 0.1, f = ceiling), 
+#                                                                                           by = plyr::round_any(max(age_type_matrix, na.rm = TRUE), 0.1, f = ceiling)/5)))
+# draw(complexhm_age_type)
+# dev.off() #run multiple times until following error shows up: Error in dev.off() : cannot shut down device 1 (the null device)
+
+# svg(file = "C:/Users/nwali/Downloads/complexhm_pos_age.svg", 
+#     width = 16, 
+#     height = 3.5)
+# complexhm_pos_age <- ComplexHeatmap::Heatmap(age_pos_matrix_ordered,
+#                                                    col = color,
+#                                                    name = "Row Z-Score",
+#                                                    na_col = "white",
+#                                                    row_names_side = "left",
+#                                                    column_names_side = "top",
+#                                                    row_dend_side = "left",
+#                                                    column_dend_side = "top",
+#                                                    cluster_columns = FALSE,
+#                                                    column_title = "# muts/# total muts, ≥ 1% proportion",
+#                                                    column_title_side = "top",
+#                                                    column_title_gp = gpar(fontface = "bold"),
+#                                                    row_names_gp = gpar(fontsize = 10),
+#                                                    row_names_max_width = max_text_width(rownames(age_pos_matrix_ordered), 
+#                                                                                         gp = gpar(fontsize = 10)),
+#                                                    column_names_gp = gpar(fontsize = 10),
+#                                                    top_annotation = column_ha_age_pos,
+#                                                    heatmap_legend_param = list(at = seq(from = 0, 
+#                                                                                         to = plyr::round_any(max(age_pos_matrix_ordered, na.rm = TRUE), 0.1, f = ceiling), 
+#                                                                                         by = plyr::round_any(max(age_pos_matrix_ordered, na.rm = TRUE), 0.1, f = ceiling)/5)))
+# draw(complexhm_pos_age)
+# dev.off() #run multiple times until following error shows up: Error in dev.off() : cannot shut down device 1 (the null device)
+
+# svg(file = "C:/Users/nwali/Downloads/complexhm_sex.svg", 
+#     width = 11, 
+#     height = 5.8)
+# complexhm_sex <- ComplexHeatmap::Heatmap(sex_matrix_ordered,
+#                                                 col = color,
+#                                                 name = "Row Z-Score",
+#                                                 na_col = "white",
+#                                          row_names_side = "left",
+#                                          column_names_side = "top",
+#                                          row_dend_side = "left",
+#                                          column_dend_side = "top",
+#                                          clustering_distance_rows = "euclidean",
+#                                          clustering_method_rows = "complete",
+#                                          clustering_distance_columns = "euclidean",
+#                                          clustering_method_columns = "complete",
+#                                                 column_title = "",
+#                                                 column_title_side = "top",
+#                                                 column_title_gp = gpar(fontface = "bold"),
+#                                                 row_names_gp = gpar(fontsize = 10),
+#                                                 row_names_max_width = max_text_width(rownames(sex_matrix_ordered), 
+#                                                                                      gp = gpar(fontsize = 10)),
+#                                                 column_names_gp = gpar(fontsize = 10),
+#                                                 column_names_max_height = max_text_width(colnames(sex_matrix_ordered)),
+#                                                 top_annotation = column_ha_sex_cancer,
+#                                                 heatmap_legend_param = list(at = seq(from = 0, 
+#                                                                                      to = plyr::round_any(max(sex_matrix_ordered, na.rm = TRUE), 0.1, f = ceiling), 
+#                                                                                      by = plyr::round_any(max(sex_matrix_ordered, na.rm = TRUE), 0.1, f = ceiling)/5)))
+# draw(complexhm_sex,
+#      heatmap_legend_side = "bottom",
+#      annotation_legend_side = "bottom",
+#      legend_grouping = "original",
+#      merge_legend = TRUE)
+# dev.off() #run multiple times until following error shows up: Error in dev.off() : cannot shut down device 1 (the null device)
+
+# svg(file = "C:/Users/nwali/Downloads/complexhm_sex_type.svg", 
+#     width = 4, 
+#     height = 2.7)
+# complexhm_sex_type <- ComplexHeatmap::Heatmap(sex_type_matrix,
+#                                                      col = color,
+#                                                      name = "Row Z-Score",
+#                                                      na_col = "white",
+#                                               row_names_side = "left",
+#                                               column_names_side = "top",
+#                                               row_dend_side = "left",
+#                                               column_dend_side = "top",
+#                                               clustering_distance_rows = "euclidean",
+#                                               clustering_method_rows = "complete",
+#                                               clustering_distance_columns = "euclidean",
+#                                               clustering_method_columns = "complete",
+#                                                      column_title = "",
+#                                                      column_title_side = "top",
+#                                                      column_title_gp = gpar(fontface = "bold"),
+#                                                      row_names_gp = gpar(fontsize = 10),
+#                                                      row_names_max_width = max_text_width(rownames(sex_type_matrix), 
+#                                                                                           gp = gpar(fontsize = 10)),
+#                                                      column_names_gp = gpar(fontsize = 10),
+#                                                      heatmap_legend_param = list(at = seq(from = 0, 
+#                                                                                           to = plyr::round_any(max(sex_type_matrix, na.rm = TRUE), 0.1, f = ceiling), 
+#                                                                                           by = plyr::round_any(max(sex_type_matrix, na.rm = TRUE), 0.1, f = ceiling)/5)))
+# draw(complexhm_sex_type,
+#      heatmap_legend_side = "bottom",
+#      annotation_legend_side = "bottom",
+#      legend_grouping = "original",
+#      merge_legend = TRUE)
+# dev.off() #run multiple times until following error shows up: Error in dev.off() : cannot shut down device 1 (the null device)
+
+svg(file = "C:/Users/nwali/Downloads/complexhm_pos_sex.svg", 
+    width = 8.65, 
+    height = 4.7)
+complexhm_pos_sex <- ComplexHeatmap::Heatmap(t(scale(t(sex_pos_matrix_ordered))),
+                                             col = circlize::colorRamp2(c(plyr::round_any(min(t(scale(t(sex_pos_matrix_ordered))), na.rm = TRUE), 0.1, f = floor),
+                                                                          0,
+                                                                          plyr::round_any(max(t(scale(t(sex_pos_matrix_ordered))), na.rm = TRUE), 0.1, f = ceiling)),
+                                                                        c("blue", 
+                                                                          "white",
+                                                                          "red")),
+                                             name = "Row Z-Score",
+                                             na_col = "white",
+                                             row_names_side = "left",
+                                             column_names_side = "top",
+                                             row_dend_side = "left",
+                                             column_dend_side = "top",
+                                             clustering_distance_rows = "euclidean",
+                                             clustering_method_rows = "complete",
+                                             clustering_distance_columns = "euclidean",
+                                             clustering_method_columns = "complete",
+                                             column_title = "Individuals with Cancer and Somatic p53 Mutations in cBioPortal, ≥ 1% proportion",
+                                             column_title_side = "top",
+                                             column_title_gp = gpar(fontface = "bold"),
+                                             row_names_gp = gpar(fontsize = 10),
+                                             row_names_max_width = max_text_width(rownames(sex_pos_matrix_ordered), 
+                                                                                  gp = gpar(fontsize = 10)),
+                                             column_names_gp = gpar(fontsize = 10),
+                                             top_annotation = column_ha_sex_pos,
+                                             heatmap_legend_param = list(at = c(plyr::round_any(min(t(scale(t(sex_pos_matrix_ordered))), na.rm = TRUE), 0.1, f = floor), 
+                                                                                0, plyr::round_any(max(t(scale(t(sex_pos_matrix_ordered))), na.rm = TRUE), 0.1, f = ceiling))
+                                             ))
+draw(complexhm_pos_sex,
+     heatmap_legend_side = "bottom",
+     annotation_legend_side = "bottom",
+     legend_grouping = "original",
+     merge_legend = TRUE)
+dev.off() #run multiple times until following error shows up: Error in dev.off() : cannot shut down device 1 (the null device)
+
+#draw complexheatmaps, without and with cancer clustering for total muts
+# svg(file = "C:/Users/nwali/Downloads/complexheatmap_barchart.svg", 
+#     width = 8.9, 
+#     height = 9)
+# complexhm_barchart <- ComplexHeatmap::Heatmap(barchart_matrix_ordered,
+#                                               col = color,
+#                                               name = "Row Z-Score",
+#                                               na_col = "white",
+#                                               row_names_side = "left",
+#                                               column_names_side = "top",
+#                                               row_dend_side = "left",
+#                                               column_dend_side = "top",
+#                                               clustering_distance_rows = "euclidean",
+#                                               clustering_method_rows = "complete",
+#                                               clustering_distance_columns = "euclidean",
+#                                               clustering_method_columns = "complete",
+#                                               column_title = "",
+#                                               column_title_side = "top",
+#                                               column_title_gp = gpar(fontface = "bold"),
+#                                               row_names_gp = gpar(fontsize = 10),
+#                                               row_names_max_width = max_text_width(
+#                                                 rownames(barchart_matrix_ordered), 
+#                                                 gp = gpar(fontsize = 10)),
+#                                               column_names_gp = gpar(fontsize = 10),
+#                                               left_annotation = row_ha_barchart,
+#                                               heatmap_legend_param = list(at = seq(from = 0,
+#                                                                                    to = plyr::round_any(max(barchart_matrix_ordered, na.rm = TRUE), 0.1, f = ceiling),
+#                                                                                    by = plyr::round_any(max(barchart_matrix_ordered, na.rm = TRUE), 0.1, f = ceiling)/5)))
+# draw(complexhm_barchart,
+#      heatmap_legend_side = "bottom",
+#      annotation_legend_side = "bottom",
+#      legend_grouping = "original",
+#      merge_legend = TRUE)
+# dev.off() #run multiple times until following error shows up: Error in dev.off() : cannot shut down device 1 (the null device)
+
+# svg(file = "C:/Users/nwali/Downloads/complexheatmap_barchart_ordered.svg",
+#     width = 8.6,
+#     height = 9)
+# complexhm_barchart_ordered <- ComplexHeatmap::Heatmap(barchart_matrix_ordered,
+#                                                       col = color,
+#                                                       name = "Row Z-Score",
+#                                                       na_col = "white",
+#                                                       row_names_side = "left",
+#                                                       column_names_side = "top",
+#                                                       cluster_columns = FALSE,
+#                                                       cluster_rows = FALSE,
+#                                                       row_dend_side = "left",
+#                                                       column_dend_side = "top",
+#                                                       column_title = "# muts/# total muts",
+#                                                       column_title_side = "top",
+#                                                       column_title_gp = gpar(fontface = "bold"),
+#                                                       row_names_gp = gpar(fontsize = 10),
+#                                                       row_names_max_width = max_text_width(
+#                                                         rownames(barchart_matrix_ordered), 
+#                                                         gp = gpar(fontsize = 10)),
+#                                                       column_names_gp = gpar(fontsize = 10),
+#                                                       left_annotation = row_ha_barchart,
+#                                                       heatmap_legend_param = list(at = seq(from = 0,
+#                                                                                            to = plyr::round_any(max(barchart_matrix_ordered, na.rm = TRUE), 0.1, f = ceiling),
+#                                                                                            by = plyr::round_any(max(barchart_matrix_ordered, na.rm = TRUE), 0.1, f = ceiling)/5)))
+# draw(complexhm_barchart_ordered)
+# dev.off() #run multiple times until following error shows up: Error in dev.off() : cannot shut down device 1 (the null device)
+
+#### alluvials ####
+
+# # also can make alluvial plots to show flow of proportions from tissues
+# # need to combine all strata labels of alluvial plot (i.e. heatmap annotation labels) into melted dfs so that everything assigned to a line, convert things you want ordered into factors so that they have defined order in alluvial plot, and rename columns to better names so that if in legend for alluvial plot automatically correct name
+# alluvial_type <- merge(data_barchart,
+#                        cancersused_barchart,
+#                        by = "Cancer")
+# alluvial_type$Germ_Layer <- factor(alluvial_type$Germ_Layer, 
+#                                    levels = unique(cancersused_barchart$Germ_Layer))
+# alluvial_type$Tissue <- factor(alluvial_type$Tissue,
+#                                levels = unique(cancersused_barchart$Tissue))
+# alluvial_type$Cancer <- factor(alluvial_type$Cancer, 
+#                                levels = unique(cancersused_barchart$Cancer))
+# alluvial_type <- alluvial_type %>% 
+#  dplyr::rename(`Germ Layer` = Germ_Layer,
+#          `Mutation Type` = Mutation)
+# 
+# alluvial_pos <- merge(datapospheatmap_meltover0.01,
+#                       cancersused_totalmuts,
+#                       by = "Cancer")
+# alluvial_pos <- merge(alluvial_pos,
+#                       posused_totalmuts,
+#                       by = "Mutation")
+# alluvial_pos <- alluvial_pos[order(alluvial_pos$Codon),]
+# alluvial_pos$Germ_Layer <- factor(alluvial_pos$Germ_Layer, 
+#                                   levels = unique(cancersused_totalmuts$Germ_Layer))
+# alluvial_pos$Tissue <- factor(alluvial_pos$Tissue,
+#                               levels = unique(cancersused_totalmuts$Tissue))
+# alluvial_pos$Cancer <- factor(alluvial_pos$Cancer, 
+#                               levels = unique(cancersused_totalmuts$Cancer))
+# alluvial_pos$Domain <- factor(alluvial_pos$Domain, 
+#                               levels = unique(posused_totalmuts$Domain))
+# alluvial_pos$Mutation <- factor(alluvial_pos$Mutation, 
+#                                 levels = unique(alluvial_pos$Mutation))
+# alluvial_pos <- alluvial_pos %>% 
+#  dplyr::rename(`Germ Layer` = Germ_Layer,
+#          `p53 Domain` = Domain,
+#          Function = Residue_function)
+# 
+# # alluvial_age <- merge(pivotage_melted,
+# #                       cancersused_totalmuts,
+# #                       by = "Cancer")
+# # alluvial_age$Germ_Layer <- factor(alluvial_age$Germ_Layer, 
+# #                                   levels = unique(cancersused_totalmuts$Germ_Layer))
+# # alluvial_age$Cancer <- factor(alluvial_age$Cancer, 
+# #                               levels = unique(cancersused_totalmuts$Cancer))
+# # alluvial_age$Age <- factor(alluvial_age$Age, 
+# #                            levels = sort(unique(alluvial_age$Age)))
+# # alluvial_age$Tissue <- factor(alluvial_age$Tissue,
+# #                               levels = unique(cancersused_totalmuts$Tissue))
+# # alluvial_age <- alluvial_age %>% 
+# #   dplyr::rename(`Germ Layer` = Germ_Layer)
+# # 
+# # alluvial_age_pos <- merge(pivotage_pos_melted_over0.01,
+# #                           pos_totalmuts_age,
+# #                           by = "Mutation")
+# # alluvial_age_pos <- alluvial_age_pos[order(alluvial_age_pos$Codon),]
+# # alluvial_age_pos$Domain <- factor(alluvial_age_pos$Domain, 
+# #                                   levels = levels(mutinfo_annotate_age$Domain))
+# # alluvial_age_pos$Mutation <- factor(alluvial_age_pos$Mutation, 
+# #                                     levels = unique(alluvial_age_pos$Mutation))
+# # alluvial_age_pos$Age <- factor(alluvial_age_pos$Age,
+# #                                levels = sort(unique(alluvial_age_pos$Age)))
+# # alluvial_age_pos <- alluvial_age_pos %>% 
+# #   dplyr::rename(`p53 Domain` = Domain,
+# #                 Function = Residue_function)
+# # 
+# alluvial_sex <- merge(pivotsex_melted,
+#                       cancersused_totalmuts,
+#                       by = "Cancer")
+# alluvial_sex$Germ_Layer <- factor(alluvial_sex$Germ_Layer, 
+#                                   levels = unique(cancersused_totalmuts$Germ_Layer))
+# alluvial_sex$Cancer <- factor(alluvial_sex$Cancer, 
+#                               levels = unique(cancersused_totalmuts$Cancer))
+# alluvial_sex$SEX <- factor(alluvial_sex$SEX, 
+#                            levels = sort(unique(alluvial_sex$SEX)))
+# alluvial_sex$Tissue <- factor(alluvial_sex$Tissue,
+#                               levels = unique(cancersused_totalmuts$Tissue))
+# alluvial_sex <- alluvial_sex %>% 
+#   dplyr::rename(`Germ Layer` = Germ_Layer)
+# 
+# alluvial_sex_pos <- merge(pivotsex_pos_melted_over0.01,
+#                           pos_totalmuts_sex,
+#                           by = "Mutation")
+# alluvial_sex_pos <- alluvial_sex_pos[order(alluvial_sex_pos$Codon),]
+# alluvial_sex_pos$Domain <- factor(alluvial_sex_pos$Domain, 
+#                                   levels = levels(mutinfo_annotate_sex$Domain))
+# alluvial_sex_pos$Mutation <- factor(alluvial_sex_pos$Mutation, 
+#                                     levels = unique(alluvial_sex_pos$Mutation))
+# alluvial_sex_pos$SEX <- factor(alluvial_sex_pos$SEX,
+#                                levels = sort(unique(alluvial_sex_pos$SEX)))
+# alluvial_sex_pos <- alluvial_sex_pos %>% 
+#   dplyr::rename(`p53 Domain` = Domain,
+#                 Function = Residue_function)
+# 
+# # because so many cancer types, need to define new distinct palette of colors for alluvial plot
+# # got distinct color palette from https://mokole.com/palette.html --> # colors needed, rest as default, run
+# alluvial_colors <- c('#808080', 
+#                      '#dcdcdc',
+#                      '#556b2f',
+#                      '#8b4513',
+#                      '#006400',
+#                      '#808000',
+#                      '#483d8b',
+#                      '#b22222',
+#                      '#008080',
+#                      '#4682b4',
+#                      '#000080',
+#                      '#9acd32',
+#                      '#7f007f',
+#                      '#b03060',
+#                      '#d2b48c',
+#                      '#ff0000',
+#                      '#00ced1',
+#                      '#ff8c00',
+#                      '#ffff00',
+#                      '#7fff00',
+#                      '#8a2be2',
+#                      '#ff1493',
+#                      '#f4a460',
+#                      '#0000ff',
+#                      '#da70d6',
+#                      '#1e90ff',
+#                      '#ff00ff',
+#                      '#f0e68c',
+#                      '#fa8072',
+#                      '#dda0dd',
+#                      '#00ff7f',
+#                      '#7b68ee',
+#                      '#98fb98',
+#                      '#87cefa',
+#                      '#7fffd4',
+#                      '#ffb6c1',
+#                      'black')
+# 
+# # draw alluvial plots with cancer as coloring
+# 
+# alluvialplot_type <- ggplot(data = alluvial_type,
+#                             aes(axis1 = `Germ Layer`,   # First variable on the X-axis
+#                                 axis2 = Tissue, # Second variable on the X-axis
+#                                 axis3 = Cancer, # Third variable on the X-axis
+#                                 axis4 = `Mutation Type`,   # Fourth variable on the X-axis
+#                                 y = Proportion)) +
+#   geom_alluvium(aes(fill = Cancer),
+#                 aes.bind = "alluvia") +
+#   geom_stratum(alpha = 0.2) +     # makes strata somewhat transparent so can see colors feeding into them
+#   geom_text(stat = "stratum",
+#             aes(label = after_stat(stratum)),
+#             min.y = 0.35,
+#             size = 5) + # so that very small categories are not labeled which are getting too tight to see
+#   ggtitle(paste0("# muts/# total muts (n = ",
+#                  format(with(pivotdf, 
+#                              sum(Total[Total >= 100 & Total <= pivotdf[1, ncol(pivotdf)]])), 
+#                         big.mark = ",",
+#                         trim = TRUE),
+#                  " muts)")) +
+#   scale_x_continuous(breaks = 1:4, 
+#                      labels = c("Germ Layer", "Tissue", "Cancer", "Mutation Type"),
+#                      expand = c(0,0)) +
+#   scale_fill_manual(values = alluvial_colors) +
+#   theme_classic() + 
+#   scale_y_continuous(expand = c(0,0)) +
+#   theme(plot.title = element_text(hjust = 0.5,
+#                                   face = "bold",
+#                                   size = 16),
+#         axis.text = element_text(color = "black",
+#                                  size = 14,
+#                                  face = "bold"),
+#         axis.text.y = element_blank(),
+#         axis.title.y = element_blank(),
+#         axis.line = element_blank(),
+#         axis.ticks = element_blank(),
+#         legend.title = element_text(face = "bold",
+#                                     size = 14,
+#                                     color = "black"),
+#         legend.text = element_text(size = 14,
+#                                    color = "black"))
+# alluvialplot_type
+# 
+# # save plot
+# save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_type.svg", 
+#           alluvialplot_type, 
+#           base_width = 32, 
+#           base_height = 12)
+# 
+# alluvialplot_pos <- ggplot(data = alluvial_pos,
+#                            aes(axis1 = `Germ Layer`,   # First variable on the X-axis
+#                                axis2 = Tissue, # Second variable on the X-axis
+#                                axis3 = Cancer, # Third variable on the X-axis
+#                                axis4 = `p53 Domain`, # Fourth variable on the X-axis
+#                                axis5 = Mutation,   # Fifth variable on the X-axis
+#                                y = Proportion)) +
+#   geom_alluvium(aes(fill = Cancer),
+#                 aes.bind = "alluvia") +
+#   geom_stratum(alpha = 0.2) +     # makes strata somewhat transparent so can see colors feeding into them
+#   geom_text(stat = "stratum",
+#             aes(label = after_stat(stratum)),
+#             min.y = 0.1,
+#             size = 5) + # so that very small categories are not labeled which are getting too tight to see
+#   ggtitle("# muts/# total muts, ≥ 1% proportion") +
+#   scale_x_continuous(breaks = 1:5, 
+#                      labels = c("Germ Layer", "Tissue", "Cancer", "p53 Domain", "Mutation"),
+#                      expand = c(0,0)) +
+#   scale_fill_manual(values = alluvial_colors) +
+#   theme_classic() + 
+#   scale_y_continuous(expand = c(0,0)) +
+#   theme(plot.title = element_text(hjust = 0.5,
+#                                   face = "bold",
+#                                   size = 16),
+#         axis.text = element_text(color = "black",
+#                                  size = 14,
+#                                  face = "bold"),
+#         axis.text.y = element_blank(),
+#         axis.title.y = element_blank(),
+#         axis.line = element_blank(),
+#         axis.ticks = element_blank(),
+#         legend.title = element_text(face = "bold",
+#                                     size = 14,
+#                                     color = "black"),
+#         legend.text = element_text(size = 14,
+#                                    color = "black"))
+# alluvialplot_pos
+# 
+# # save plot
+# save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_pos.svg", 
+#           alluvialplot_pos, 
+#           base_width = 36, 
+#           base_height = 12)
+# 
+# # draw alluvial plots with germ layer as coloring
+# alluvialplot_type_side <- ggplot(data = alluvial_type,
+#                                  aes(axis1 = `Germ Layer`,   # First variable on the X-axis
+#                                      axis2 = Tissue, # Second variable on the X-axis
+#                                      axis3 = Cancer, # Third variable on the X-axis
+#                                      axis4 = `Mutation Type`,   # Fourth variable on the X-axis
+#                                      y = Proportion)) +
+#   geom_alluvium(aes(fill = `Germ Layer`),
+#                 aes.bind = "alluvia") +
+#   geom_stratum(alpha = 0.2) +     # makes strata somewhat transparent so can see colors feeding into them
+#   geom_text(stat = "stratum",
+#             aes(label = after_stat(stratum)),
+#             min.y = 0.35,
+#             size = 5) + # so that very small categories are not labeled which are getting too tight to see
+#   ggtitle(paste0("# muts/# total muts (n = ",
+#                  format(with(pivotdf, 
+#                              sum(Total[Total >= 100 & Total <= pivotdf[1, ncol(pivotdf)]])), 
+#                         big.mark = ",",
+#                         trim = TRUE),
+#                  " muts)")) +
+#   scale_x_continuous(breaks = 1:4, 
+#                      labels = c("Germ Layer", "Tissue", "Cancer", "Mutation Type"),
+#                      expand = c(0,0)) +
+#   scale_fill_manual(values = annotationcolornamed_barchart[["Germ_Layer"]]) +
+#   theme_classic() + 
+#   scale_y_continuous(expand = c(0,0)) +
+#   theme(plot.title = element_text(hjust = 0.5,
+#                                   face = "bold",
+#                                   size = 16),
+#         axis.text = element_text(color = "black",
+#                                  size = 14,
+#                                  face = "bold"),
+#         axis.text.y = element_blank(),
+#         axis.title.y = element_blank(),
+#         axis.line = element_blank(),
+#         axis.ticks = element_blank(),
+#         legend.title = element_text(face = "bold",
+#                                     size = 14,
+#                                     color = "black"),
+#         legend.text = element_text(size = 14,
+#                                    color = "black"))
+# alluvialplot_type_side
+# 
+# # save plot
+# save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_type_side.svg", 
+#           alluvialplot_type_side, 
+#           base_width = 24, 
+#           base_height = 12)
+# 
+# alluvialplot_pos_side <- ggplot(data = alluvial_pos,
+#                                 aes(axis1 = `Germ Layer`,   # First variable on the X-axis
+#                                     axis2 = Tissue, # Second variable on the X-axis
+#                                     axis3 = Cancer, # Third variable on the X-axis
+#                                     axis4 = `p53 Domain`, # Fourth variable on the X-axis
+#                                     axis5 = Mutation,   # Fifth variable on the X-axis
+#                                     y = Proportion)) +
+#   geom_alluvium(aes(fill = `Germ Layer`),
+#                 aes.bind = "alluvia") +
+#   geom_stratum(alpha = 0.2) +     # makes strata somewhat transparent so can see colors feeding into them
+#   geom_text(stat = "stratum",
+#             aes(label = after_stat(stratum)),
+#             min.y = 0.1,
+#             size = 5) + # so that very small categories are not labeled which are getting too tight to see
+#   ggtitle("# muts/# total muts, ≥ 1% proportion") +
+#   scale_x_continuous(breaks = 1:5, 
+#                      labels = c("Germ Layer", "Tissue", "Cancer", "p53 Domain", "Mutation"),
+#                      expand = c(0,0)) +
+#   scale_fill_manual(values = annotationcolornamed_totalmuts[["Germ_Layer"]]) +
+#   theme_classic() + 
+#   scale_y_continuous(expand = c(0,0)) +
+#   theme(plot.title = element_text(hjust = 0.5,
+#                                   face = "bold",
+#                                   size = 16),
+#         axis.text = element_text(color = "black",
+#                                  size = 14,
+#                                  face = "bold"),
+#         axis.text.y = element_blank(),
+#         axis.title.y = element_blank(),
+#         axis.line = element_blank(),
+#         axis.ticks = element_blank(),
+#         legend.title = element_text(face = "bold",
+#                                     size = 14,
+#                                     color = "black"),
+#         legend.text = element_text(size = 14,
+#                                    color = "black"))
+# alluvialplot_pos_side
+# 
+# # save plot
+# save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_pos_side.svg", 
+#           alluvialplot_pos_side, 
+#           base_width = 30, 
+#           base_height = 12)
+# 
+# # draw alluvial plots with tissue as coloring
+# alluvialplot_type_side2 <- ggplot(data = alluvial_type,
+#                                   aes(axis1 = `Germ Layer`,   # First variable on the X-axis
+#                                       axis2 = Tissue, # Second variable on the X-axis
+#                                       axis3 = Cancer, # Third variable on the X-axis
+#                                       axis4 = `Mutation Type`,   # Fourth variable on the X-axis
+#                                       y = Proportion)) +
+#   geom_alluvium(aes(fill = Tissue),
+#                 aes.bind = "alluvia") +
+#   geom_stratum(alpha = 0.2) +     # makes strata somewhat transparent so can see colors feeding into them
+#   geom_text(stat = "stratum",
+#             aes(label = after_stat(stratum)),
+#             min.y = 0.35,
+#             size = 5) + # so that very small categories are not labeled which are getting too tight to see
+#   ggtitle(paste0("# muts/# total muts (n = ",
+#                  format(with(pivotdf, 
+#                              sum(Total[Total >= 100 & Total <= pivotdf[1, ncol(pivotdf)]])), 
+#                         big.mark = ",",
+#                         trim = TRUE),
+#                  " muts)")) +
+#   scale_x_continuous(breaks = 1:4, 
+#                      labels = c("Germ Layer", "Tissue", "Cancer", "Mutation Type"),
+#                      expand = c(0,0)) +
+#   scale_fill_manual(values = annotationcolornamed_barchart[["Tissue"]]) +
+#   theme_classic() + 
+#   scale_y_continuous(expand = c(0,0)) +
+#   theme(plot.title = element_text(hjust = 0.5,
+#                                   face = "bold",
+#                                   size = 16),
+#         axis.text = element_text(color = "black",
+#                                  size = 14,
+#                                  face = "bold"),
+#         axis.text.y = element_blank(),
+#         axis.title.y = element_blank(),
+#         axis.line = element_blank(),
+#         axis.ticks = element_blank(),
+#         legend.title = element_text(face = "bold",
+#                                     size = 14,
+#                                     color = "black"),
+#         legend.text = element_text(size = 14,
+#                                    color = "black"))
+# alluvialplot_type_side2
+# 
+# # save plot
+# save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_type_side2.svg", 
+#           alluvialplot_type_side2, 
+#           base_width = 24, 
+#           base_height = 12)
+# 
+# alluvialplot_pos_side2 <- ggplot(data = alluvial_pos,
+#                                  aes(axis1 = `Germ Layer`,   # First variable on the X-axis
+#                                      axis2 = Tissue, # Second variable on the X-axis
+#                                      axis3 = Cancer, # Third variable on the X-axis
+#                                      axis4 = `p53 Domain`, # Fourth variable on the X-axis
+#                                      axis5 = Mutation,   # Fifth variable on the X-axis
+#                                      y = Proportion)) +
+#   geom_alluvium(aes(fill = Tissue),
+#                 aes.bind = "alluvia") +
+#   geom_stratum(alpha = 0.2) +     # makes strata somewhat transparent so can see colors feeding into them
+#   geom_text(stat = "stratum",
+#             aes(label = after_stat(stratum)),
+#             min.y = 0.1,
+#             size = 5) + # so that very small categories are not labeled which are getting too tight to see
+#   ggtitle("# muts/# total muts, ≥ 1% proportion") +
+#   scale_x_continuous(breaks = 1:5, 
+#                      labels = c("Germ Layer", "Tissue", "Cancer", "p53 Domain", "Mutation"),
+#                      expand = c(0,0)) +
+#   scale_fill_manual(values = annotationcolornamed_totalmuts[["Tissue"]]) +
+#   theme_classic() + 
+#   scale_y_continuous(expand = c(0,0)) +
+#   theme(plot.title = element_text(hjust = 0.5,
+#                                   face = "bold",
+#                                   size = 16),
+#         axis.text = element_text(color = "black",
+#                                  size = 14,
+#                                  face = "bold"),
+#         axis.text.y = element_blank(),
+#         axis.title.y = element_blank(),
+#         axis.line = element_blank(),
+#         axis.ticks = element_blank(),
+#         legend.title = element_text(face = "bold",
+#                                     size = 14,
+#                                     color = "black"),
+#         legend.text = element_text(size = 14,
+#                                    color = "black"))
+# alluvialplot_pos_side2
+# 
+# # save plot
+# save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_pos_side2.svg", 
+#           alluvialplot_pos_side2, 
+#           base_width = 30, 
+#           base_height = 12)
+# 
+# # # draw alluvial plots with tissue as coloring
+# # alluvialplot_age <- ggplot(data = alluvial_age,
+# #                            aes(axis1 = Age,   # First variable on the X-axis
+# #                                axis2 = Cancer, # Second variable on the X-axis
+# #                                axis3 = `Germ Layer`, # Third variable on the X-axis
+# #                                axis4 = Tissue,   # Fourth variable on the X-axis
+# #                                y = Proportion)) +
+# #   geom_alluvium(aes(fill = Tissue),
+# #                 aes.bind = "alluvia") +
+# #   geom_stratum(alpha = 0.2) +     # makes strata somewhat transparent so can see colors feeding into them
+# #   geom_text(stat = "stratum",
+# #             aes(label = after_stat(stratum)),
+# #             min.y = 0.05,
+# #             size = 5) + # so that very small categories are not labeled which are getting too tight to see
+# #   ggtitle("# muts/# total muts") +
+# #   scale_x_continuous(breaks = 1:4, 
+# #                      labels = c("Age", "Cancer", "Germ Layer", "Tissue"),
+# #                      expand = c(0,0)) +
+# #   scale_fill_manual(values = annotationcolornamed_totalmuts[["Tissue"]]) +
+# #   theme_classic() + 
+# #   scale_y_continuous(expand = c(0,0)) +
+# #   theme(plot.title = element_text(hjust = 0.5,
+# #                                   face = "bold",
+# #                                   size = 16),
+# #         axis.text = element_text(color = "black",
+# #                                  size = 14,
+# #                                  face = "bold"),
+# #         axis.text.y = element_blank(),
+# #         axis.title.y = element_blank(),
+# #         axis.line = element_blank(),
+# #         axis.ticks = element_blank(),
+# #         legend.title = element_text(face = "bold",
+# #                                     size = 14,
+# #                                     color = "black"),
+# #         legend.text = element_text(size = 14,
+# #                                    color = "black"))
+# # alluvialplot_age
+# # 
+# # # save plot
+# # save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_age.svg", 
+# #           alluvialplot_age, 
+# #           base_width = 17, 
+# #           base_height = 12)
+# 
+# # # draw alluvial plots with germ layer as coloring
+# # alluvialplot_age_side <- ggplot(data = alluvial_age,
+# #                                 aes(axis1 = Age,   # First variable on the X-axis
+# #                                     axis2 = Cancer, # Second variable on the X-axis
+# #                                     axis3 = `Germ Layer`, # Third variable on the X-axis
+# #                                     axis4 = Tissue,   # Fourth variable on the X-axis
+# #                                     y = Proportion)) +
+# #   geom_alluvium(aes(fill = `Germ Layer`),
+# #                 aes.bind = "alluvia") +
+# #   geom_stratum(alpha = 0.2) +     # makes strata somewhat transparent so can see colors feeding into them
+# #   geom_text(stat = "stratum",
+# #             aes(label = after_stat(stratum)),
+# #             min.y = 0.05,
+# #             size = 5) + # so that very small categories are not labeled which are getting too tight to see
+# #   ggtitle("# muts/# total muts") +
+# #   scale_x_continuous(breaks = 1:4, 
+# #                      labels = c("Age", "Cancer", "Germ Layer", "Tissue"),
+# #                      expand = c(0,0)) +
+# #   scale_fill_manual(values = annotationcolornamedage[["Germ_Layer"]]) +
+# #   theme_classic() + 
+# #   scale_y_continuous(expand = c(0,0)) +
+# #   theme(plot.title = element_text(hjust = 0.5,
+# #                                   face = "bold",
+# #                                   size = 16),
+# #         axis.text = element_text(color = "black",
+# #                                  size = 14,
+# #                                  face = "bold"),
+# #         axis.text.y = element_blank(),
+# #         axis.title.y = element_blank(),
+# #         axis.line = element_blank(),
+# #         axis.ticks = element_blank(),
+# #         legend.title = element_text(face = "bold",
+# #                                     size = 14,
+# #                                     color = "black"),
+# #         legend.text = element_text(size = 14,
+# #                                    color = "black"))
+# # alluvialplot_age_side
+# # 
+# # # save plot
+# # save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_age_side.svg", 
+# #           alluvialplot_age_side, 
+# #           base_width = 17, 
+# #           base_height = 12)
+# 
+# # # draw alluvial plots with age as coloring
+# # alluvialplot_age_side2 <- ggplot(data = alluvial_age,
+# #                                  aes(axis1 = Age,   # First variable on the X-axis
+# #                                      axis2 = Cancer, # Second variable on the X-axis
+# #                                      axis3 = `Germ Layer`, # Third variable on the X-axis
+# #                                      axis4 = Tissue,   # Fourth variable on the X-axis
+# #                                      y = Proportion)) +
+# #   geom_alluvium(aes(fill = Age),
+# #                 aes.bind = "alluvia") +
+# #   geom_stratum(alpha = 0.2) +     # makes strata somewhat transparent so can see colors feeding into them
+# #   geom_text(stat = "stratum",
+# #             aes(label = after_stat(stratum)),
+# #             min.y = 0.05,
+# #             size = 5) + # so that very small categories are not labeled which are getting too tight to see
+# #   ggtitle("# muts/# total muts") +
+# #   scale_x_continuous(breaks = 1:4, 
+# #                      labels = c("Age", "Cancer", "Germ Layer", "Tissue"),
+# #                      expand = c(0,0)) +
+# #   theme_classic() + 
+# #   scale_y_continuous(expand = c(0,0)) +
+# #   theme(plot.title = element_text(hjust = 0.5,
+# #                                   face = "bold",
+# #                                   size = 16),
+# #         axis.text = element_text(color = "black",
+# #                                  size = 14,
+# #                                  face = "bold"),
+# #         axis.text.y = element_blank(),
+# #         axis.title.y = element_blank(),
+# #         axis.line = element_blank(),
+# #         axis.ticks = element_blank(),
+# #         legend.title = element_text(face = "bold",
+# #                                     size = 14,
+# #                                     color = "black"),
+# #         legend.text = element_text(size = 14,
+# #                                    color = "black"))
+# # alluvialplot_age_side2
+# # 
+# # # save plot
+# # save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_age_side2.svg", 
+# #           alluvialplot_age_side2, 
+# #           base_width = 17, 
+# #           base_height = 12)
+# 
+# # # draw alluvial plots with cancer as coloring
+# # alluvialplot_age_side3 <- ggplot(data = alluvial_age,
+# #                                  aes(axis1 = Age,   # First variable on the X-axis
+# #                                      axis2 = Cancer, # Second variable on the X-axis
+# #                                      axis3 = `Germ Layer`, # Third variable on the X-axis
+# #                                      axis4 = Tissue,   # Fourth variable on the X-axis
+# #                                      y = Proportion)) +
+# #   geom_alluvium(aes(fill = Cancer),
+# #                 aes.bind = "alluvia") +
+# #   geom_stratum(alpha = 0.2) +     # makes strata somewhat transparent so can see colors feeding into them
+# #   geom_text(stat = "stratum",
+# #             aes(label = after_stat(stratum)),
+# #             min.y = 0.05,
+# #             size = 5) + # so that very small categories are not labeled which are getting too tight to see
+# #   ggtitle("# muts/# total muts") +
+# #   scale_x_continuous(breaks = 1:4, 
+# #                      labels = c("Age", "Cancer", "Germ Layer", "Tissue"),
+# #                      expand = c(0,0)) +
+# #   theme_classic() + 
+# #   scale_y_continuous(expand = c(0,0)) +
+# #   scale_fill_manual(values = alluvial_colors) +
+# #   theme(plot.title = element_text(hjust = 0.5,
+# #                                   face = "bold",
+# #                                   size = 16),
+# #         axis.text = element_text(color = "black",
+# #                                  size = 14,
+# #                                  face = "bold"),
+# #         axis.text.y = element_blank(),
+# #         axis.title.y = element_blank(),
+# #         axis.line = element_blank(),
+# #         axis.ticks = element_blank(),
+# #         legend.title = element_text(face = "bold",
+# #                                     size = 14,
+# #                                     color = "black"),
+# #         legend.text = element_text(size = 14,
+# #                                    color = "black"))
+# # alluvialplot_age_side3
+# # 
+# # # save plot
+# # save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_age_side3.svg", 
+# #           alluvialplot_age_side3, 
+# #           base_width = 27, 
+# #           base_height = 12)
+# 
+# # # draw alluvial plots with age as coloring
+# # alluvialplot_pos_age <- ggplot(data = alluvial_age_pos,
+# #                                aes(axis1 = Age,   # First variable on the X-axis
+# #                                    axis2 = Type, # Second variable on the X-axis
+# #                                    axis3 = `p53 Domain`, # Third variable on the X-axis
+# #                                    axis4 = Mutation,   # Fourth variable on the X-axis
+# #                                    y = Proportion)) +
+# #   geom_alluvium(aes(fill = Age),
+# #                 aes.bind = "alluvia") +
+# #   geom_stratum(alpha = 0.2) +     # makes strata somewhat transparent so can see colors feeding into them
+# #   geom_text(stat = "stratum",
+# #             aes(label = after_stat(stratum)),
+# #             min.y = 0.02,
+# #             size = 5) + # so that very small categories are not labeled which are getting too tight to see
+# #   ggtitle("# muts/# total muts, ≥ 1% proportion") +
+# #   scale_x_continuous(breaks = 1:4, 
+# #                      labels = c("Age", "Mutation Type", "p53 Domain", "Mutation"),
+# #                      expand = c(0,0)) +
+# #   theme_classic() + 
+# #   scale_y_continuous(expand = c(0,0)) +
+# #   theme(plot.title = element_text(hjust = 0.5,
+# #                                   face = "bold",
+# #                                   size = 16),
+# #         axis.text = element_text(color = "black",
+# #                                  size = 14,
+# #                                  face = "bold"),
+# #         axis.text.y = element_blank(),
+# #         axis.title.y = element_blank(),
+# #         axis.line = element_blank(),
+# #         axis.ticks = element_blank(),
+# #         legend.title = element_text(face = "bold",
+# #                                     size = 14,
+# #                                     color = "black"),
+# #         legend.text = element_text(size = 14,
+# #                                    color = "black"))
+# # alluvialplot_pos_age
+# # 
+# # # save plot
+# # save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_pos_age.svg", 
+# #           alluvialplot_pos_age, 
+# #           base_width = 15, 
+# #           base_height = 12)
+# 
+# # # draw alluvial plots with domain as coloring
+# # alluvialplot_pos_age_side <- ggplot(data = alluvial_age_pos,
+# #                                     aes(axis1 = Age,   # First variable on the X-axis
+# #                                         axis2 = Type, # Second variable on the X-axis
+# #                                         axis3 = `p53 Domain`, # Third variable on the X-axis
+# #                                         axis4 = Mutation,   # Fourth variable on the X-axis
+# #                                         y = Proportion)) +
+# #   geom_alluvium(aes(fill = `p53 Domain`),
+# #                 aes.bind = "alluvia") +
+# #   geom_stratum(alpha = 0.2) +     # makes strata somewhat transparent so can see colors feeding into them
+# #   geom_text(stat = "stratum",
+# #             aes(label = after_stat(stratum)),
+# #             min.y = 0.02,
+# #             size = 5) + # so that very small categories are not labeled which are getting too tight to see
+# #   ggtitle("# muts/# total muts, ≥ 1% proportion") +
+# #   scale_x_continuous(breaks = 1:4, 
+# #                      labels = c("Age", "Mutation Type", "p53 Domain", "Mutation"),
+# #                      expand = c(0,0)) +
+# #   theme_classic() + 
+# #   scale_y_continuous(expand = c(0,0)) +
+# #   theme(plot.title = element_text(hjust = 0.5,
+# #                                   face = "bold",
+# #                                   size = 16),
+# #         axis.text = element_text(color = "black",
+# #                                  size = 14,
+# #                                  face = "bold"),
+# #         axis.text.y = element_blank(),
+# #         axis.title.y = element_blank(),
+# #         axis.line = element_blank(),
+# #         axis.ticks = element_blank(),
+# #         legend.title = element_text(face = "bold",
+# #                                     size = 14,
+# #                                     color = "black"),
+# #         legend.text = element_text(size = 14,
+# #                                    color = "black"))
+# # alluvialplot_pos_age_side
+# # 
+# # # save plot
+# # save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_pos_age_side.svg", 
+# #           alluvialplot_pos_age_side, 
+# #           base_width = 15, 
+# #           base_height = 12)
+# 
+# # draw alluvial plots with tissue as coloring
+# alluvialplot_sex <- ggplot(data = alluvial_sex,
+#                            aes(axis1 = SEX,   # First variable on the X-axis
+#                                axis2 = Cancer, # Second variable on the X-axis
+#                                axis3 = `Germ Layer`, # Third variable on the X-axis
+#                                axis4 = Tissue,   # Fourth variable on the X-axis
+#                                y = Proportion)) +
+#   geom_alluvium(aes(fill = Tissue),
+#                 aes.bind = "alluvia") +
+#   geom_stratum(alpha = 0.2) +     # makes strata somewhat transparent so can see colors feeding into them
+#   geom_text(stat = "stratum",
+#             aes(label = after_stat(stratum)),
+#             min.y = 0.01,
+#             size = 5) + # so that very small categories are not labeled which are getting too tight to see
+#   ggtitle(paste0("# muts/# total muts (n = ",
+#                  format(with(pivotsex, 
+#                              sum(Total[Total >= 100 & Total <= pivotsex[1, ncol(pivotsex)]])), 
+#                         big.mark = ",",
+#                         trim = TRUE),
+#                  " muts)")) +
+#   scale_x_continuous(breaks = 1:4, 
+#                      labels = c("Sex", "Cancer", "Germ Layer", "Tissue"),
+#                      expand = c(0,0)) +
+#   scale_fill_manual(values = annotationcolornamed_totalmuts[["Tissue"]]) +
+#   theme_classic() + 
+#   scale_y_continuous(expand = c(0,0)) +
+#   theme(plot.title = element_text(hjust = 0.5,
+#                                   face = "bold",
+#                                   size = 16),
+#         axis.text = element_text(color = "black",
+#                                  size = 14,
+#                                  face = "bold"),
+#         axis.text.y = element_blank(),
+#         axis.title.y = element_blank(),
+#         axis.line = element_blank(),
+#         axis.ticks = element_blank(),
+#         legend.title = element_text(face = "bold",
+#                                     size = 14,
+#                                     color = "black"),
+#         legend.text = element_text(size = 14,
+#                                    color = "black"))
+# alluvialplot_sex
+# 
+# # save plot
+# save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_sex.svg", 
+#           alluvialplot_sex, 
+#           base_width = 18, 
+#           base_height = 12)
+# 
+# # draw alluvial plots with germ layer as coloring
+# alluvialplot_sex_side <- ggplot(data = alluvial_sex,
+#                                 aes(axis1 = SEX,   # First variable on the X-axis
+#                                     axis2 = Cancer, # Second variable on the X-axis
+#                                     axis3 = `Germ Layer`, # Third variable on the X-axis
+#                                     axis4 = Tissue,   # Fourth variable on the X-axis
+#                                     y = Proportion)) +
+#   geom_alluvium(aes(fill = `Germ Layer`),
+#                 aes.bind = "alluvia") +
+#   geom_stratum(alpha = 0.2) +     # makes strata somewhat transparent so can see colors feeding into them
+#   geom_text(stat = "stratum",
+#             aes(label = after_stat(stratum)),
+#             min.y = 0.01,
+#             size = 5) + # so that very small categories are not labeled which are getting too tight to see
+#   ggtitle(paste0("# muts/# total muts (n = ",
+#                  format(with(pivotsex, 
+#                              sum(Total[Total >= 100 & Total <= pivotsex[1, ncol(pivotsex)]])), 
+#                         big.mark = ",",
+#                         trim = TRUE),
+#                  " muts)")) +
+#   scale_x_continuous(breaks = 1:4, 
+#                      labels = c("Sex", "Cancer", "Germ Layer", "Tissue"),
+#                      expand = c(0,0)) +
+#   scale_fill_manual(values = annotationcolornamedsex[["Germ_Layer"]]) +
+#   theme_classic() + 
+#   scale_y_continuous(expand = c(0,0)) +
+#   theme(plot.title = element_text(hjust = 0.5,
+#                                   face = "bold",
+#                                   size = 16),
+#         axis.text = element_text(color = "black",
+#                                  size = 14,
+#                                  face = "bold"),
+#         axis.text.y = element_blank(),
+#         axis.title.y = element_blank(),
+#         axis.line = element_blank(),
+#         axis.ticks = element_blank(),
+#         legend.title = element_text(face = "bold",
+#                                     size = 14,
+#                                     color = "black"),
+#         legend.text = element_text(size = 14,
+#                                    color = "black"))
+# alluvialplot_sex_side
+# 
+# # save plot
+# save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_sex_side.svg", 
+#           alluvialplot_sex_side, 
+#           base_width = 18, 
+#           base_height = 12)
+# 
+# # draw alluvial plots with sex as coloring
+# alluvialplot_sex_side2 <- ggplot(data = alluvial_sex,
+#                                  aes(axis1 = SEX,   # First variable on the X-axis
+#                                      axis2 = Cancer, # Second variable on the X-axis
+#                                      axis3 = `Germ Layer`, # Third variable on the X-axis
+#                                      axis4 = Tissue,   # Fourth variable on the X-axis
+#                                      y = Proportion)) +
+#   geom_alluvium(aes(fill = SEX),
+#                 aes.bind = "alluvia") +
+#   geom_stratum(alpha = 0.2) +     # makes strata somewhat transparent so can see colors feeding into them
+#   geom_text(stat = "stratum",
+#             aes(label = after_stat(stratum)),
+#             min.y = 0.01,
+#             size = 5) + # so that very small categories are not labeled which are getting too tight to see
+#   ggtitle(paste0("# muts/# total muts (n = ",
+#                  format(with(pivotsex, 
+#                              sum(Total[Total >= 100 & Total <= pivotsex[1, ncol(pivotsex)]])), 
+#                         big.mark = ",",
+#                         trim = TRUE),
+#                  " muts)")) +
+#   labs(fill = "Sex") +
+#   scale_x_continuous(breaks = 1:4, 
+#                      labels = c("Sex", "Cancer", "Germ Layer", "Tissue"),
+#                      expand = c(0,0)) +
+#   theme_classic() + 
+#   scale_y_continuous(expand = c(0,0)) +
+#   theme(plot.title = element_text(hjust = 0.5,
+#                                   face = "bold",
+#                                   size = 16),
+#         axis.text = element_text(color = "black",
+#                                  size = 14,
+#                                  face = "bold"),
+#         axis.text.y = element_blank(),
+#         axis.title.y = element_blank(),
+#         axis.line = element_blank(),
+#         axis.ticks = element_blank(),
+#         legend.title = element_text(face = "bold",
+#                                     size = 14,
+#                                     color = "black"),
+#         legend.text = element_text(size = 14,
+#                                    color = "black"))
+# alluvialplot_sex_side2
+# 
+# # save plot
+# save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_sex_side2.svg", 
+#           alluvialplot_sex_side2, 
+#           base_width = 18, 
+#           base_height = 12)
+# 
+# # draw alluvial plots with cancer as coloring
+# alluvialplot_sex_side3 <- ggplot(data = alluvial_sex,
+#                                  aes(axis1 = SEX,   # First variable on the X-axis
+#                                      axis2 = Cancer, # Second variable on the X-axis
+#                                      axis3 = `Germ Layer`, # Third variable on the X-axis
+#                                      axis4 = Tissue,   # Fourth variable on the X-axis
+#                                      y = Proportion)) +
+#   geom_alluvium(aes(fill = Cancer),
+#                 aes.bind = "alluvia") +
+#   geom_stratum(alpha = 0.2) +     # makes strata somewhat transparent so can see colors feeding into them
+#   geom_text(stat = "stratum",
+#             aes(label = after_stat(stratum)),
+#             min.y = 0.01,
+#             size = 5) + # so that very small categories are not labeled which are getting too tight to see
+#   ggtitle(paste0("# muts/# total muts (n = ",
+#                  format(with(pivotsex, 
+#                              sum(Total[Total >= 100 & Total <= pivotsex[1, ncol(pivotsex)]])), 
+#                         big.mark = ",",
+#                         trim = TRUE),
+#                  " muts)")) +
+#   scale_x_continuous(breaks = 1:4, 
+#                      labels = c("Sex", "Cancer", "Germ Layer", "Tissue"),
+#                      expand = c(0,0)) +
+#   theme_classic() + 
+#   scale_y_continuous(expand = c(0,0)) +
+#   scale_fill_manual(values = alluvial_colors) +
+#   theme(plot.title = element_text(hjust = 0.5,
+#                                   face = "bold",
+#                                   size = 16),
+#         axis.text = element_text(color = "black",
+#                                  size = 14,
+#                                  face = "bold"),
+#         axis.text.y = element_blank(),
+#         axis.title.y = element_blank(),
+#         axis.line = element_blank(),
+#         axis.ticks = element_blank(),
+#         legend.title = element_text(face = "bold",
+#                                     size = 14,
+#                                     color = "black"),
+#         legend.text = element_text(size = 14,
+#                                    color = "black"))
+# alluvialplot_sex_side3
+# 
+# # save plot
+# save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_sex_side3.svg", 
+#           alluvialplot_sex_side3, 
+#           base_width = 28, 
+#           base_height = 12)
+# 
+# # draw alluvial plots with sex as coloring
+# alluvialplot_pos_sex <- ggplot(data = alluvial_sex_pos,
+#                                aes(axis1 = SEX,   # First variable on the X-axis
+#                                    axis2 = Type, # Second variable on the X-axis
+#                                    axis3 = `p53 Domain`, # Third variable on the X-axis
+#                                    axis4 = Mutation,   # Fourth variable on the X-axis
+#                                    y = Proportion)) +
+#   geom_alluvium(aes(fill = SEX),
+#                 aes.bind = "alluvia") +
+#   geom_stratum(alpha = 0.2) +     # makes strata somewhat transparent so can see colors feeding into them
+#   geom_text(stat = "stratum",
+#             aes(label = after_stat(stratum)),
+#             min.y = 0.01,
+#             size = 5) + # so that very small categories are not labeled which are getting too tight to see
+#   ggtitle("# muts/# total muts, ≥ 1% proportion") +
+#   labs(fill = "Sex") +
+#   scale_x_continuous(breaks = 1:4, 
+#                      labels = c("Sex", "Mutation Type", "p53 Domain", "Mutation"),
+#                      expand = c(0,0)) +
+#   theme_classic() + 
+#   scale_y_continuous(expand = c(0,0)) +
+#   theme(plot.title = element_text(hjust = 0.5,
+#                                   face = "bold",
+#                                   size = 16),
+#         axis.text = element_text(color = "black",
+#                                  size = 14,
+#                                  face = "bold"),
+#         axis.text.y = element_blank(),
+#         axis.title.y = element_blank(),
+#         axis.line = element_blank(),
+#         axis.ticks = element_blank(),
+#         legend.title = element_text(face = "bold",
+#                                     size = 14,
+#                                     color = "black"),
+#         legend.text = element_text(size = 14,
+#                                    color = "black"))
+# alluvialplot_pos_sex
+# 
+# # save plot
+# save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_pos_sex.svg", 
+#           alluvialplot_pos_sex, 
+#           base_width = 17, 
+#           base_height = 12)
+# 
+# # draw alluvial plots with domain as coloring
+# alluvialplot_pos_sex_side <- ggplot(data = alluvial_sex_pos,
+#                                     aes(axis1 = SEX,   # First variable on the X-axis
+#                                         axis2 = Type, # Second variable on the X-axis
+#                                         axis3 = `p53 Domain`, # Third variable on the X-axis
+#                                         axis4 = Mutation,   # Fourth variable on the X-axis
+#                                         y = Proportion)) +
+#   geom_alluvium(aes(fill = `p53 Domain`),
+#                 aes.bind = "alluvia") +
+#   geom_stratum(alpha = 0.2) +     # makes strata somewhat transparent so can see colors feeding into them
+#   geom_text(stat = "stratum",
+#             aes(label = after_stat(stratum)),
+#             min.y = 0.01,
+#             size = 5) + # so that very small categories are not labeled which are getting too tight to see
+#   ggtitle("# muts/# total muts, ≥ 1% proportion") +
+#   scale_x_continuous(breaks = 1:4, 
+#                      labels = c("Sex", "Mutation Type", "p53 Domain", "Mutation"),
+#                      expand = c(0,0)) +
+#   theme_classic() + 
+#   scale_y_continuous(expand = c(0,0)) +
+#   theme(plot.title = element_text(hjust = 0.5,
+#                                   face = "bold",
+#                                   size = 16),
+#         axis.text = element_text(color = "black",
+#                                  size = 14,
+#                                  face = "bold"),
+#         axis.text.y = element_blank(),
+#         axis.title.y = element_blank(),
+#         axis.line = element_blank(),
+#         axis.ticks = element_blank(),
+#         legend.title = element_text(face = "bold",
+#                                     size = 14,
+#                                     color = "black"),
+#         legend.text = element_text(size = 14,
+#                                    color = "black"))
+# alluvialplot_pos_sex_side
+# 
+# # save plot
+# save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_pos_sex_side.svg", 
+#           alluvialplot_pos_sex_side, 
+#           base_width = 17, 
+#           base_height = 12)
+
+# # draw flipped alluvial plots
+# alluvialplot_type_horiz <- alluvialplot_type +
+#   coord_flip() + 
+#   scale_y_reverse() +
+#   theme(axis.text.x = element_blank(),
+#         axis.title.x = element_blank())
+# alluvialplot_type_horiz
+# 
+# # save plot
+# save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_type_horiz.svg", 
+#           alluvialplot_type_horiz, 
+#           base_width = 18, 
+#           base_height = 10)
+# 
+# alluvialplot_pos_horiz <- alluvialplot_pos +
+#   coord_flip() + 
+#   scale_y_reverse() +
+#   theme(axis.text.x = element_blank(),
+#         axis.title.x = element_blank())
+# alluvialplot_pos_horiz
+# 
+# # save plot
+# save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_pos_horiz.svg", 
+#           alluvialplot_pos_horiz, 
+#           base_width = 18, 
+#           base_height = 10)
+# 
+# alluvialplot_type_horiz_side <- alluvialplot_type_side +
+#   coord_flip() + 
+#   scale_y_reverse() +
+#   theme(axis.text.x = element_blank(),
+#         axis.title.x = element_blank())
+# alluvialplot_type_horiz_side
+# 
+# # save plot
+# save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_type_horiz_side.svg", 
+#           alluvialplot_type_horiz_side, 
+#           base_width = 18, 
+#           base_height = 10)
+# 
+# alluvialplot_pos_horiz_side <- alluvialplot_pos_side +
+#   coord_flip() + 
+#   scale_y_reverse() +
+#   theme(axis.text.x = element_blank(),
+#         axis.title.x = element_blank())
+# alluvialplot_pos_horiz_side
+# 
+# # save plot
+# save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_pos_horiz_side.svg", 
+#           alluvialplot_pos_horiz_side, 
+#           base_width = 18, 
+#           base_height = 10)
+# 
+# alluvialplot_type_horiz_side2 <- alluvialplot_type_side2 +
+#   coord_flip() + 
+#   scale_y_reverse() +
+#   theme(axis.text.x = element_blank(),
+#         axis.title.x = element_blank())
+# alluvialplot_type_horiz_side2
+# 
+# # save plot
+# save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_type_horiz_side2.svg", 
+#           alluvialplot_type_horiz_side2, 
+#           base_width = 18, 
+#           base_height = 10)
+# 
+# alluvialplot_pos_horiz_side2 <- alluvialplot_pos_side2 +
+#   coord_flip() + 
+#   scale_y_reverse() +
+#   theme(axis.text.x = element_blank(),
+#         axis.title.x = element_blank())
+# alluvialplot_pos_horiz_side2
+# 
+# # save plot
+# save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_pos_horiz_side2.svg", 
+#           alluvialplot_pos_horiz_side2, 
+#           base_width = 18, 
+#           base_height = 10)
+# 
+# # alluvialplot_age_horiz <- alluvialplot_age +
+# #   coord_flip() + 
+# #   scale_y_reverse() +
+# #   theme(axis.text.x = element_blank(),
+# #         axis.title.x = element_blank())
+# # alluvialplot_age_horiz
+# # 
+# # # save plot
+# # save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_age_horiz.svg", 
+# #           alluvialplot_age_horiz, 
+# #           base_width = 18, 
+# #           base_height = 10)
+# # 
+# # alluvialplot_age_side_horiz <- alluvialplot_age_side +
+# #   coord_flip() + 
+# #   scale_y_reverse() +
+# #   theme(axis.text.x = element_blank(),
+# #         axis.title.x = element_blank())
+# # alluvialplot_age_side_horiz
+# # 
+# # # save plot
+# # save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_age_side_horiz.svg", 
+# #           alluvialplot_age_side_horiz, 
+# #           base_width = 18, 
+# #           base_height = 10)
+# # 
+# # alluvialplot_age_side2_horiz <- alluvialplot_age_side2 +
+# #   coord_flip() + 
+# #   scale_y_reverse() +
+# #   theme(axis.text.x = element_blank(),
+# #         axis.title.x = element_blank())
+# # alluvialplot_age_side2_horiz
+# # 
+# # # save plot
+# # save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_age_side2_horiz.svg", 
+# #           alluvialplot_age_side2_horiz, 
+# #           base_width = 18, 
+# #           base_height = 10)
+# # 
+# # alluvialplot_age_side3_horiz <- alluvialplot_age_side3 +
+# #   coord_flip() + 
+# #   scale_y_reverse() +
+# #   theme(axis.text.x = element_blank(),
+# #         axis.title.x = element_blank())
+# # alluvialplot_age_side3_horiz
+# # 
+# # # save plot
+# # save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_age_side3_horiz.svg", 
+# #           alluvialplot_age_side3_horiz, 
+# #           base_width = 18, 
+# #           base_height = 10)
+# # 
+# # alluvialplot_pos_age_horiz <- alluvialplot_pos_age +
+# #   coord_flip() + 
+# #   scale_y_reverse() +
+# #   theme(axis.text.x = element_blank(),
+# #         axis.title.x = element_blank())
+# # alluvialplot_pos_age_horiz
+# # 
+# # # save plot
+# # save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_pos_age_horiz.svg", 
+# #           alluvialplot_pos_age_horiz, 
+# #           base_width = 18, 
+# #           base_height = 10)
+# # 
+# # alluvialplot_pos_age_side_horiz <- alluvialplot_pos_age_side +
+# #   coord_flip() + 
+# #   scale_y_reverse() +
+# #   theme(axis.text.x = element_blank(),
+# #         axis.title.x = element_blank())
+# # alluvialplot_pos_age_side_horiz
+# # 
+# # # save plot
+# # save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_pos_age_side_horiz.svg", 
+# #           alluvialplot_pos_age_side_horiz, 
+# #           base_width = 18, 
+# #           base_height = 10)
+# 
+# alluvialplot_sex_horiz <- alluvialplot_sex +
+#   coord_flip() + 
+#   scale_y_reverse() +
+#   theme(axis.text.x = element_blank(),
+#         axis.title.x = element_blank())
+# alluvialplot_sex_horiz
+# 
+# # save plot
+# save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_sex_horiz.svg", 
+#           alluvialplot_sex_horiz, 
+#           base_width = 18, 
+#           base_height = 10)
+# 
+# alluvialplot_sex_side_horiz <- alluvialplot_sex_side +
+#   coord_flip() + 
+#   scale_y_reverse() +
+#   theme(axis.text.x = element_blank(),
+#         axis.title.x = element_blank())
+# alluvialplot_sex_side_horiz
+# 
+# # save plot
+# save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_sex_side_horiz.svg", 
+#           alluvialplot_sex_side_horiz, 
+#           base_width = 18, 
+#           base_height = 10)
+# 
+# alluvialplot_sex_side2_horiz <- alluvialplot_sex_side2 +
+#   coord_flip() + 
+#   scale_y_reverse() +
+#   theme(axis.text.x = element_blank(),
+#         axis.title.x = element_blank())
+# alluvialplot_sex_side2_horiz
+# 
+# # save plot
+# save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_sex_side2_horiz.svg", 
+#           alluvialplot_sex_side2_horiz, 
+#           base_width = 18, 
+#           base_height = 10)
+# 
+# alluvialplot_sex_side3_horiz <- alluvialplot_sex_side3 +
+#   coord_flip() + 
+#   scale_y_reverse() +
+#   theme(axis.text.x = element_blank(),
+#         axis.title.x = element_blank())
+# alluvialplot_sex_side3_horiz
+# 
+# # save plot
+# save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_sex_side3_horiz.svg", 
+#           alluvialplot_sex_side3_horiz, 
+#           base_width = 18, 
+#           base_height = 10)
+# 
+# alluvialplot_pos_sex_horiz <- alluvialplot_pos_sex +
+#   coord_flip() + 
+#   scale_y_reverse() +
+#   theme(axis.text.x = element_blank(),
+#         axis.title.x = element_blank())
+# alluvialplot_pos_sex_horiz
+# 
+# # save plot
+# save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_pos_sex_horiz.svg", 
+#           alluvialplot_pos_sex_horiz, 
+#           base_width = 18, 
+#           base_height = 10)
+# 
+# alluvialplot_pos_sex_side_horiz <- alluvialplot_pos_sex_side +
+#   coord_flip() + 
+#   scale_y_reverse() +
+#   theme(axis.text.x = element_blank(),
+#         axis.title.x = element_blank())
+# alluvialplot_pos_sex_side_horiz
+# 
+# # save plot
+# save_plot(file = "C:/Users/nwali/Downloads/alluvialplot_pos_sex_side_horiz.svg", 
+#           alluvialplot_pos_sex_side_horiz, 
+#           base_width = 18, 
+#           base_height = 10)
+# 
+# 
