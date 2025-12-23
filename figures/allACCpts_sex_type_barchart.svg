@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' class='svglite' width='324.00pt' height='442.80pt' viewBox='0 0 324.00 442.80'>
+<defs>
+  <style type='text/css'><![CDATA[
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+    .svglite text {
+      white-space: pre;
+    }
+  ]]></style>
+</defs>
+<rect width='100%' height='100%' style='stroke: none; fill: #FFFFFF;'/>
+<defs>
+  <clipPath id='cpMC4wMHwzMjQuMDB8MC4wMHw0NDIuODA='>
+    <rect x='0.00' y='0.00' width='324.00' height='442.80' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMC4wMHwzMjQuMDB8MC4wMHw0NDIuODA=)'>
+<rect x='0.00' y='0.00' width='324.00' height='442.80' style='stroke-width: 1.07; stroke: #FFFFFF; fill: #FFFFFF;' />
+</g>
+<defs>
+  <clipPath id='cpNzQuMTB8MTcyLjU3fDYzLjU2fDMyNS4wNA=='>
+    <rect x='74.10' y='63.56' width='98.46' height='261.49' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpNzQuMTB8MTcyLjU3fDYzLjU2fDMyNS4wNA==)'>
+<rect x='74.10' y='63.56' width='98.46' height='261.49' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<rect x='74.10' y='63.56' width='46.64' height='140.80' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #F8766D;' />
+<rect x='125.93' y='63.56' width='46.64' height='104.59' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #F8766D;' />
+<rect x='125.93' y='168.15' width='46.64' height='52.30' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #C49A00;' />
+<rect x='74.10' y='204.36' width='46.64' height='40.23' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #53B400;' />
+<rect x='74.10' y='244.59' width='46.64' height='40.23' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #00C094;' />
+<rect x='74.10' y='284.82' width='46.64' height='40.23' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #00B6EB;' />
+<rect x='125.93' y='220.45' width='46.64' height='26.15' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #53B400;' />
+<rect x='125.93' y='246.60' width='46.64' height='26.15' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #00C094;' />
+<rect x='125.93' y='272.75' width='46.64' height='26.15' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #A58AFF;' />
+<rect x='125.93' y='298.90' width='46.64' height='26.15' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #FB61D7;' />
+<rect x='74.10' y='204.36' width='46.64' height='0.00' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #C49A00;' />
+<rect x='74.10' y='325.04' width='46.64' height='0.00' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #A58AFF;' />
+<rect x='74.10' y='325.04' width='46.64' height='0.00' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #FB61D7;' />
+<rect x='125.93' y='272.75' width='46.64' height='0.00' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #00B6EB;' />
+</g>
+<g clip-path='url(#cpMC4wMHwzMjQuMDB8MC4wMHw0NDIuODA=)'>
+<polyline points='74.10,325.04 74.10,63.56 ' style='stroke-width: 1.07; stroke-linecap: butt;' />
+<text x='69.17' y='329.34' text-anchor='end' style='font-size: 12.00px; font-family: "Arial";' textLength='17.34px' lengthAdjust='spacingAndGlyphs'>0%</text>
+<text x='69.17' y='277.04' text-anchor='end' style='font-size: 12.00px; font-family: "Arial";' textLength='24.02px' lengthAdjust='spacingAndGlyphs'>20%</text>
+<text x='69.17' y='224.75' text-anchor='end' style='font-size: 12.00px; font-family: "Arial";' textLength='24.02px' lengthAdjust='spacingAndGlyphs'>40%</text>
+<text x='69.17' y='172.45' text-anchor='end' style='font-size: 12.00px; font-family: "Arial";' textLength='24.02px' lengthAdjust='spacingAndGlyphs'>60%</text>
+<text x='69.17' y='120.15' text-anchor='end' style='font-size: 12.00px; font-family: "Arial";' textLength='24.02px' lengthAdjust='spacingAndGlyphs'>80%</text>
+<text x='69.17' y='67.86' text-anchor='end' style='font-size: 12.00px; font-family: "Arial";' textLength='30.69px' lengthAdjust='spacingAndGlyphs'>100%</text>
+<polyline points='71.36,325.04 74.10,325.04 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
+<polyline points='71.36,272.75 74.10,272.75 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
+<polyline points='71.36,220.45 74.10,220.45 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
+<polyline points='71.36,168.15 74.10,168.15 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
+<polyline points='71.36,115.86 74.10,115.86 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
+<polyline points='71.36,63.56 74.10,63.56 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
+<polyline points='74.10,325.04 172.57,325.04 ' style='stroke-width: 1.07; stroke-linecap: butt;' />
+<polyline points='97.42,327.78 97.42,325.04 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
+<polyline points='149.25,327.78 149.25,325.04 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
+<text transform='translate(103.50,336.05) rotate(-45)' text-anchor='end' style='font-size: 12.00px; font-family: "Arial";' textLength='110.06px' lengthAdjust='spacingAndGlyphs'>Female (13 patients)</text>
+<text transform='translate(155.33,336.05) rotate(-45)' text-anchor='end' style='font-size: 12.00px; font-family: "Arial";' textLength='96.06px' lengthAdjust='spacingAndGlyphs'>Male (10 patients)</text>
+<text x='123.34' y='439.86' text-anchor='middle' style='font-size: 14.00px; font-weight: bold; font-family: "Arial";' textLength='24.90px' lengthAdjust='spacingAndGlyphs'>Sex</text>
+<text transform='translate(21.36,194.30) rotate(-90)' text-anchor='middle' style='font-size: 14.00px; font-weight: bold; font-family: "Arial";' textLength='71.52px' lengthAdjust='spacingAndGlyphs'>Proportion</text>
+<rect x='183.53' y='119.12' width='140.47' height='150.37' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<text x='189.01' y='136.09' style='font-size: 14.00px; font-weight: bold; font-family: "Arial";' textLength='38.88px' lengthAdjust='spacingAndGlyphs'>Effect</text>
+<rect x='189.01' y='143.04' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<rect x='189.72' y='143.75' width='15.86' height='15.86' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #F8766D;' />
+<rect x='189.01' y='160.32' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<rect x='189.72' y='161.03' width='15.86' height='15.86' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #C49A00;' />
+<rect x='189.01' y='177.60' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<rect x='189.72' y='178.31' width='15.86' height='15.86' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #53B400;' />
+<rect x='189.01' y='194.88' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<rect x='189.72' y='195.59' width='15.86' height='15.86' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #00C094;' />
+<rect x='189.01' y='212.16' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<rect x='189.72' y='212.87' width='15.86' height='15.86' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #00B6EB;' />
+<rect x='189.01' y='229.44' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<rect x='189.72' y='230.15' width='15.86' height='15.86' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #A58AFF;' />
+<rect x='189.01' y='246.72' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<rect x='189.72' y='247.43' width='15.86' height='15.86' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #FB61D7;' />
+<text x='211.77' y='155.98' style='font-size: 12.00px; font-family: "Arial";' textLength='103.41px' lengthAdjust='spacingAndGlyphs'>Missense_Mutation</text>
+<text x='211.77' y='173.26' style='font-size: 12.00px; font-family: "Arial";' textLength='60.04px' lengthAdjust='spacingAndGlyphs'>Splice_Site</text>
+<text x='211.77' y='190.54' style='font-size: 12.00px; font-family: "Arial";' textLength='90.04px' lengthAdjust='spacingAndGlyphs'>Frame_Shift_Del</text>
+<text x='211.77' y='207.82' style='font-size: 12.00px; font-family: "Arial";' textLength='88.05px' lengthAdjust='spacingAndGlyphs'>Frame_Shift_Ins</text>
+<text x='211.77' y='225.10' style='font-size: 12.00px; font-family: "Arial";' textLength='106.75px' lengthAdjust='spacingAndGlyphs'>Nonsense_Mutation</text>
+<text x='211.77' y='242.38' style='font-size: 12.00px; font-family: "Arial";' textLength='76.04px' lengthAdjust='spacingAndGlyphs'>In_Frame_Del</text>
+<text x='211.77' y='259.66' style='font-size: 12.00px; font-family: "Arial";' textLength='77.39px' lengthAdjust='spacingAndGlyphs'>Splice_Region</text>
+<text x='167.67' y='11.46' text-anchor='middle' style='font-size: 16.00px; font-weight: bold; font-family: "Arial";' textLength='198.82px' lengthAdjust='spacingAndGlyphs'>Mutation Types vs. Sex in </text>
+<text x='167.67' y='28.74' text-anchor='middle' style='font-size: 16.00px; font-weight: bold; font-family: "Arial";' textLength='332.75px' lengthAdjust='spacingAndGlyphs'> Individuals with Adrenocortical Carcinoma </text>
+<text x='167.67' y='46.02' text-anchor='middle' style='font-size: 16.00px; font-weight: bold; font-family: "Arial";' textLength='310.21px' lengthAdjust='spacingAndGlyphs'>and Somatic p53 Mutations in cBioPortal</text>
+</g>
+</svg>

@@ -1,0 +1,2 @@
+load("/Volumes/Lu_Lab/Neha Wali/p53-somatic-mut-spectrum-cbioportal_files/tables/p53muts.rds")
+load("/Volumes/Lu_Lab/Neha Wali/p53-somatic-mut-spectrum-cbioportal_files/tables/p53mutscancersover100.rds")

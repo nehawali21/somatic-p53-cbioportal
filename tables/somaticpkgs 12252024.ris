@@ -1,0 +1,802 @@
+TY  - BOOK
+TI  - AnVIL: Bioconductor on the AnVIL compute environment
+AU  - Ramos, Marcel
+AU  - Morgan, Martin
+AU  - Interdonato, Kayla
+AU  - Cheng, Yubo
+AU  - Turaga, Nitesh
+DA  - 2024///
+PY  - 2024
+UR  - https://bioconductor.org/packages/AnVIL
+N1  - <p>R package version 1.16.1</p>
+ER  - 
+
+TY  - BOOK
+TI  - R: A Language and Environment for Statistical Computing
+AU  - R Core Team
+CY  - Vienna, Austria
+DA  - 2024///
+PY  - 2024
+PB  - R Foundation for Statistical Computing
+UR  - https://www.R-project.org/
+ER  - 
+
+TY  - BOOK
+TI  - Biobase: Base functions for Bioconductor
+AU  - Gentleman, R.
+AU  - Carey, V.
+AU  - Morgan, M.
+AU  - Falcon, S.
+DA  - 2024///
+PY  - 2024
+UR  - https://bioconductor.org/packages/Biobase
+N1  - <p>R package version 2.64.0</p>
+ER  - 
+
+TY  - BOOK
+TI  - BiocGenerics: S4 generic functions used in Bioconductor
+AU  - Team, The Bioconductor Dev
+DA  - 2024///
+PY  - 2024
+UR  - https://bioconductor.org/packages/BiocGenerics
+N1  - <p>R package version 0.50.0</p>
+ER  - 
+
+TY  - BOOK
+TI  - BiocManager: Access the Bioconductor Project Package Repository
+AU  - Morgan, Martin
+AU  - Ramos, Marcel
+DA  - 2024///
+PY  - 2024
+UR  - https://bioconductor.github.io/BiocManager/
+N1  - <p>R package version 1.30.25</p>
+ER  - 
+
+TY  - BOOK
+TI  - cBioPortalData: Exposes and Makes Available Data from the cBioPortal Web Resources
+AU  - Waldron, Levi
+AU  - Ramos, Marcel
+DA  - 2024///
+PY  - 2024
+UR  - https://bioconductor.org/packages/cBioPortalData
+N1  - <p>R package version 2.16.0</p>
+ER  - 
+
+TY  - BOOK
+TI  - cbioportalR: Browse and Query Clinical and Genomic Data from cBioPortal
+AU  - Whiting, Karissa
+DA  - 2023///
+PY  - 2023
+UR  - https://github.com/karissawhiting/cbioportalR
+N1  - <p>R package version 1.1.0</p>
+ER  - 
+
+TY  - BOOK
+TI  - ComplexHeatmap: Make Complex Heatmaps
+AU  - Gu, Zuguang
+DA  - 2024///
+PY  - 2024
+UR  - https://bioconductor.org/packages/ComplexHeatmap
+N1  - <p>R package version 2.20.0</p>
+ER  - 
+
+TY  - BOOK
+TI  - condformat: Conditional Formatting in Data Frames
+AU  - Moreno, Sergio Oller
+DA  - 2023///
+PY  - 2023
+UR  - https://zeehio.github.io/condformat/
+N1  - <p>R package version 0.10.1</p>
+ER  - 
+
+TY  - BOOK
+TI  - cowplot: Streamlined Plot Theme and Plot Annotations for ggplot2
+AU  - Wilke, Claus O.
+DA  - 2024///
+PY  - 2024
+UR  - https://wilkelab.org/cowplot/
+N1  - <p>R package version 1.1.3</p>
+ER  - 
+
+TY  - BOOK
+TI  - dplyr: A Grammar of Data Manipulation
+AU  - Wickham, Hadley
+AU  - François, Romain
+AU  - Henry, Lionel
+AU  - Müller, Kirill
+AU  - Vaughan, Davis
+DA  - 2023///
+PY  - 2023
+UR  - https://dplyr.tidyverse.org
+N1  - <p>R package version 1.1.4</p>
+ER  - 
+
+TY  - BOOK
+TI  - forcats: Tools for Working with Categorical Variables (Factors)
+AU  - Wickham, Hadley
+DA  - 2023///
+PY  - 2023
+UR  - https://forcats.tidyverse.org/
+N1  - <p>R package version 1.0.0</p>
+ER  - 
+
+TY  - BOOK
+TI  - GenomeInfoDb: Utilities for manipulating chromosome names, including modifying them to follow a particular naming style
+AU  - Arora, Sonali
+AU  - Morgan, Martin
+AU  - Carlson, Marc
+AU  - Pagès, Hervé
+DA  - 2024///
+PY  - 2024
+UR  - https://bioconductor.org/packages/GenomeInfoDb
+N1  - <p>R package version 1.40.1</p>
+ER  - 
+
+TY  - BOOK
+TI  - GenomicRanges: Representation and manipulation of genomic intervals
+AU  - Aboyoun, Patrick
+AU  - Pagès, Hervé
+AU  - Lawrence, Michael
+DA  - 2024///
+PY  - 2024
+UR  - https://bioconductor.org/packages/GenomicRanges
+N1  - <p>R package version 1.56.1</p>
+ER  - 
+
+TY  - BOOK
+TI  - ggalluvial: Alluvial Plots in ggplot2
+AU  - Brunson, Jason Cory
+AU  - Read, Quentin D.
+DA  - 2023///
+PY  - 2023
+UR  - http://corybrunson.github.io/ggalluvial/
+N1  - <p>R package version 0.12.5</p>
+ER  - 
+
+TY  - BOOK
+TI  - ggh4x: Hacks for ggplot2
+AU  - Brand, Teun van den
+DA  - 2024///
+PY  - 2024
+UR  - https://github.com/teunbrand/ggh4x
+N1  - <p>R package version 0.2.8</p>
+ER  - 
+
+TY  - BOOK
+TI  - ggplot2: Create Elegant Data Visualisations Using the Grammar of Graphics
+AU  - Wickham, Hadley
+AU  - Chang, Winston
+AU  - Henry, Lionel
+AU  - Pedersen, Thomas Lin
+AU  - Takahashi, Kohske
+AU  - Wilke, Claus
+AU  - Woo, Kara
+AU  - Yutani, Hiroaki
+AU  - Dunnington, Dewey
+AU  - Brand, Teun van den
+DA  - 2024///
+PY  - 2024
+UR  - https://ggplot2.tidyverse.org
+N1  - <p>R package version 3.5.1</p>
+ER  - 
+
+TY  - BOOK
+TI  - gridExtra: Miscellaneous Functions for "Grid" Graphics
+AU  - Auguie, Baptiste
+DA  - 2017///
+PY  - 2017
+UR  - https://CRAN.R-project.org/package=gridExtra
+N1  - <p>R package version 2.3</p>
+ER  - 
+
+TY  - BOOK
+TI  - gt: Easily Create Presentation-Ready Display Tables
+AU  - Iannone, Richard
+AU  - Cheng, Joe
+AU  - Schloerke, Barret
+AU  - Hughes, Ellis
+AU  - Lauer, Alexandra
+AU  - Seo, JooYoung
+AU  - Brevoort, Ken
+AU  - Roy, Olivier
+DA  - 2024///
+PY  - 2024
+UR  - https://gt.rstudio.com
+N1  - <p>R package version 0.11.0</p>
+ER  - 
+
+TY  - BOOK
+TI  - gtsummary: Presentation-Ready Data Summary and Analytic Result Tables
+AU  - Sjoberg, Daniel D.
+AU  - Larmarange, Joseph
+AU  - Curry, Michael
+AU  - Lavery, Jessica
+AU  - Whiting, Karissa
+AU  - Zabor, Emily C.
+DA  - 2024///
+PY  - 2024
+UR  - https://github.com/ddsjoberg/gtsummary
+N1  - <p>R package version 2.0.1</p>
+ER  - 
+
+TY  - BOOK
+TI  - IRanges: Foundation of integer range manipulation in Bioconductor
+AU  - Pagès, Hervé
+AU  - Aboyoun, Patrick
+AU  - Lawrence, Michael
+DA  - 2024///
+PY  - 2024
+UR  - https://bioconductor.org/packages/IRanges
+N1  - <p>R package version 2.38.1</p>
+ER  - 
+
+TY  - BOOK
+TI  - janitor: Simple Tools for Examining and Cleaning Dirty Data
+AU  - Firke, Sam
+DA  - 2023///
+PY  - 2023
+UR  - https://github.com/sfirke/janitor
+N1  - <p>R package version 2.2.0</p>
+ER  - 
+
+TY  - BOOK
+TI  - lubridate: Make Dealing with Dates a Little Easier
+AU  - Spinu, Vitalie
+AU  - Grolemund, Garrett
+AU  - Wickham, Hadley
+DA  - 2023///
+PY  - 2023
+UR  - https://lubridate.tidyverse.org
+N1  - <p>R package version 1.9.3</p>
+ER  - 
+
+TY  - BOOK
+TI  - MatrixGenerics: S4 Generic Summary Statistic Functions that Operate on Matrix-Like Objects
+AU  - Ahlmann-Eltze, Constantin
+AU  - Hickey, Peter
+AU  - Pagès, Hervé
+DA  - 2024///
+PY  - 2024
+UR  - https://bioconductor.org/packages/MatrixGenerics
+N1  - <p>R package version 1.16.0</p>
+ER  - 
+
+TY  - BOOK
+TI  - matrixStats: Functions that Apply to Rows and Columns of Matrices (and to Vectors)
+AU  - Bengtsson, Henrik
+DA  - 2024///
+PY  - 2024
+UR  - https://github.com/HenrikBengtsson/matrixStats
+N1  - <p>R package version 1.3.0</p>
+ER  - 
+
+TY  - BOOK
+TI  - MultiAssayExperiment: Software for the integration of multi-omics experiments in Bioconductor
+AU  - Ramos, Marcel
+AU  - Morgan, Martin
+AU  - Carey, Vincent J.
+AU  - Waldron, Levi
+DA  - 2024///
+PY  - 2024
+UR  - https://bioconductor.org/packages/MultiAssayExperiment
+N1  - <p>R package version 1.30.3</p>
+ER  - 
+
+TY  - BOOK
+TI  - pacman: Package Management Tool
+AU  - Rinker, Tyler
+AU  - Kurkiewicz, Dason
+DA  - 2019///
+PY  - 2019
+UR  - https://github.com/trinker/pacman
+N1  - <p>R package version 0.5.1</p>
+ER  - 
+
+TY  - BOOK
+TI  - pivottabler: Create Pivot Tables
+AU  - Bailiss, Christopher
+DA  - 2023///
+PY  - 2023
+UR  - http://www.pivottabler.org.uk/
+N1  - <p>R package version 1.5.5</p>
+ER  - 
+
+TY  - BOOK
+TI  - plotly: Create Interactive Web Graphics via plotly.js
+AU  - Sievert, Carson
+AU  - Parmer, Chris
+AU  - Hocking, Toby
+AU  - Chamberlain, Scott
+AU  - Ram, Karthik
+AU  - Corvellec, Marianne
+AU  - Despouy, Pedro
+DA  - 2024///
+PY  - 2024
+UR  - https://plotly-r.com
+N1  - <p>R package version 4.10.4</p>
+ER  - 
+
+TY  - BOOK
+TI  - purrr: Functional Programming Tools
+AU  - Wickham, Hadley
+AU  - Henry, Lionel
+DA  - 2023///
+PY  - 2023
+UR  - https://purrr.tidyverse.org/
+N1  - <p>R package version 1.0.2</p>
+ER  - 
+
+TY  - BOOK
+TI  - RColorBrewer: ColorBrewer Palettes
+AU  - Neuwirth, Erich
+DA  - 2022///
+PY  - 2022
+UR  - https://CRAN.R-project.org/package=RColorBrewer
+N1  - <p>R package version 1.1-3</p>
+ER  - 
+
+TY  - BOOK
+TI  - readr: Read Rectangular Text Data
+AU  - Wickham, Hadley
+AU  - Hester, Jim
+AU  - Bryan, Jennifer
+DA  - 2024///
+PY  - 2024
+UR  - https://readr.tidyverse.org
+N1  - <p>R package version 2.1.5</p>
+ER  - 
+
+TY  - BOOK
+TI  - reshape2: Flexibly Reshape Data: A Reboot of the Reshape Package
+AU  - Wickham, Hadley
+DA  - 2020///
+PY  - 2020
+UR  - https://github.com/hadley/reshape
+N1  - <p>R package version 1.4.4</p>
+ER  - 
+
+TY  - BOOK
+TI  - S4Vectors: Foundation of vector-like and list-like containers in Bioconductor
+AU  - Pagès, Hervé
+AU  - Lawrence, Michael
+AU  - Aboyoun, Patrick
+DA  - 2024///
+PY  - 2024
+UR  - https://bioconductor.org/packages/S4Vectors
+N1  - <p>R package version 0.42.1</p>
+ER  - 
+
+TY  - BOOK
+TI  - scales: Scale Functions for Visualization
+AU  - Wickham, Hadley
+AU  - Pedersen, Thomas Lin
+AU  - Seidel, Dana
+DA  - 2023///
+PY  - 2023
+UR  - https://scales.r-lib.org
+N1  - <p>R package version 1.3.0</p>
+ER  - 
+
+TY  - BOOK
+TI  - stringr: Simple, Consistent Wrappers for Common String Operations
+AU  - Wickham, Hadley
+DA  - 2023///
+PY  - 2023
+UR  - https://stringr.tidyverse.org
+N1  - <p>R package version 1.5.1</p>
+ER  - 
+
+TY  - BOOK
+TI  - SummarizedExperiment: SummarizedExperiment container
+AU  - Morgan, Martin
+AU  - Obenchain, Valerie
+AU  - Hester, Jim
+AU  - Pagès, Hervé
+DA  - 2024///
+PY  - 2024
+UR  - https://bioconductor.org/packages/SummarizedExperiment
+N1  - <p>R package version 1.34.0</p>
+ER  - 
+
+TY  - BOOK
+TI  - svglite: An SVG Graphics Device
+AU  - Wickham, Hadley
+AU  - Henry, Lionel
+AU  - Pedersen, Thomas Lin
+AU  - Luciani, T. Jake
+AU  - Decorde, Matthieu
+AU  - Lise, Vaudor
+DA  - 2023///
+PY  - 2023
+UR  - https://svglite.r-lib.org
+N1  - <p>R package version 2.1.3</p>
+ER  - 
+
+TY  - BOOK
+TI  - tibble: Simple Data Frames
+AU  - Müller, Kirill
+AU  - Wickham, Hadley
+DA  - 2023///
+PY  - 2023
+UR  - https://tibble.tidyverse.org/
+N1  - <p>R package version 3.2.1</p>
+ER  - 
+
+TY  - BOOK
+TI  - tidyr: Tidy Messy Data
+AU  - Wickham, Hadley
+AU  - Vaughan, Davis
+AU  - Girlich, Maximilian
+DA  - 2024///
+PY  - 2024
+UR  - https://tidyr.tidyverse.org
+N1  - <p>R package version 1.3.1</p>
+ER  - 
+
+TY  - BOOK
+TI  - tidyverse: Easily Install and Load the Tidyverse
+AU  - Wickham, Hadley
+DA  - 2023///
+PY  - 2023
+UR  - https://tidyverse.tidyverse.org
+N1  - <p>R package version 2.0.0</p>
+ER  - 
+
+TY  - BOOK
+TI  - webr: Data and Functions for Web-Based Analysis
+AU  - Moon, Keon-Woong
+DA  - 2020///
+PY  - 2020
+UR  - https://github.com/cardiomoon/webr
+N1  - <p>R package version 0.1.5</p>
+ER  - 
+
+TY  - BOOK
+TI  - webshot2: Take Screenshots of Web Pages
+AU  - Chang, Winston
+DA  - 2023///
+PY  - 2023
+UR  - https://rstudio.github.io/webshot2/
+N1  - <p>R package version 0.1.1</p>
+ER  - 
+
+TY  - JOUR
+TI  - Orchestrating high-throughput genomic analysis with Bioconductor
+AU  - Huber, W.
+AU  - Carey, V. J.
+AU  - Gentleman, R.
+AU  - Anders, S.
+AU  - Carlson, M.
+AU  - Carvalho, B. S.
+AU  - Bravo, H. C.
+AU  - Davis, S.
+AU  - Gatto, L.
+AU  - Girke, T.
+AU  - Gottardo, R.
+AU  - Hahne, F.
+AU  - Hansen, K. D.
+AU  - Irizarry, R. A.
+AU  - Lawrence, M.
+AU  - Love, M. I.
+AU  - MacDonald, J.
+AU  - Obenchain, V.
+AU  - Ole's, A. K.
+AU  - Pag`es, H.
+AU  - Reyes, A.
+AU  - Shannon, P.
+AU  - Smyth, G. K.
+AU  - Tenenbaum, D.
+AU  - Waldron, L.
+AU  - Morgan, M.
+T2  - Nature Methods
+DA  - 2015///
+PY  - 2015
+VL  - 12
+IS  - 2
+SP  - 115
+EP  - 121
+UR  - http://www.nature.com/nmeth/journal/v12/n2/full/nmeth.3252.html
+ER  - 
+
+TY  - JOUR
+TI  - Orchestrating high-throughput genomic analysis with Bioconductor
+AU  - Huber
+AU  - W.
+AU  - Carey
+AU  - J, V.
+AU  - Gentleman
+AU  - R.
+AU  - Anders
+AU  - S.
+AU  - Carlson
+AU  - M.
+AU  - Carvalho
+AU  - S, B.
+AU  - Bravo
+AU  - C, H.
+AU  - Davis
+AU  - S.
+AU  - Gatto
+AU  - L.
+AU  - Girke
+AU  - T.
+AU  - Gottardo
+AU  - R.
+AU  - Hahne
+AU  - F.
+AU  - Hansen
+AU  - D, K.
+AU  - Irizarry
+AU  - A, R.
+AU  - Lawrence
+AU  - M.
+AU  - Love
+AU  - I, M.
+AU  - MacDonald
+AU  - J.
+AU  - Obenchain
+AU  - V.
+AU  - Ole's
+AU  - K, A.
+AU  - Pag`es
+AU  - H.
+AU  - Reyes
+AU  - A.
+AU  - Shannon
+AU  - P.
+AU  - Smyth
+AU  - K, G.
+AU  - Tenenbaum
+AU  - D.
+AU  - Waldron
+AU  - L.
+AU  - Morgan
+AU  - M.
+T2  - Nature Methods
+DA  - 2015///
+PY  - 2015
+VL  - 12
+IS  - 2
+SP  - 115
+EP  - 121
+UR  - http://www.nature.com/nmeth/journal/v12/n2/full/nmeth.3252.html
+ER  - 
+
+TY  - JOUR
+TI  - Multiomic Integration of Public Oncology Databases in Bioconductor
+AU  - Ramos, Marcel
+AU  - Geistlinger, Ludwig
+AU  - Oh, Sehyun
+AU  - Schiffer, Lucas
+AU  - Azhar, Rimsha
+AU  - Kodali, Hanish
+AU  - Bruijn, Ino de
+AU  - Gao, Jianjiong
+AU  - Carey, Vincent J.
+AU  - Morgan, Martin
+AU  - Waldron, Levi
+T2  - JCO Clinical Cancer Informatics
+DA  - 2020///
+PY  - 2020
+DO  - 10.1200/CCI.19.00119
+VL  - 1
+IS  - 4
+SP  - 958
+EP  - 971
+UR  - https://ascopubs.org/doi/pdf/10.1200/CCI.19.00119
+ER  - 
+
+TY  - JOUR
+TI  - Complex heatmaps reveal patterns and correlations in multidimensional genomic data
+AU  - Gu, Zuguang
+AU  - Eils, Roland
+AU  - Schlesner, Matthias
+T2  - Bioinformatics
+DA  - 2016///
+PY  - 2016
+DO  - 10.1093/bioinformatics/btw313
+ER  - 
+
+TY  - JOUR
+TI  - Complex Heatmap Visualization
+AU  - Gu, Zuguang
+T2  - iMeta
+DA  - 2022///
+PY  - 2022
+DO  - 10.1002/imt2.43
+ER  - 
+
+TY  - JOUR
+TI  - Software for Computing and Annotating Genomic Ranges
+AU  - Lawrence, Michael
+AU  - Huber, Wolfgang
+AU  - Pagès, Hervé
+AU  - Aboyoun, Patrick
+AU  - Carlson, Marc
+AU  - Gentleman, Robert
+AU  - Morgan, Martin
+AU  - Carey, Vincent
+T2  - PLoS Computational Biology
+DA  - 2013///
+PY  - 2013
+DO  - 10.1371/journal.pcbi.1003118
+VL  - 9
+IS  - 8
+UR  - http://www.ploscompbiol.org/article/info%3Adoi%2F10.1371%2Fjournal.pcbi.1003118
+ER  - 
+
+TY  - JOUR
+TI  - ggalluvial: Layered Grammar for Alluvial Plots
+AU  - Brunson, Jason Cory
+T2  - Journal of Open Source Software
+DA  - 2020///
+PY  - 2020
+DO  - 10.21105/joss.02017
+VL  - 5
+IS  - 49
+SP  - 2017
+ER  - 
+
+TY  - BOOK
+TI  - ggplot2: Elegant Graphics for Data Analysis
+AU  - Wickham, Hadley
+DA  - 2016///
+PY  - 2016
+PB  - Springer-Verlag New York
+SN  - 978-3-319-24277-4
+UR  - https://ggplot2.tidyverse.org
+ER  - 
+
+TY  - JOUR
+TI  - Reproducible Summary Tables with the gtsummary Package
+AU  - Sjoberg, Daniel D.
+AU  - Whiting, Karissa
+AU  - Curry, Michael
+AU  - Lavery, Jessica A.
+AU  - Larmarange, Joseph
+T2  - The R Journal
+DA  - 2021///
+PY  - 2021
+DO  - 10.32614/RJ-2021-053
+VL  - 13
+IS  - 1
+SP  - 570
+EP  - 580
+UR  - https://doi.org/10.32614/RJ-2021-053
+ER  - 
+
+TY  - JOUR
+TI  - Software for Computing and Annotating Genomic Ranges
+AU  - Lawrence, Michael
+AU  - Huber, Wolfgang
+AU  - Pagès, Hervé
+AU  - Aboyoun, Patrick
+AU  - Carlson, Marc
+AU  - Gentleman, Robert
+AU  - Morgan, Martin
+AU  - Carey, Vincent
+T2  - PLoS Computational Biology
+DA  - 2013///
+PY  - 2013
+DO  - 10.1371/journal.pcbi.1003118
+VL  - 9
+IS  - 8
+UR  - http://www.ploscompbiol.org/article/info%3Adoi%2F10.1371%2Fjournal.pcbi.1003118
+ER  - 
+
+TY  - JOUR
+TI  - Dates and Times Made Easy with lubridate
+AU  - Grolemund, Garrett
+AU  - Wickham, Hadley
+T2  - Journal of Statistical Software
+DA  - 2011///
+PY  - 2011
+VL  - 40
+IS  - 3
+SP  - 1
+EP  - 25
+UR  - https://www.jstatsoft.org/v40/i03/
+ER  - 
+
+TY  - JOUR
+TI  - Software For The Integration Of Multi-Omics Experiments In Bioconductor
+AU  - Ramos, Marcel
+AU  - Schiffer, Lucas
+AU  - Re, Angela
+AU  - Azhar, Rimsha
+AU  - Basunia, Azfar
+AU  - Cabrera, Carmen Rodriguez
+AU  - Chan, Tiffany
+AU  - Chapman, Philip
+AU  - Davis, Sean
+AU  - Gomez-Cabrero, David
+AU  - Culhane, Aedin C.
+AU  - Haibe-Kains, Benjamin
+AU  - Hansen, Kasper
+AU  - Kodali, Hanish
+AU  - Louis, Marie S.
+AU  - Mer, Arvind S.
+AU  - Reister, Markus
+AU  - Morgan, Martin
+AU  - Carey, Vincent J.
+AU  - Waldron, Levi
+T2  - Cancer Research
+DA  - 2017///
+PY  - 2017
+DO  - 10.1158/0008-5472.CAN-17-0344
+VL  - 77
+IS  - 21
+SP  - e39
+EP  - 42
+UR  - https://cancerres.aacrjournals.org/content/77/21/e39
+ER  - 
+
+TY  - BOOK
+TI  - pacman: Package Management for R
+AU  - Rinker, Tyler W.
+AU  - Kurkiewicz, Dason
+CY  - Buffalo, New York
+DA  - 2018///
+PY  - 2018
+UR  - http://github.com/trinker/pacman
+N1  - <p>version 0.5.0</p>
+ER  - 
+
+TY  - BOOK
+TI  - Interactive Web-Based Data Visualization with R, plotly, and shiny
+AU  - Sievert, Carson
+DA  - 2020///
+PY  - 2020
+PB  - Chapman and Hall/CRC
+SN  - 978-1-138-33145-7
+UR  - https://plotly-r.com
+ER  - 
+
+TY  - JOUR
+TI  - Reshaping Data with the reshape Package
+AU  - Wickham, Hadley
+T2  - Journal of Statistical Software
+DA  - 2007///
+PY  - 2007
+VL  - 21
+IS  - 12
+SP  - 1
+EP  - 20
+UR  - http://www.jstatsoft.org/v21/i12/
+ER  - 
+
+TY  - JOUR
+TI  - Welcome to the tidyverse
+AU  - Wickham, Hadley
+AU  - Averick, Mara
+AU  - Bryan, Jennifer
+AU  - Chang, Winston
+AU  - McGowan, Lucy D'Agostino
+AU  - François, Romain
+AU  - Grolemund, Garrett
+AU  - Hayes, Alex
+AU  - Henry, Lionel
+AU  - Hester, Jim
+AU  - Kuhn, Max
+AU  - Pedersen, Thomas Lin
+AU  - Miller, Evan
+AU  - Bache, Stephan Milton
+AU  - Müller, Kirill
+AU  - Ooms, Jeroen
+AU  - Robinson, David
+AU  - Seidel, Dana Paige
+AU  - Spinu, Vitalie
+AU  - Takahashi, Kohske
+AU  - Vaughan, Davis
+AU  - Wilke, Claus
+AU  - Woo, Kara
+AU  - Yutani, Hiroaki
+T2  - Journal of Open Source Software
+DA  - 2019///
+PY  - 2019
+DO  - 10.21105/joss.01686
+VL  - 4
+IS  - 43
+SP  - 1686
+ER  - 
+
