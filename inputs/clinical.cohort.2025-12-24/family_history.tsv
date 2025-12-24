@@ -1,0 +1,7 @@
+project.project_id	cases.case_id	cases.submitter_id	family_histories.family_history_id	family_histories.relationship_age_at_diagnosis	family_histories.relationship_gender	family_histories.relationship_primary_diagnosis	family_histories.relationship_type	family_histories.relative_deceased	family_histories.relative_smoker	family_histories.relative_with_cancer_history	family_histories.relatives_with_cancer_history_count	family_histories.submitter_id
+TCGA-LGG	58650d08-7685-41de-9ae0-21665f8f449f	TCGA-S9-A7R4	'--	'--	'--	'--	'--	'--	'--	unknown	'--	'--
+TCGA-COAD	628408ce-0691-4e0b-b4c7-aca9a0d73bb0	TCGA-AA-3673	'--	'--	'--	Cancer	'--	'--	'--	yes	1	'--
+TCGA-LIHC	7444eea6-90e8-42dd-a7b5-0afc6d96e1e8	TCGA-CC-5259	'--	'--	'--	Cancer	'--	'--	'--	no	'--	'--
+TCGA-STAD	8b5746f9-dbee-40bd-9141-1081960cf286	TCGA-D7-5579	'--	'--	'--	Gastric Cancer	'--	'--	'--	no	'--	'--
+TCGA-COAD	cc1d6ad3-b60d-482e-8fa4-0af26823007d	TCGA-CM-5863	'--	'--	'--	Cancer	'--	'--	'--	no	'--	'--
+TCGA-BLCA	e1540865-69c2-4b60-a78e-97d0ce2957dc	TCGA-G2-AA3D	'--	'--	'--	Breast Cancer	Mother	'--	'--	yes	'--	'--
