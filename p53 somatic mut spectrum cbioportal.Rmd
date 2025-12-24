@@ -92,7 +92,7 @@ $~$
 $~$
 
 ```{r inputdata, warning = FALSE, message = FALSE, results = 'hide'}
-#find all nonoverlapping studies by going to cbioportal in chrome, hit F12, click curated list of nonredundant studies button, then within F12 console go to network --> fetch/XHR --> fetch entry --> payload --> right-click on second study ids for copy value and paste to Excel and from Excel paste to here
+#find all nonoverlapping studies by going to cbioportal in chrome, hit F12, click curated list of nonredundant studies button, then within F12 console go to network --> fetch/XHR --> fetch entry --> payload --> right-click on second study ids for copy value and paste to Excel and from Excel paste to here (remove precancerous/nl studies in Excel itself so not added here); 237 total nonoverlapping - 5 precan/nl = 232 studies as of 12.23.25
 nonoverlapping <- list("acbc_mskcc_2015",
                        "acc_2019",
                        "acc_tcga_pan_can_atlas_2018",
@@ -104,7 +104,7 @@ nonoverlapping <- list("acbc_mskcc_2015",
                        "all_phase2_target_2018_pub",
                        "all_stjude_2016",
                        "aml_ohsu_2018",
-                       "aml_ohsu_2022", # new one in 217 unique
+                       "aml_ohsu_2022", 
                        "aml_target_2018_pub",
                        "ampca_bcm_2016",
                        "angs_painter_2020",
@@ -112,7 +112,7 @@ nonoverlapping <- list("acbc_mskcc_2015",
                        "bcc_unige_2016",
                        "bfn_duke_nus_2015",
                        "biliary_tract_summit_2022",
-                       #"bladder_columbia_msk_2018", # new one in 217 unique, but inclusion causes error
+                       #"bladder_columbia_msk_2018", # inclusion causes error
                        "blca_bcan_hcrn_2022",
                        "blca_bgi",
                        "blca_cornell_2016",
@@ -124,6 +124,9 @@ nonoverlapping <- list("acbc_mskcc_2015",
                        "brca_bccrc",
                        "brca_broad",
                        "brca_cptac_2020",
+                       "brca_dfci_2020",
+                       "brca_dldccc_2022",
+                       "brca_fuscc_2020",
                        "brca_hta9_htan_2022",
                        "brca_igr_2015",
                        "brca_mbcproject_wagle_2017",
@@ -132,26 +135,32 @@ nonoverlapping <- list("acbc_mskcc_2015",
                        "brca_sanger",
                        "brca_smc_2018",
                        "brca_tcga_pan_can_atlas_2018",
+                       "ccle_genentech_2014",
                        "ccrcc_dfci_2019",
                        "ccrcc_irc_2014",
                        "ccrcc_utokyo_2013",
                        "cesc_tcga_pan_can_atlas_2018",
+                       "chl_sccc_2023",
                        "chol_icgc_2017",
                        "chol_jhu_2013",
                        "chol_nccs_2013",
                        "chol_nus_2012",
                        "chol_tcga_pan_can_atlas_2018",
                        "cll_broad_2015",
+                       "cll_broad_2022",
                        "cll_iuopa_2015",
                        "cllsll_icgc_2011",
                        "coad_caseccc_2015",
                        "coad_cptac_2019",
-                       "coad_silu_2022", # new one in 217 unique
+                       "coad_silu_2022", 
+                       "coadread_cass_2020",
                        "coadread_dfci_2016",
                        "coadread_genentech",
                        "coadread_mskcc",
                        "coadread_tcga_pan_can_atlas_2018",
                        "crc_nigerian_2020",
+                       "crc_orion_2024",
+                       "crc_sysucc_2022",
                        "cscc_dfarber_2015",
                        "cscc_hgsc_bcm_2014",
                        "cscc_ucsf_2021",
@@ -173,6 +182,7 @@ nonoverlapping <- list("acbc_mskcc_2015",
                        "gbm_cptac_2021",
                        "gbm_tcga_pan_can_atlas_2018",
                        "glioma_msk_2018",
+                       "hcc_clca_2024",
                        "hcc_inserm_fr_2015",
                        "hcc_meric_2021",
                        "hcc_msk_venturaa_2018",
@@ -198,6 +208,7 @@ nonoverlapping <- list("acbc_mskcc_2015",
                        "lihc_riken",
                        "lihc_tcga_pan_can_atlas_2018",
                        "luad_broad",
+                       "luad_cas_2020",
                        "luad_cptac_2020",
                        "luad_oncosg_2020",
                        "luad_tcga_pan_can_atlas_2018",
@@ -228,7 +239,7 @@ nonoverlapping <- list("acbc_mskcc_2015",
                        "mpn_cimr_2013",
                        "mpnst_mskcc",
                        "mrt_bcgsc_2016",
-                       "msk_impact_2017",
+                       "msk_chord_2024",
                        "nbl_amc_2012",
                        "nbl_target_2018_pub",
                        "nbl_ucologne_2015",
@@ -263,6 +274,7 @@ nonoverlapping <- list("acbc_mskcc_2015",
                        "prad_fhcrc",
                        "prad_mich",
                        "prad_msk_2019",
+                       "prad_msk_mdanderson_2023",
                        "prad_mskcc",
                        "prad_mskcc_cheny1_organoids_2014",
                        "prad_su2c_2019",
@@ -273,10 +285,13 @@ nonoverlapping <- list("acbc_mskcc_2015",
                        "rt_target_2018_pub",
                        "sarc_mskcc",
                        "sarc_tcga_pan_can_atlas_2018",
+                       "sarcoma_msk_2022",
+                       "sarcoma_ucla_2024",
                        "scco_mskcc",
                        "sclc_cancercell_gardner_2017",
                        "sclc_jhu",
                        "sclc_ucologne_2015",
+                       "sft_sysucc_2023",
                        "skcm_broad",
                        "skcm_broad_brafresist_2012",
                        "skcm_dfci_2015",
@@ -288,7 +303,7 @@ nonoverlapping <- list("acbc_mskcc_2015",
                        "stad_pfizer_uhongkong",
                        "stad_tcga_pan_can_atlas_2018",
                        "stad_utokyo",
-                       "stmyec_wcm_2022", # new one in 217 unique
+                       "stmyec_wcm_2022", 
                        "summit_2018",
                        "tet_nci_2014",
                        "tgct_tcga_pan_can_atlas_2018",
@@ -314,25 +329,37 @@ nonoverlapping <- list("acbc_mskcc_2015",
 
 #feed in altered and unaltered samples lists from cbioportal download when TP53 queried in cBioPortal website as only muts checkbox genomic profiles, only cases with muts data dropdown, OQL search datatypes: mut; tp53, combine into 1 list, rename columns 
 alteredsamples <- read.delim(paste0(input_path, 
-                                    "altered_samples (1).txt"),  # ALL 217 unique studies
+                                    "altered_samples (2).txt"),  # ALL 232 unique studies
                              header = FALSE, 
                              sep = ":")
 unalteredsamples <- read.delim(paste0(input_path, 
-                                      "unaltered_samples (1).txt"), # ALL 217 unique studies
+                                      "unaltered_samples (2).txt"), # ALL 232 unique studies
                                header = FALSE, 
                                sep = ":")
 
-# because T125T is an important mutation from germline data, but it's not annotated properly in TCGA samples in cbioportal somatic p53muts df, read in cases of GDC TCGA T125= i.e. T125T manually gotten from --> <https://portal.gdc.cancer.gov/v1/exploration?cases_size=100&cases_sort=%5B%7B%22field%22%3A%22project.project_id%22%2C%22order%22%3A%22asc%22%7D%5D&facetTab=cases&filters=%7B%22content%22%3A%5B%7B%22content%22%3A%7B%22field%22%3A%22cases.case_id%22%2C%22value%22%3A%5B%22set_id%3Adeee4d915eb6683cc5d01bf5197456a4f18103a434bb3447efbb7b16d8324d032a9699c386a38c7c22fe6cf84aafe4b4c81f347e4bd5e3e288239dd21ba9f027%22%5D%7D%2C%22op%22%3A%22IN%22%7D%2C%7B%22op%22%3A%22in%22%2C%22content%22%3A%7B%22field%22%3A%22genes.gene_id%22%2C%22value%22%3A%5B%22ENSG00000141510%22%5D%7D%7D%5D%2C%22op%22%3A%22AND%22%7D&searchTableTab=cases>. once file read in, change incorrect annotations in p53muts to T125= for consistency with other studies' annotations
-tcga_known_t125t <- read.delim(paste0(input_path, 
-                                      "explore-case-table.2024-02-20 GDC TCGA T125=.tsv"), 
-                               header = TRUE,
+# # because T125T is an important mutation from germline data, but it's not annotated properly in TCGA samples in cbioportal somatic p53muts df, read in cases of GDC TCGA T125= i.e. T125T manually gotten from --> <https://portal.gdc.cancer.gov/v1/exploration?cases_size=100&cases_sort=%5B%7B%22field%22%3A%22project.project_id%22%2C%22order%22%3A%22asc%22%7D%5D&facetTab=cases&filters=%7B%22content%22%3A%5B%7B%22content%22%3A%7B%22field%22%3A%22cases.case_id%22%2C%22value%22%3A%5B%22set_id%3Adeee4d915eb6683cc5d01bf5197456a4f18103a434bb3447efbb7b16d8324d032a9699c386a38c7c22fe6cf84aafe4b4c81f347e4bd5e3e288239dd21ba9f027%22%5D%7D%2C%22op%22%3A%22IN%22%7D%2C%7B%22op%22%3A%22in%22%2C%22content%22%3A%7B%22field%22%3A%22genes.gene_id%22%2C%22value%22%3A%5B%22ENSG00000141510%22%5D%7D%7D%5D%2C%22op%22%3A%22AND%22%7D&searchTableTab=cases>. once file read in, change incorrect annotations in p53muts to T125= for consistency with other studies' annotations
+# tcga_known_t125t <- read.delim(paste0(input_path, 
+#                                       "explore-case-table.2024-02-20 GDC TCGA T125=.tsv"), 
+#                                header = TRUE,
+#                                sep = "\t") %>%
+#   clean_names()
+
+# because above gdc link was for v1 and does not work now due to v2, obtain GDC TCGA T125= i.e., T125T manually from <https://portal.gdc.cancer.gov/> with program TCGA, mutated gene TP53, tissue type tumor, tumor descriptor primary, and ssm ID three muts that generate T125= (make mutation set after other parameters filter down cases a lot), final list of 40 cases is identical to above file
+tcga_known_t125t <- read.delim(paste0(input_path,
+                                      "biospecimen.cohort.2025-12-24/sample.tsv"), 
+                               na.strings = "'--", 
+                               header = TRUE, 
                                sep = "\t") %>%
-  clean_names()
+  clean_names() %>% # next few lines are to collapse down to 40 cases and remove empty rows/cols
+  filter(samples_sample_type == "Primary Tumor") %>% 
+  distinct(cases_submitter_id, .keep_all = TRUE) %>% 
+  remove_empty(which = c("rows", 
+                         "cols")) 
 
 # read in functional and structural annotations of p53 for all codons, obtained from: https://tp53.cancer.gov/view_data?bq_view_name=MutationView and downloaded as-is with no filters
 #how to get to download page --> https://tp53.cancer.gov/ --> Functional/Structural Data --> Data Downloads Functional/Structural Data --> Functional/structural data in TP53 with their annotations (includes validated polymorphisms) --> click Preview icon to get to filterable data table --> download entire table without filters
 origfunction <- read.csv(file = paste0(input_path, 
-                                       "MutationView_r20.csv"), 
+                                       "MutationView_r21.csv"), 
                          sep = ",",
                          header = TRUE) %>% 
   distinct() %>% 
@@ -939,7 +966,7 @@ all(test2 %in% test) #should be TRUE if joined correctly as it checks if all p53
 
 # correct T125= annotations which have been misannotated in cbioportal but are proper in GDC
 p53muts <- p53muts %>% 
-  mutate(proteinChange = ifelse((patientId %in% tcga_known_t125t$case_id & proteinChange == "X125_splice"), 
+  mutate(proteinChange = ifelse((patientId %in% tcga_known_t125t$cases_submitter_id & proteinChange == "X125_splice"), 
                                 "T125=", 
                                 proteinChange))
 
