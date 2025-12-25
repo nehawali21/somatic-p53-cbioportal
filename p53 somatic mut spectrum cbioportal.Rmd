@@ -112,7 +112,7 @@ nonoverlapping <- list("acbc_mskcc_2015",
                        "bcc_unige_2016",
                        "bfn_duke_nus_2015",
                        "biliary_tract_summit_2022",
-                       #"bladder_columbia_msk_2018", # inclusion causes error
+                       "bladder_columbia_msk_2018", 
                        "blca_bcan_hcrn_2022",
                        "blca_bgi",
                        "blca_cornell_2016",
@@ -632,7 +632,8 @@ clindatacombined <- clindatacombined %>%
   dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Bone Sarcoma Other"),
                                               "Bone Sarcoma, Other", 
                                               CANCER_TYPE_DETAILED)) %>%
-  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Breast Carcinoma Other"), 
+  dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Breast Carcinoma Other", 
+                                                                          "Breast Neoplasm, NOS"), 
                                               "Breast Carcinoma, Other", 
                                               CANCER_TYPE_DETAILED)) %>%
   dplyr::mutate(CANCER_TYPE_DETAILED = ifelse(CANCER_TYPE_DETAILED %in% c("Colon Adenocarcinoma",
@@ -866,12 +867,14 @@ clindatacombined <- clindatacombined %>%
              RACE,
              ETHNICITY,
              COUNTRY,
-             COUNTRY_OF_PROCUREMENT,
-             TMB_NONSYNONYMOUS,
-             MUTATION_COUNT),
+             COUNTRY_OF_PROCUREMENT
+             #,
+             #TMB_NONSYNONYMOUS,
+             #MUTATION_COUNT
+             ),
            .after = patientId) %>%
-  mutate_at(c("TMB_NONSYNONYMOUS",
-              "MUTATION_COUNT",
+  mutate_at(c(#"TMB_NONSYNONYMOUS",
+              #"MUTATION_COUNT",
               "SAMPLE_COUNT"),
             as.numeric)
 
@@ -906,9 +909,11 @@ p53muts <- merge(p53muts,
                                    "RACE",
                                    "ETHNICITY",
                                    "COUNTRY",
-                                   "COUNTRY_OF_PROCUREMENT",
-                                   "TMB_NONSYNONYMOUS",
-                                   "MUTATION_COUNT")) %>%
+                                   "COUNTRY_OF_PROCUREMENT"
+                                   #,
+                                   #"TMB_NONSYNONYMOUS",
+                                   #"MUTATION_COUNT"
+                                   )) %>%
                    dplyr::rename(studyId = StudyID), 
                  by = c("sampleId", 
                         "studyId")) 
@@ -923,8 +928,8 @@ p53muts <- p53muts %>%
            proteinChange, 
            mutationType, 
            variantType, 
-           TMB_NONSYNONYMOUS,
-           MUTATION_COUNT,
+           #TMB_NONSYNONYMOUS,
+           #MUTATION_COUNT,
            #referenceAllele, 
            #variantAllele, 
            .before = entrezGeneId)
@@ -979,7 +984,11 @@ p53muts <- p53muts %>%
 # add ages to p53mutscancersover100 and p53muts dfs
 clindataages <- clindatacombined %>% 
   dplyr::select(c(sampleId, 
-                  starts_with("AGE"))) %>% 
+                  starts_with("AGE"),
+                  contains("diagnosis age", 
+                           ignore.case = TRUE),
+                  contains("CURRENT_AGE_DEID", 
+                           ignore.case = TRUE))) %>% 
   distinct() %>% 
   remove_empty("cols") # remove all cols which have only NA in them
 # %>%dplyr::select(-c(AGENT, 
@@ -1009,10 +1018,10 @@ clindataages <- clindataages %>%
                            AGE_AT_DX,
                            Age_used))
 table(is.na(clindataages$Age_used))
-# clindataages <- clindataages %>%
-#   mutate(Age_used = ifelse(is.na(clindataages$Age_used),
-#                            AGE_YRS,
-#                            Age_used))
+clindataages <- clindataages %>%
+  mutate(Age_used = ifelse(is.na(clindataages$Age_used),
+                           `DIAGNOSIS AGE`,
+                           Age_used))
 table(is.na(clindataages$Age_used))
 clindataages <- clindataages %>%
   mutate(Age_used = ifelse(is.na(clindataages$Age_used),
@@ -1027,6 +1036,11 @@ table(is.na(clindataages$Age_used))
 clindataages <- clindataages %>%
   mutate(Age_used = ifelse(is.na(clindataages$Age_used),
                            AGE_CURRENT,
+                           Age_used))
+table(is.na(clindataages$Age_used)) 
+clindataages <- clindataages %>%
+  mutate(Age_used = ifelse(is.na(clindataages$Age_used),
+                           CURRENT_AGE_DEID,
                            Age_used))
 table(is.na(clindataages$Age_used)) # still don't have all ages annotated but these are best possible ages added
 clindataages <- clindataages %>% 
@@ -1510,12 +1524,12 @@ origfunction_damageinfo <- origfunction_damageinfo %>%
 
 # get number of studies
 p53muts$studyId %>% 
-  unique() %>% # gives 65 studies but most are just cancers from same 2018 tcga study
+  unique() %>% # gives 67 studies but many are just cancers from same 2018 tcga study
   gsub("^.*?_", # remove characters before first underscore so that study suffix is all that remains
        "", 
        .) %>% 
   unique() %>% # to collapse all 31 cancers of 2018 tcga study down to 1 study (so -30)
-  n_distinct() + 1 # 35 (+ 1 because mskcc suffix is for 2 different studies but collapsed into 1 in unique)
+  n_distinct() + 1 # 37 (+ 1 because mskcc suffix is for 2 different studies but collapsed into 1 in unique)
 
 # get number of distinct studies in nonoverlapping
 
@@ -1536,7 +1550,7 @@ p53muts$studyId %>%
 
 # get number of studies
 unlist(nonoverlapping) %>% 
-    n_distinct() - 3 - 31 # TARGET has 4 overall and TCGA has 32 overall so need to collapse to 1 each
+    n_distinct() - 4 - 31 # TARGET has 5 overall (including phase II) and TCGA has 32 overall so need to collapse to 1 each
 
 
 ```
@@ -8775,7 +8789,7 @@ studies_pts_grid <- grid.arrange(studies_pts_gridprep,
 
 $~$
 
-```{r piedonut-studies, fig.height = 9.5, fig.width = 9.5, message = FALSE, warning = FALSE}
+```{r piedonut-studies, fig.height = 10.5, fig.width = 10.5, message = FALSE, warning = FALSE}
 # make df for piedonut chart of amount of representation each study in dataset has with cases (inner ring is tcga and other studies, outer ring is each study named)
 piedonut_df <- pivotdf_studypts %>% 
   mutate(prop = `Count of distinct individuals`/last(`Count of distinct individuals`)) %>% 
@@ -8810,6 +8824,9 @@ webr::PieDonut(piedonut_df,
                aes(Surface, # what inner pie should be
                    Deeper, # what outer should be
                    count = prop_round), # what labels should show
+               pieLabelSize = 5,
+               donutLabelSize = 3, 
+               titlesize = 7,
                ratioByGroup = FALSE, # show outer percents as part of total chart, not as part of slice group
                explode = 1, # which level to jut out of chart
                pieAlpha = 0.7, # transparency of inner
@@ -8819,7 +8836,7 @@ webr::PieDonut(piedonut_df,
                r1 = 0.9, # radius of inner pie
                r2 = 1.3, # radius of outer
                showRatioThreshold = 0.015, # percent at which labels are written
-               labelpositionThreshold = 0.05, #percent at which labels are put outside plot instead of inside
+               labelpositionThreshold = 0.03, #percent at which labels are put outside plot instead of inside
                title = "Studies of p53-mutant somatic cancer cases")
 ```
 

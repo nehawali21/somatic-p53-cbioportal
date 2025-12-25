@@ -1,48 +1,43 @@
 CANCER_TYPE_DETAILED,count
-Non-Small Cell Lung Cancer,4240
-Breast Invasive Ductal Carcinoma,3325
-Colorectal Adenocarcinoma,2521
-Hepatocellular Carcinoma,1808
-Gastric Adenocarcinoma,1428
-Pancreatic Adenocarcinoma,1311
-Prostate Adenocarcinoma,1291
-Cholangiocarcinoma,983
-Bladder Urothelial Carcinoma,944
-Serous Ovarian Cancer,855
-Renal Clear Cell Carcinoma,845
-Head and Neck Squamous Cell Carcinoma,838
-Glioblastoma Multiforme,836
-Esophageal Squamous Cell Carcinoma,664
-Thyroid Carcinoma,662
-Astrocytoma,568
-Uterine Endometrioid Carcinoma,494
-"Breast Invasive Carcinoma, NOS",480
-Breast Invasive Lobular Carcinoma,463
-Medulloblastoma,413
-Small Cell Lung Cancer,379
-Melanoma,378
-Papillary Renal Cell Carcinoma,345
-Cervical Squamous Cell Carcinoma,337
-Oligodendroglioma,312
-Breast Mixed Ductal and Lobular Carcinoma,286
-Esophageal Adenocarcinoma,286
+Non-Small Cell Lung Cancer,7948
+Colorectal Adenocarcinoma,6036
+Breast Invasive Ductal Carcinoma,5119
+Prostate Adenocarcinoma,3019
+Pancreatic Adenocarcinoma,2818
+Hepatocellular Carcinoma,1733
+Gastric Adenocarcinoma,1316
+Cholangiocarcinoma,835
+Serous Ovarian Cancer,808
+Head and Neck Squamous Cell Carcinoma,763
+"Breast Invasive Carcinoma, NOS",743
+Renal Clear Cell Carcinoma,725
+Bladder Urothelial Carcinoma,704
+Breast Invasive Lobular Carcinoma,699
+Esophageal Squamous Cell Carcinoma,659
+Thyroid Carcinoma,559
+Glioblastoma Multiforme,550
+Uterine Endometrioid Carcinoma,450
+Astrocytoma,445
+Medulloblastoma,411
+Small Cell Lung Cancer,347
+Cervical Squamous Cell Carcinoma,331
+Papillary Renal Cell Carcinoma,324
+Breast Mixed Ductal and Lobular Carcinoma,308
+Melanoma,286
 Adenoid Cystic Carcinoma,272
+Pancreatic Neuroendocrine Tumor,244
 Acute Myeloid Leukemia,243
-Osteosarcoma,221
-Mesothelioma,179
+Oligodendroglioma,233
+Esophageal Adenocarcinoma,196
+Osteosarcoma,195
+"Lung Neuroendocrine Tumor, Other",184
 Gallbladder Adenocarcinoma,169
-"Diffuse Large B-Cell Lymphoma, NOS",162
-Oligoastrocytoma,160
-Leiomyosarcoma,157
-Uterine Serous Carcinoma/Uterine Papillary Serous Carcinoma,156
-"Glioma, Other",154
-Pheochromocytoma,149
-Mixed Germ Cell Tumor,148
-Thymoma,141
-Pancreatic Neuroendocrine Tumor,140
-Gastrointestinal Stromal Tumor,138
-Chromophobe Renal Cell Carcinoma,133
-Seminoma,117
-Adrenocortical Carcinoma,115
-Dedifferentiated Liposarcoma,101
-Total,30347
+Pheochromocytoma,147
+Leiomyosarcoma,141
+Oligoastrocytoma,140
+Thymoma,138
+Uterine Serous Carcinoma/Uterine Papillary Serous Carcinoma,128
+"Glioma, Other",122
+Chromophobe Renal Cell Carcinoma,113
+Solitary Fibrous Tumor/Hemangiopericytoma,101
+Total,40702
