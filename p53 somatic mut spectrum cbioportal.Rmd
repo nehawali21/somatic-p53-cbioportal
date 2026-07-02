@@ -1593,6 +1593,11 @@ studyptspivot$evaluatePivot()
 pivotdf_studypts <- studyptspivot$asDataFrame(rowGroupsAsColumns = TRUE) %>% 
   remove_rownames()
 
+# save as csv to use for intel on studies of p53muts pts
+write.csv(pivotdf_studypts, 
+          file = paste0(table_path, 
+                        "pivotdf_studypts.csv"))
+
 #make pivot table based on mutation type, sorted by descending counts for rows and columns
 muttypepivot <- PivotTable$new()
 muttypepivot$addData(p53mutscancersover100)
@@ -7151,7 +7156,7 @@ contingency_som_germ_cancers_overall_PAT <- p53mutsPATpercancer_matchgermline_pi
   mutate(Cancer = paste0(Cancer,
                          "_somatic"))
 
-# for overall 17% vs 13% ATO prevalence in germ and som need to merge raw counts for prop test
+# for overall 18% vs 14% ATO prevalence in germ and som need to merge raw counts for prop test
 contingency_som_germ_overallraw_ATO <- p53mutsATOpercancer_pivot %>% 
   dplyr::select(c(ATO, 
                   Total)) %>% 
@@ -7510,7 +7515,7 @@ $~$
 
 $~$
 
-```{r allACCpts-prep, message = FALSE, warning = FALSE, include = FALSE}
+```{r allACCpts-prep, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # subset dataset of all cancers to just ACC
 p53muts_allACCpts <- p53muts %>%
   mutate(Codon = abs((parse_number(as.character(proteinChange), 
@@ -7792,7 +7797,7 @@ $~$
 
 $~$
 
-```{r allsofttissuepts-prep, message = FALSE, warning = FALSE, include = FALSE}
+```{r allsofttissuepts-prep, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # subset dataset of all cancers to just soft tissues
 p53muts_allsofttissuespts <- p53muts %>%
   mutate(Codon = abs((parse_number(as.character(proteinChange), 
@@ -8069,7 +8074,7 @@ $~$
 
 $~$
 
-```{r allosteosarcomapts-prep, message = FALSE, warning = FALSE, include = FALSE}
+```{r allosteosarcomapts-prep, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # subset dataset of all cancers to just osteosarcoma
 p53muts_allosteosarcpts <- p53muts %>%
   mutate(Codon = abs((parse_number(as.character(proteinChange), 
@@ -8346,7 +8351,7 @@ $~$
 
 $~$
 
-```{r allbrainpts-prep, message = FALSE, warning = FALSE, include = FALSE}
+```{r allbrainpts-prep, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # subset dataset of all cancers to just brain
 p53muts_allbrainpts <- p53muts %>%
   mutate(Codon = abs((parse_number(as.character(proteinChange), 
@@ -8624,7 +8629,7 @@ $~$
 
 $~$
 
-```{r alluvial-prep, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvial-prep, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # also can make alluvial plots to show flow of proportions from tissues
 # # need to combine all strata labels of alluvial plot (i.e. heatmap annotation labels) into melted dfs so that everything assigned to a line, convert things you want ordered into factors so that they have defined order in alluvial plot, and rename columns to better names so that if in legend for alluvial plot automatically correct name
 # alluvial_type <- merge(data_barchart,
@@ -8824,18 +8829,18 @@ webr::PieDonut(piedonut_df,
                aes(Surface, # what inner pie should be
                    Deeper, # what outer should be
                    count = prop_round), # what labels should show
-               pieLabelSize = 5,
-               donutLabelSize = 3, 
-               titlesize = 7,
+               pieLabelSize = 6.3,
+               donutLabelSize = 5.8, 
+               titlesize = 6,
                ratioByGroup = FALSE, # show outer percents as part of total chart, not as part of slice group
                explode = 1, # which level to jut out of chart
                pieAlpha = 0.7, # transparency of inner
                donutAlpha = 1, # transparency of outer
                showPieName = FALSE, # don't show inner name in middle
-               r0 = 0.15, # radius of inner white space
-               r1 = 0.9, # radius of inner pie
-               r2 = 1.3, # radius of outer
-               showRatioThreshold = 0.015, # percent at which labels are written
+               r0 = 0.1, # radius of inner white space
+               r1 = 0.975, # radius of inner pie
+               r2 = 1.2, # radius of outer
+               showRatioThreshold = 0.021, # percent at which labels are written
                labelpositionThreshold = 0.03, #percent at which labels are put outside plot instead of inside
                title = "Studies of p53-mutant somatic cancer cases")
 ```
@@ -9767,7 +9772,7 @@ write_csv(pivotdfposother,
 
 $~$
 
-```{r allACCpts_sex_pos_grid, fig.width = 16, fig.height = 8, message = FALSE, warning = FALSE, include = FALSE}
+```{r allACCpts_sex_pos_grid, fig.width = 16, fig.height = 8, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # create colorful grid table of mutated residues across sexes in pts with ACC
 allACCpts_sex_pos_gridprep <- condformat(p53muts_allACCpts_sex_pos_pivot_damage) %>% 
   rule_text_color(1:Num_Indiv,
@@ -9878,7 +9883,7 @@ allACCpts_sex_pos_grid <- grid.arrange(allACCpts_sex_pos_gridprep,
 
 $~$
 
-```{r allsofttissuespts_sex_pos_grid, fig.width = 17, fig.height = 11, message = FALSE, warning = FALSE, include = FALSE}
+```{r allsofttissuespts_sex_pos_grid, fig.width = 17, fig.height = 11, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # create colorful grid table of mutated residues across sexes in pts with soft tissues
 allsofttissuespts_sex_pos_gridprep <- condformat(p53muts_allsofttissuespts_sex_pos_pivot_damage %>% 
                                                    subset(as.numeric(Num_Indiv) > 1) %>% 
@@ -9991,7 +9996,7 @@ allsofttissuespts_sex_pos_grid <- grid.arrange(allsofttissuespts_sex_pos_gridpre
 
 $~$
 
-```{r allosteosarcpts_sex_pos_grid, fig.width = 14.5, fig.height = 13, message = FALSE, warning = FALSE, include = FALSE}
+```{r allosteosarcpts_sex_pos_grid, fig.width = 14.5, fig.height = 13, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # create colorful grid table of mutated residues across sexes in pts with osteosarc
 allosteosarcpts_sex_pos_gridprep <- condformat(p53muts_allosteosarcpts_sex_pos_pivot_damage) %>% 
   rule_text_color(1:Num_Indiv,
@@ -10102,7 +10107,7 @@ allosteosarcpts_sex_pos_grid <- grid.arrange(allosteosarcpts_sex_pos_gridprep,
 
 $~$
 
-```{r allbrainpts_sex_pos_grid, fig.width = 16.5, fig.height = 8.5, message = FALSE, warning = FALSE, include = FALSE}
+```{r allbrainpts_sex_pos_grid, fig.width = 16.5, fig.height = 8.5, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # create colorful grid table of mutated residues across sexes in pts with brain
 allbrainpts_sex_pos_gridprep <- condformat(p53muts_allbrainpts_sex_pos_pivot_damage %>% 
                                              subset(as.numeric(Num_Indiv) > 5) %>% 
@@ -13866,7 +13871,7 @@ barchart_keysplicepos_matchgermline_cancers
 
 $~$
 
-```{r p53mutssplicepossex_barchart, fig.width = 22, fig.height = 7, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r p53mutssplicepossex_barchart, fig.width = 22, fig.height = 7, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # draw stacked barchart of splicing alterations
 p53mutssplicepossex_barchart <- ggplot(p53mutssplicepossex_pivot_melted,
                                        aes(x = protchange_collapseintronic,
@@ -13917,7 +13922,7 @@ p53mutssplicepossex_barchart
 
 $~$
 
-```{r p53mutsspliceposage_barchart, fig.width = 22, fig.height = 7, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r p53mutsspliceposage_barchart, fig.width = 22, fig.height = 7, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # draw stacked barchart of splicing alterations
 p53mutsspliceposage_barchart <- ggplot(p53mutsspliceposage_pivot_melted %>% 
                                          mutate(Age = gsub("NA",
@@ -13977,7 +13982,7 @@ p53mutsspliceposage_barchart
 
 $~$
 
-```{r p53mutssplicepos_barchart, fig.width = 34, fig.height = 7, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r p53mutssplicepos_barchart, fig.width = 34, fig.height = 7, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # draw stacked barchart of splicing alterations
 p53mutssplicepos_barchart <- ggplot(p53mutssplicepos_pivot_melted,
                                     aes(x = protchange_collapseintronic,
@@ -15839,7 +15844,7 @@ top_PAT_allp53mut_grid <- grid.arrange(top_PAT_allp53mut_gridprep,
 
 $~$
 
-```{r p53mutsATOpossex_barchart, fig.width = 32, fig.height = 6.25, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r p53mutsATOpossex_barchart, fig.width = 32, fig.height = 6.25, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # draw stacked barchart of ATO-rescuable alterations
 p53mutsATOpossex_barchart <- ggplot(p53mutsATOpossex_pivot_melted,
                                     aes(x = proteinChange,
@@ -15890,7 +15895,7 @@ p53mutsATOpossex_barchart
 
 $~$
 
-```{r p53mutsATOposage_barchart, fig.width = 32, fig.height = 6.25, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r p53mutsATOposage_barchart, fig.width = 32, fig.height = 6.25, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # draw stacked barchart of ATO-rescuable alterations
 p53mutsATOposage_barchart <- ggplot(p53mutsATOposage_pivot_melted %>% 
                                       mutate(Age = gsub("NA",
@@ -15950,7 +15955,7 @@ p53mutsATOposage_barchart
 
 $~$
 
-```{r p53mutsATOpos_barchart, fig.width = 42, fig.height = 7, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r p53mutsATOpos_barchart, fig.width = 42, fig.height = 7, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # draw stacked barchart of ATO-rescuable alterations
 p53mutsATOpos_barchart <- ggplot(p53mutsATOpos_pivot_melted,
                                  aes(x = proteinChange,
@@ -16658,7 +16663,7 @@ justify_clindata_cancer_prevalence_barchart_horiz
 
 $~$
 
-```{r allACCpts_sex_type_barchart, fig.width = 4.5, fig.height = 6.15, message = FALSE, warning = FALSE, include = FALSE}
+```{r allACCpts_sex_type_barchart, fig.width = 4.5, fig.height = 6.15, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # draw stacked barchart
 allACCpts_sex_type_barchart <- ggplot(p53muts_allACCpts_sex_type_pivot_melted,
                                       aes(x = Sex,
@@ -16706,7 +16711,7 @@ allACCpts_sex_type_barchart
 
 $~$
 
-```{r allsofttissuespts_sex_type_barchart, fig.width = 4.5, fig.height = 6.15, message = FALSE, warning = FALSE, include = FALSE}
+```{r allsofttissuespts_sex_type_barchart, fig.width = 4.5, fig.height = 6.15, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # draw stacked barchart
 allsofttissuespts_sex_type_barchart <- ggplot(p53muts_allsofttissuespts_sex_type_pivot_melted,
                                               aes(x = Sex,
@@ -16754,7 +16759,7 @@ allsofttissuespts_sex_type_barchart
 
 $~$
 
-```{r allosteosarcpts_sex_type_barchart, fig.width = 4.5, fig.height = 6.15, message = FALSE, warning = FALSE, include = FALSE}
+```{r allosteosarcpts_sex_type_barchart, fig.width = 4.5, fig.height = 6.15, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # draw stacked barchart
 allosteosarcpts_sex_type_barchart <- ggplot(p53muts_allosteosarcpts_sex_type_pivot_melted,
                                             aes(x = Sex,
@@ -16802,7 +16807,7 @@ allosteosarcpts_sex_type_barchart
 
 $~$
 
-```{r allbrainpts_sex_type_barchart, fig.width = 4.5, fig.height = 6.15, message = FALSE, warning = FALSE, include = FALSE}
+```{r allbrainpts_sex_type_barchart, fig.width = 4.5, fig.height = 6.15, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # draw stacked barchart
 allbrainpts_sex_type_barchart <- ggplot(p53muts_allbrainpts_sex_type_pivot_melted,
                                         aes(x = Sex,
@@ -16898,7 +16903,7 @@ draw(complexhm_totalmuts,
 
 $~$
 
-```{r complexhm_pos_sex, fig.width = 8.65, fig.height = 4.7, message = FALSE, warning = FALSE, include = FALSE}
+```{r complexhm_pos_sex, fig.width = 8.65, fig.height = 4.7, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 complexhm_pos_sex <- ComplexHeatmap::Heatmap(t(scale(t(sex_pos_matrix_ordered))),
                                              col = circlize::colorRamp2(c(plyr::round_any(min(t(scale(t(sex_pos_matrix_ordered))), na.rm = TRUE), 0.1, f = floor),
                                                                           0,
@@ -16940,7 +16945,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_type, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_type, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # draw alluvial plots with cancer as coloring
 # 
 # alluvialplot_type <- ggplot(data = alluvial_type,
@@ -16992,7 +16997,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_pos, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_pos, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # alluvialplot_pos <- ggplot(data = alluvial_pos,
 #                            aes(axis1 = `Germ Layer`,   # First variable on the X-axis
 #                                axis2 = Tissue, # Second variable on the X-axis
@@ -17038,7 +17043,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_type_side, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_type_side, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # draw alluvial plots with germ layer as coloring
 # alluvialplot_type_side <- ggplot(data = alluvial_type,
 #                                  aes(axis1 = `Germ Layer`,   # First variable on the X-axis
@@ -17089,7 +17094,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_pos_side, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_pos_side, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # alluvialplot_pos_side <- ggplot(data = alluvial_pos,
 #                                 aes(axis1 = `Germ Layer`,   # First variable on the X-axis
 #                                     axis2 = Tissue, # Second variable on the X-axis
@@ -17135,7 +17140,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_type_side2, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_type_side2, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # draw alluvial plots with tissue as coloring
 # alluvialplot_type_side2 <- ggplot(data = alluvial_type,
 #                                   aes(axis1 = `Germ Layer`,   # First variable on the X-axis
@@ -17186,7 +17191,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_pos_side2, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_pos_side2, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # alluvialplot_pos_side2 <- ggplot(data = alluvial_pos,
 #                                  aes(axis1 = `Germ Layer`,   # First variable on the X-axis
 #                                      axis2 = Tissue, # Second variable on the X-axis
@@ -17232,7 +17237,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_age, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_age, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # # draw alluvial plots with tissue as coloring
 # # alluvialplot_age <- ggplot(data = alluvial_age,
 # #                            aes(axis1 = Age,   # First variable on the X-axis
@@ -17278,7 +17283,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_age_side, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_age_side, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # # draw alluvial plots with germ layer as coloring
 # # alluvialplot_age_side <- ggplot(data = alluvial_age,
 # #                                 aes(axis1 = Age,   # First variable on the X-axis
@@ -17324,7 +17329,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_age_side2, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_age_side2, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # # draw alluvial plots with age as coloring
 # # alluvialplot_age_side2 <- ggplot(data = alluvial_age,
 # #                                  aes(axis1 = Age,   # First variable on the X-axis
@@ -17369,7 +17374,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_age_side3, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_age_side3, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # # draw alluvial plots with cancer as coloring
 # # alluvialplot_age_side3 <- ggplot(data = alluvial_age,
 # #                                  aes(axis1 = Age,   # First variable on the X-axis
@@ -17415,7 +17420,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_pos_age, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_pos_age, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # # draw alluvial plots with age as coloring
 # # alluvialplot_pos_age <- ggplot(data = alluvial_age_pos,
 # #                                aes(axis1 = Age,   # First variable on the X-axis
@@ -17460,7 +17465,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_pos_age_side, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_pos_age_side, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # # draw alluvial plots with domain as coloring
 # # alluvialplot_pos_age_side <- ggplot(data = alluvial_age_pos,
 # #                                     aes(axis1 = Age,   # First variable on the X-axis
@@ -17505,7 +17510,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_sex, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_sex, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # draw alluvial plots with tissue as coloring
 # alluvialplot_sex <- ggplot(data = alluvial_sex,
 #                            aes(axis1 = SEX,   # First variable on the X-axis
@@ -17556,7 +17561,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_sex_side, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_sex_side, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # draw alluvial plots with germ layer as coloring
 # alluvialplot_sex_side <- ggplot(data = alluvial_sex,
 #                                 aes(axis1 = SEX,   # First variable on the X-axis
@@ -17607,7 +17612,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_sex_side2, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_sex_side2, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # draw alluvial plots with sex as coloring
 # alluvialplot_sex_side2 <- ggplot(data = alluvial_sex,
 #                                  aes(axis1 = SEX,   # First variable on the X-axis
@@ -17658,7 +17663,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_sex_side3, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_sex_side3, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # draw alluvial plots with cancer as coloring
 # alluvialplot_sex_side3 <- ggplot(data = alluvial_sex,
 #                                  aes(axis1 = SEX,   # First variable on the X-axis
@@ -17709,7 +17714,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_pos_sex, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_pos_sex, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # draw alluvial plots with sex as coloring
 # alluvialplot_pos_sex <- ggplot(data = alluvial_sex_pos,
 #                                aes(axis1 = SEX,   # First variable on the X-axis
@@ -17755,7 +17760,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_pos_sex_side, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_pos_sex_side, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # draw alluvial plots with domain as coloring
 # alluvialplot_pos_sex_side <- ggplot(data = alluvial_sex_pos,
 #                                     aes(axis1 = SEX,   # First variable on the X-axis
@@ -17800,7 +17805,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_type_horiz, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_type_horiz, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # draw flipped alluvial plots
 # alluvialplot_type_horiz <- alluvialplot_type +
 #   coord_flip() + 
@@ -17816,7 +17821,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_pos_horiz, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_pos_horiz, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # alluvialplot_pos_horiz <- alluvialplot_pos +
 #   coord_flip() + 
 #   scale_y_reverse() +
@@ -17831,7 +17836,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_type_horiz_side, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_type_horiz_side, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # alluvialplot_type_horiz_side <- alluvialplot_type_side +
 #   coord_flip() + 
 #   scale_y_reverse() +
@@ -17846,7 +17851,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_pos_horiz_side, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_pos_horiz_side, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # alluvialplot_pos_horiz_side <- alluvialplot_pos_side +
 #   coord_flip() + 
 #   scale_y_reverse() +
@@ -17861,7 +17866,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_type_horiz_side2, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_type_horiz_side2, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # alluvialplot_type_horiz_side2 <- alluvialplot_type_side2 +
 #   coord_flip() + 
 #   scale_y_reverse() +
@@ -17876,7 +17881,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_pos_horiz_side2, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_pos_horiz_side2, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # alluvialplot_pos_horiz_side2 <- alluvialplot_pos_side2 +
 #   coord_flip() + 
 #   scale_y_reverse() +
@@ -17891,7 +17896,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_age_horiz, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_age_horiz, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # alluvialplot_age_horiz <- alluvialplot_age +
 # #   coord_flip() + 
 # #   scale_y_reverse() +
@@ -17906,7 +17911,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_age_side_horiz, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_age_side_horiz, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # alluvialplot_age_side_horiz <- alluvialplot_age_side +
 # #   coord_flip() + 
 # #   scale_y_reverse() +
@@ -17921,7 +17926,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_age_side2_horiz, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_age_side2_horiz, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # alluvialplot_age_side2_horiz <- alluvialplot_age_side2 +
 # #   coord_flip() + 
 # #   scale_y_reverse() +
@@ -17936,7 +17941,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_age_side3_horiz, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_age_side3_horiz, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # alluvialplot_age_side3_horiz <- alluvialplot_age_side3 +
 # #   coord_flip() + 
 # #   scale_y_reverse() +
@@ -17951,7 +17956,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_pos_age_horiz, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_pos_age_horiz, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # alluvialplot_pos_age_horiz <- alluvialplot_pos_age +
 # #   coord_flip() + 
 # #   scale_y_reverse() +
@@ -17966,7 +17971,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_pos_age_side_horiz, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_pos_age_side_horiz, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # alluvialplot_pos_age_side_horiz <- alluvialplot_pos_age_side +
 # #   coord_flip() + 
 # #   scale_y_reverse() +
@@ -17981,7 +17986,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_sex_horiz, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_sex_horiz, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # alluvialplot_sex_horiz <- alluvialplot_sex +
 #   coord_flip() + 
 #   scale_y_reverse() +
@@ -17996,7 +18001,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_sex_side_horiz, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_sex_side_horiz, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # alluvialplot_sex_side_horiz <- alluvialplot_sex_side +
 #   coord_flip() + 
 #   scale_y_reverse() +
@@ -18011,7 +18016,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_sex_side2_horiz, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_sex_side2_horiz, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # alluvialplot_sex_side2_horiz <- alluvialplot_sex_side2 +
 #   coord_flip() + 
 #   scale_y_reverse() +
@@ -18026,7 +18031,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_sex_side3_horiz, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_sex_side3_horiz, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # alluvialplot_sex_side3_horiz <- alluvialplot_sex_side3 +
 #   coord_flip() + 
 #   scale_y_reverse() +
@@ -18041,7 +18046,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_pos_sex_horiz, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_pos_sex_horiz, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # alluvialplot_pos_sex_horiz <- alluvialplot_pos_sex +
 #   coord_flip() + 
 #   scale_y_reverse() +
@@ -18056,7 +18061,7 @@ $~$
 
 $~$
 
-```{r alluvialplot_pos_sex_side_horiz, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r alluvialplot_pos_sex_side_horiz, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # alluvialplot_pos_sex_side_horiz <- alluvialplot_pos_sex_side +
 #   coord_flip() + 
 #   scale_y_reverse() +
@@ -18075,7 +18080,7 @@ $~$
 
 $~$
 
-```{r oldplot1, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot1, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # #make ggplot heatmap
 # ggplotheatmap <- ggplot(data_meltover0.01, 
 #                         aes(x = Mutation, 
@@ -18111,7 +18116,7 @@ $~$
 
 $~$
 
-```{r oldplot1a, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot1a, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # #make interactive heatmap with plotly
 # plotlymap <- ggplotly(ggplotheatmap, 
 #                       autosize = FALSE, 
@@ -18132,7 +18137,7 @@ $~$
 
 $~$
 
-```{r oldplot2, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot2, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # #make horiz stacked barchart
 # barchart_horiz <- ggplot(data_barchart, 
 #                          aes(x = Cancer, 
@@ -18176,7 +18181,7 @@ $~$
 
 $~$
 
-```{r oldplot2a, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot2a, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # #make interactive stacked barchart with plotly
 # plotlybarchart <- ggplotly(ggplotstackedbarchart, 
 #                            autosize = FALSE,
@@ -18194,7 +18199,7 @@ $~$
 
 $~$
 
-```{r oldplot3, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot3, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # make 100% stacked barchart with ggplot2 with reversed missense order i.e. highest to lowest
 # ggplotstackedbarchart_age <- ggplot(pivotage_type_melted, 
 #                                            aes(x = Age, 
@@ -18235,7 +18240,7 @@ $~$
 
 $~$
 
-```{r oldplot4, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot4, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # make horizontal barchart of age
 # ggplotstackedbarchart_age_horiz <- ggplot(pivotage_type_melted, 
 #                                                  aes(x = Age, 
@@ -18277,7 +18282,7 @@ $~$
 
 $~$
 
-```{r oldplot5, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot5, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # make horizontal barchart of sex
 # ggplotstackedbarchart_sex_horiz <- ggplot(pivotsex_type_melted, 
 #                                                  aes(x = SEX, 
@@ -18325,7 +18330,7 @@ $~$
 
 $~$
 
-```{r oldplot6, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot6, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # #make ggplot heatmap
 # ggplotposheatmap <- ggplot(datapos_meltover0.01, 
 #                            aes(x = Mutation, 
@@ -18359,7 +18364,7 @@ $~$
 
 $~$
 
-```{r oldplot7, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot7, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # pheatmap::pheatmap(pos_matrix, 
 #          main = "# muts/# distinct samples, ≥ 1% prevalence", 
 #          annotation_col = posused_annotate, 
@@ -18375,7 +18380,7 @@ $~$
 
 $~$
 
-```{r oldplot8, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot8, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # #create pheatmap with ordered tissues and codons
 # pheatmap::pheatmap(pos_matrix_ordered, 
 #          main = "# muts/# distinct samples, ≥ 1% prevalence", 
@@ -18395,7 +18400,7 @@ $~$
 
 $~$
 
-```{r oldplot9, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot9, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # svg(file = paste0(fig_path, "complexheatmap.svg"), 
 #     width = 25, 
 #     height = 8)
@@ -18427,7 +18432,7 @@ $~$
 
 $~$
 
-```{r oldplot10, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot10, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # svg(file = paste0(fig_path, "complexheatmap_ordered.svg"), 
 #     width = 25, 
 #     height = 8)
@@ -18460,7 +18465,7 @@ $~$
 
 $~$
 
-```{r oldplot11, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot11, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # svg(file = paste0(fig_path, "complexheatmap_ordered_totalmuts.svg"), 
 #     width = 35, 
 #     height = 8)
@@ -18493,7 +18498,7 @@ $~$
 
 $~$
 
-```{r oldplot12, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot12, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # pheatmap::pheatmap(pos_matrix_totalmuts, 
 #          main = "# muts/# total muts, ≥ 1% proportion", 
 #          annotation_col = posused_totalmuts_annotate, 
@@ -18510,7 +18515,7 @@ $~$
 
 $~$
 
-```{r oldplot13, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot13, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # #create pheatmap with ordered tissues and codons
 # pheatmap::pheatmap(pos_matrix_ordered_totalmuts, 
 #          main = "# muts/# total muts, ≥ 1% proportion", 
@@ -18532,7 +18537,7 @@ $~$
 
 $~$
 
-```{r oldplot14, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot14, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # draw stacked barchart
 # allACCpts_agestrata_sex_barchart <- ggplot(p53muts_allACCpts_agestrata_sex_pivot_melted,
 #                                            aes(x = Age,
@@ -18584,7 +18589,7 @@ $~$
 
 $~$
 
-```{r oldplot15, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot15, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # draw stacked barchart
 # allACCpts_agestrata_type_barchart <- ggplot(p53muts_allACCpts_agestrata_type_pivot_melted,
 #                                             aes(x = Age,
@@ -18636,7 +18641,7 @@ $~$
 
 $~$
 
-```{r oldplot16, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot16, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # create colorful grid table of mutated residues across age strata in pts with ACC
 # allACCpts_agestrata_pos_gridprep <- condformat(p53muts_allACCpts_agestrata_pos_pivot_damage) %>% 
 #   rule_text_color(1:Num_Indiv,
@@ -18739,7 +18744,7 @@ $~$
 
 $~$
 
-```{r oldplot17, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot17, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # draw stacked barchart
 # allsofttissuespts_agestrata_sex_barchart <- ggplot(p53muts_allsofttissuespts_agestrata_sex_pivot_melted,
 #                                            aes(x = Age,
@@ -18791,7 +18796,7 @@ $~$
 
 $~$
 
-```{r oldplot18, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot18, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # draw stacked barchart
 # allsofttissuespts_agestrata_type_barchart <- ggplot(p53muts_allsofttissuespts_agestrata_type_pivot_melted,
 #                                             aes(x = Age,
@@ -18843,7 +18848,7 @@ $~$
 
 $~$
 
-```{r oldplot19, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot19, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # create colorful grid table of mutated residues across age strata in pts with soft tissues
 # allsofttissuespts_agestrata_pos_gridprep <- condformat(p53muts_allsofttissuespts_agestrata_pos_pivot_damage %>% 
 #                                                          subset(as.numeric(Num_Indiv) > 1) %>% 
@@ -18948,7 +18953,7 @@ $~$
 
 $~$
 
-```{r oldplot20, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot20, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # draw stacked barchart
 # allosteosarcpts_agestrata_sex_barchart <- ggplot(p53muts_allosteosarcpts_agestrata_sex_pivot_melted,
 #                                            aes(x = Age,
@@ -19000,7 +19005,7 @@ $~$
 
 $~$
 
-```{r oldplot21, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot21, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # draw stacked barchart
 # allosteosarcpts_agestrata_type_barchart <- ggplot(p53muts_allosteosarcpts_agestrata_type_pivot_melted,
 #                                             aes(x = Age,
@@ -19052,7 +19057,7 @@ $~$
 
 $~$
 
-```{r oldplot22, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot22, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # create colorful grid table of mutated residues across age strata in pts with osteosarc
 # allosteosarcpts_agestrata_pos_gridprep <- condformat(p53muts_allosteosarcpts_agestrata_pos_pivot_damage) %>% 
 #   rule_text_color(1:Num_Indiv,
@@ -19155,7 +19160,7 @@ $~$
 
 $~$
 
-```{r oldplot23, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot23, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # draw stacked barchart
 # allbrainpts_agestrata_sex_barchart <- ggplot(p53muts_allbrainpts_agestrata_sex_pivot_melted,
 #                                                    aes(x = Age,
@@ -19207,7 +19212,7 @@ $~$
 
 $~$
 
-```{r oldplot24, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot24, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # draw stacked barchart
 # allbrainpts_agestrata_type_barchart <- ggplot(p53muts_allbrainpts_agestrata_type_pivot_melted,
 #                                                     aes(x = Age,
@@ -19259,7 +19264,7 @@ $~$
 
 $~$
 
-```{r oldplot25, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot25, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # # create colorful grid table of mutated residues across age strata in pts with brain
 # allbrainpts_agestrata_pos_gridprep <- condformat(p53muts_allbrainpts_agestrata_pos_pivot_damage %>% 
 #                                                          subset(as.numeric(Num_Indiv) > 5) %>% 
@@ -19364,7 +19369,7 @@ $~$
 
 $~$
 
-```{r oldplot26, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot26, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # svg(file = paste0(fig_path, "complexhm_age.svg"), 
 #     width = 10.5, 
 #     height = 6.8)
@@ -19394,7 +19399,7 @@ $~$
 
 $~$
 
-```{r oldplot27, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot27, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # svg(file = paste0(fig_path, "complexhm_age_type.svg"), 
 #     width = 4.5, 
 #     height = 4)
@@ -19422,7 +19427,7 @@ $~$
 
 $~$
 
-```{r oldplot28, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot28, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # svg(file = paste0(fig_path, "complexhm_pos_age.svg"), 
 #     width = 16, 
 #     height = 3.5)
@@ -19452,7 +19457,7 @@ $~$
 
 $~$
 
-```{r oldplot29, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot29, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # svg(file = paste0(fig_path, "complexhm_sex.svg"), 
 #     width = 11, 
 #     height = 5.8)
@@ -19490,7 +19495,7 @@ $~$
 
 $~$
 
-```{r oldplot30, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot30, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # svg(file = paste0(fig_path, "complexhm_sex_type.svg"), 
 #     width = 4, 
 #     height = 2.7)
@@ -19526,7 +19531,7 @@ $~$
 
 $~$
 
-```{r oldplot31, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot31, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 #draw complexheatmaps, without and with cancer clustering for total muts
 # svg(file = paste0(fig_path, "complexheatmap_barchart.svg"), 
 #     width = 8.9, 
@@ -19565,7 +19570,7 @@ $~$
 
 $~$
 
-```{r oldplot32, message = FALSE, warning = FALSE, eval = FALSE, include = FALSE}
+```{r oldplot32, message = FALSE, warning = FALSE, eval = FALSE, echo = FALSE}
 # svg(file = paste0(fig_path, "complexheatmap_barchart_ordered.svg"),
 #     width = 8.6,
 #     height = 9)
